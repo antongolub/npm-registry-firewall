@@ -3,7 +3,10 @@
   "version": "0.0.0-pre.0",
   "description": "nodejs-based npm registry proxy with on-the-fly filtering",
   "main": "src/main/js/index.js",
+  "type": "module",
+  "exports": "./src/main/js/index.js",
   "scripts": {
+    "start": "node src/main/js/index.js",
     "test": "exit 0"
   },
   "dependencies": {
