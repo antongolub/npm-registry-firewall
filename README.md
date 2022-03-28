@@ -2,6 +2,11 @@
 nodejs-based npm registry proxy with on-the-fly filtering
 
 ## Motivation
+To reduce security and legal risks
+
+<details>
+  <summary>Details</summary>
+
 Open Source is essential for modern software development. [According to various estimates](https://www.perforce.com/blog/vcs/using-open-source-code-in-proprietary-software), at least 60% of the resulting codebase is composed of open repositories, libraries and packages. And keeps growing. [Synopsys OSSRA 2021 report](https://www.synopsys.com/content/dam/synopsys/sig-assets/reports/rep-ossra-2021.pdf) found that 98% of applications have open source components.
 
 But _open_ does not mean _free_. The price is the risk that you take:
@@ -11,7 +16,7 @@ But _open_ does not mean _free_. The price is the risk that you take:
 
 Let's consider these problems in the context of the JS universe.
 
-### Availability
+### Availability risks
 JS packages are distributed in various ways: git repos, cdns and package registries.
 Regardless of the method, there are only two entry types that are finally resolved by any pkg manager: git-commit pointers and tarball links.
 
@@ -45,7 +50,7 @@ yaf2@antongolub/yarn-audit-fix:
   "dependencies": {
 ```
 So the implementation of mirroring is fundamentally quite simple:
-we just need to save and expose these assets from an alternative entry point. Luckily this has already happened.
+we just need to save and expose these assets from an alternative ssh/https entry point. Luckily this has already happened.
 The main repository for JS code is [registry.npmjs.org](https://registry.npmjs.org/). 
 And at least 4 public replicas are always available as alternatives:
 * [https://registry.yarnpkg.com](https://registry.yarnpkg.com/)
@@ -53,8 +58,36 @@ And at least 4 public replicas are always available as alternatives:
 * [https://skimdb.npmjs.com/registry/](https://skimdb.npmjs.com/registry/)
 * [https://registry.npm.taobao.org/](https://registry.npm.taobao.org/)
 
-If this reliability level is not enough, you easily run your own registry:
+If this reliability level is not enough, you can easily run one more registry:
 * [sonatype-nexus](https://help.sonatype.com/repomanager3/nexus-repository-administration/formats/npm-registry)
 * [verdaccio.org](https://verdaccio.org/)
 
-### Security 
+### Security risks
+Any code may not work properly. Due to error or malice — this is not so important. 
+Keep in mind that most OSS licenses **exclude any liability for damages**. It's also important to always remember that oss code is **not verified** before being published.
+These two circumstances sometimes give rise to dangerous incidents like [colors.js](https://security.snyk.io/vuln/SNYK-JS-COLORS-2331906) or [node-ipc](https://snyk.io/blog/peacenotwar-malicious-npm-node-ipc-package-vulnerability/).
+
+The independent audit process is expensive, time consuming, so only setting a delay before using new pkg version might be effective countermeasure.
+
+### Legal risks
+License agreement is an attribute of the moment: it can suddenly change and affect the development process (for example, [husky-5](https://blog.typicode.com/husky-5/)).
+Uncontrolled use of new versions may have legal and financial consequences. Therefore, automated license checks should be part of CI/CD pipeline or the registry's own feature.
+
+</details>
+
+## Install
+```shell
+# npm
+npm i npm-registry-firewall
+
+# yarn
+yarn add npm-registry-firewall
+```
+
+## Usage
+```shell
+npm-registry-firewall -c=/path/to/config.json
+```
+
+## License
+[MiT](./LICENSE)

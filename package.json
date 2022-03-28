@@ -1,0 +1,30 @@
+{
+  "name": "npm-registry-firewall",
+  "version": "0.0.0-pre.0",
+  "description": "nodejs-based npm registry proxy with on-the-fly filtering",
+  "main": "src/main/js/index.js",
+  "scripts": {
+    "test": "exit 0"
+  },
+  "dependencies": {
+  },
+  "files": [
+    "src/main"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/antongolub/npm-registry-firewall.git"
+  },
+  "keywords": [
+    "npm",
+    "registry",
+    "firewall",
+    "proxy"
+  ],
+  "author": "Anton Golub <antongolub@antongolub.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/antongolub/npm-registry-firewall/issues"
+  },
+  "homepage": "https://github.com/antongolub/npm-registry-firewall#readme"
+}
