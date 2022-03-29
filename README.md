@@ -52,11 +52,12 @@ yaf2@antongolub/yarn-audit-fix:
 So the implementation of mirroring is fundamentally quite simple:
 we just need to save and expose these assets from an alternative ssh/https entry point. Luckily this has already happened.
 The main repository for JS code is [registry.npmjs.org](https://registry.npmjs.org/). 
-And at least 4 public replicas are always available as alternatives:
+And at least 5 public replicas are always available as alternatives:
 * [https://registry.yarnpkg.com](https://registry.yarnpkg.com/)
-* [https://r.cnpmjs.org/](https://r.cnpmjs.org/)
-* [https://skimdb.npmjs.com/registry/](https://skimdb.npmjs.com/registry/)
-* [https://registry.npm.taobao.org/](https://registry.npm.taobao.org/)
+* [https://registry.npmmirror.com](https://registry.npmmirror.com)
+* [https://r.cnpmjs.org](https://r.cnpmjs.org/)
+* [https://skimdb.npmjs.com/registry](https://skimdb.npmjs.com/registry/)
+* [https://registry.npm.taobao.org](https://registry.npm.taobao.org/)
 
 If this reliability level is not enough, you can easily run one more registry:
 * [sonatype-nexus](https://help.sonatype.com/repomanager3/nexus-repository-administration/formats/npm-registry)

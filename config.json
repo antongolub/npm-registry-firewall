@@ -1,0 +1,22 @@
+{
+  "server": [
+    {
+      "host": "localhost",
+      "port": 3000,
+      "secure": {
+        "cert": "ssl/cert.pem",
+        "key": "ssl/key.pem"
+      }
+    }
+  ],
+  "rules": [
+    {
+      "policy": "deny",
+      "provider": "publish-date",
+      "options": {
+        "from": "2022-02-24T00:00:00.000Z"
+      },
+      "final": true
+    }
+  ]
+}

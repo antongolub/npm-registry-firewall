@@ -21,25 +21,24 @@ export const request = async (url, method = 'GET', postData, pipe) => {
   } = parse(url)
 
   const {promise, resolve, reject} = makeDeferred()
+
   const params = {
     method,
     host,
     port,
     path,
+    headers: {...pipe?.req?.headers, host },
   }
 
   const req = lib.request(params, res => {
-    if (pipe) {
-      pipe.req.pipe(req)
-      res.pipe(pipe.res)
-      return
-    }
-
     res.req = req
     req.res = res
 
     if (res.statusCode < 200 || res.statusCode >= 300) {
-      return reject(Object.assign(new Error(`HTTP Status Code: ${res.statusCode}`), {res}))
+      const err = new Error(`HTTP Status Code: ${res.statusCode}`)
+      Object.defineProperty(err, 'res', {enumerable: false, value: res})
+
+      return reject(err)
     }
 
     const data = []
@@ -53,14 +52,26 @@ export const request = async (url, method = 'GET', postData, pipe) => {
       })
       resolve(res)
     })
+
+    if (pipe) {
+      pipe.res.writeHead(res.statusCode, res.headers);
+      res.pipe(pipe.res, { end: true })
+    }
   })
   req.on('error', reject)
 
   promise.req = req
-  if (postData) {
-    req.write(postData)
+
+  if (pipe) {
+    pipe.req.on('error', reject)
+    pipe.req.pipe(req, { end: true })// .pipe(pipe.res)
+
+  } else {
+    if (postData) {
+      req.write(postData)
+    }
+    req.end()
   }
-  req.end()
 
   return promise
 }

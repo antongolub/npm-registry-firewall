@@ -1,3 +1,4 @@
-import { server } from './server.js'
+import { createServer } from './server.js'
+import { config } from './config.js'
 
-server.listen(3000)
+await Promise.all(config.server.map(s => createServer(s).start()))
