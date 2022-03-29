@@ -35,7 +35,7 @@ export const request = async (url, method = 'GET', postData, pipe) => {
     req.res = res
 
     if (res.statusCode < 200 || res.statusCode >= 300) {
-      const err = new Error(`HTTP Status Code: ${res.statusCode}`)
+      const err = new Error(`HTTP ${res.statusCode} ${host}${path}`)
       Object.defineProperty(err, 'res', {enumerable: false, value: res})
 
       return reject(err)

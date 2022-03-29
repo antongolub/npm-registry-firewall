@@ -4,7 +4,7 @@ export const format = ({level = 'INFO', msgChunks = []}) => JSON.stringify({
   message: msgChunks.map(c => c?.toString() || `${c}`).join(' ')
 })
 
-export const levels = ['info', 'log', 'warn', 'error']
+export const levels = ['info', 'warn', 'error']
 
 export const logger = levels.reduce((m, l) => {
   m[l] = (...args) => console.log(format({
