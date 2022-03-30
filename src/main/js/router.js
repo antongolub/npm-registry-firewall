@@ -1,3 +1,5 @@
+import {once} from './util.js'
+
 const normalizeRoute = ([m, p, cb]) => {
   if (typeof m === 'function') {
     return ['*', null, m]
@@ -30,16 +32,25 @@ export const createRouter = (routes) => async (req, res) => {
   const matched = routes
     .map(normalizeRoute)
     .filter(([method, pattern]) => matchMethod(req.method, method) && matchUrl(url, pattern))
-  const getNext = async () => {
-    if (matched.length === 0) {
+
+  let i = 0
+  const getNext = async (err) => {
+    i = matched.findIndex(([,,cb], _i) => _i >= i && !!err  === (cb.length === 4))
+
+    if (i === -1) {
       return Promise.resolve()
     }
 
-    const [, p, cb] = matched.shift()
+    const next = once(getNext)
+    const args = err ? [err, req, res, next] : [req, res, next]
+    const [, p, cb] = matched[i++]
 
     // req.params = pattern.match(url) || {}
-
-    await cb(req, res, getNext)
+    try {
+      await cb(...args)
+    } catch (e) {
+      await getNext(e)
+    }
   }
 
   await getNext()
