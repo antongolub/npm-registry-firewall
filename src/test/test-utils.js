@@ -4,7 +4,7 @@ import {promisify} from 'node:util'
 
 export {strict as assert} from 'node:assert'
 
-const sleep = promisify(setTimeout)
+export const sleep = promisify(setTimeout)
 
 // https://stackoverflow.com/questions/9781218/how-to-change-node-jss-console-font-color
 const Reset = "\x1b[0m",

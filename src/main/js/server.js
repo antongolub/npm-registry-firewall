@@ -1,10 +1,11 @@
 import https from 'node:https'
-import http from 'node:https'
+import http from 'node:http'
 import url from 'node:url'
 
 import {request} from './client.js'
 import {logger} from './logger.js'
 import {getPkgDigest} from './pkg-digest.js'
+import { makeDeferred } from './util.js'
 
 const remote = 'https://registry.npmmirror.com'
 // const remote = 'https://registry.npm.taobao.org'
@@ -41,9 +42,28 @@ export const createServer = ({host, port, secure, router}) => {
   server.headersTimeout = 62_000
 
   server.start = async () => {
-    await server.listen(port, host, () => {
-      logger.info(`npm registry firewall is ready: ${secure ? 'https' : 'http'}://${host}:${port}`)
+    const {promise, resolve, reject} = makeDeferred()
+    server.listen(port, host, (err) => {
+      if (err) {
+        return reject(err)
+      }
+      resolve()
+      logger.info(`npm-registry-firewall is ready for connections: ${secure ? 'https' : 'http'}://${host}:${port}`)
     })
+
+    return promise
+  }
+
+  server.stop = async () => {
+    const {promise, resolve, reject} = makeDeferred()
+    server.close((err) => {
+      if (err) {
+        return reject(err)
+      }
+      resolve()
+    })
+
+    return promise
   }
 
   return server

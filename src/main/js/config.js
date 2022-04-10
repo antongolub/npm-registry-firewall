@@ -26,4 +26,4 @@ const populate = (config) => {
   }
 }
 
-export const config = populate(JSON.parse(fs.readFileSync('config.json', 'utf8')))
+export const getConfig = (file) => populate(JSON.parse(fs.readFileSync(file, 'utf8')))

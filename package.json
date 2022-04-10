@@ -27,12 +27,5 @@
   "bugs": {
     "url": "https://github.com/antongolub/npm-registry-firewall/issues"
   },
-  "homepage": "https://github.com/antongolub/npm-registry-firewall#readme",
-  "dependencies": {
-    "@antongolub/git-root": "^1.5.6",
-    "git-root": "^1.0.0",
-    "minimist": "^1.2.5",
-    "p-cancelable": "^3.0.0",
-    "size-limit": "^7.0.8"
-  }
+  "homepage": "https://github.com/antongolub/npm-registry-firewall#readme"
 }

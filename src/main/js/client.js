@@ -16,6 +16,7 @@ export const request = async (url, method = 'GET', postData, pipe) => {
     isSecure = protocol === 'https:',
     path = '/',
     host,
+    hostname,
     port = isSecure ? 443 : 80,
     lib = isSecure ? https : http
   } = parse(url)
@@ -24,7 +25,7 @@ export const request = async (url, method = 'GET', postData, pipe) => {
 
   const params = {
     method,
-    host,
+    host: hostname,
     port,
     path,
     headers: {...pipe?.req?.headers, host },
