@@ -12,3 +12,5 @@ export const once = (fn) => (() => {
   let r
   return (...args) => r || (r = fn(...args))
 })()
+
+export const asArray = (v) => Array.isArray(v) ? v : [v]

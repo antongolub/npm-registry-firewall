@@ -1,21 +1,21 @@
-import {once} from './util.js'
+import {asArray, once} from './util.js'
 
 const normalizeRoute = ([m, p, cb]) => {
   if (typeof m === 'function') {
-    return ['*', null, m]
+    return ['*', [null], m]
   }
 
   if (typeof p === 'function') {
-    return [m, null, p]
+    return [m, [null], p]
   }
 
-  return [m, p, cb]
+  return [m, asArray(p), cb]
 }
 
 const matchMethod = (method, expected) =>
   method === expected || expected === '*' || expected === 'ALL'
 
-const matchUrl = (url, pattern) => {
+const matchUrl = (url, [pattern]) => {
   if (typeof pattern === 'string') {
     return url.startsWith(pattern)
   }
@@ -43,9 +43,14 @@ export const createRouter = (routes) => async (req, res) => {
 
     const next = once(getNext)
     const args = err ? [err, req, res, next] : [req, res, next]
-    const [, p, cb] = matched[i++]
+    const [, [pattern, rmap], cb] = matched[i++]
 
-    // req.params = pattern.match(url) || {}
+    req.routeParams = rmap && pattern instanceof RegExp
+      ? pattern.exec(url)
+        .slice(1)
+        .reduce((m, v, k) => { m[rmap[k]] = v; return m }, {})
+      : {}
+
     try {
       await cb(...args)
     } catch (e) {

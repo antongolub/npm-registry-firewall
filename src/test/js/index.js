@@ -9,16 +9,7 @@ const app = createApp({
     host: 'localhost',
     port: 3001,
   }],
-  "rules": [
-    {
-      "policy": "deny",
-      "provider": "publish-date",
-      "options": {
-        "from": "2022-02-24T00:00:00.000Z"
-      },
-      "final": true
-    }
-  ]
+  registry: 'https://registry.npmmirror.com'
 })
 
 await app.start()

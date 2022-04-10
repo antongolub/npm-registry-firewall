@@ -2,9 +2,11 @@ import fs from 'node:fs'
 import {strict as assert} from 'node:assert'
 
 const populate = (config) => {
-  const server = config.server.map(({host, port, secure: _secure}) => {
-    assert.ok(host, 'cfg: server host must be specified')
-    assert.ok(port, 'cfg: server port must be specified')
+  assert.ok(config.registry, 'cfg: registry')
+
+  const server = config.server.map(({host, port, secure: _secure} ) => {
+    assert.ok(host, 'cfg: server.host')
+    assert.ok(port, 'cfg: server.port')
 
     const secure = _secure
       ? {
@@ -18,11 +20,11 @@ const populate = (config) => {
       port
     }
   })
-  const rules = config.rules
 
   return {
     server,
-    rules
+    rules: config.rules,
+    registry: config.registry,
   }
 }
 

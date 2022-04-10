@@ -9,6 +9,7 @@
       }
     }
   ],
+  "registry": "https://registry.npmmirror.com",
   "rules": [
     {
       "policy": "deny",

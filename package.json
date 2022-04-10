@@ -3,11 +3,12 @@
   "version": "0.0.0-pre.0",
   "description": "nodejs-based npm registry proxy with on-the-fly filtering",
   "main": "src/main/js/index.js",
+  "bin": "src/main/js/cli.js",
   "type": "module",
   "exports": "./src/main/js/index.js",
   "scripts": {
-    "start": "node src/main/js/index.js",
-    "test": "exit 0"
+    "start": "node src/main/js/cli.js",
+    "test": "node src/test/js/index.js"
   },
   "files": [
     "src/main"
@@ -27,5 +28,9 @@
   "bugs": {
     "url": "https://github.com/antongolub/npm-registry-firewall/issues"
   },
-  "homepage": "https://github.com/antongolub/npm-registry-firewall#readme"
+  "homepage": "https://github.com/antongolub/npm-registry-firewall#readme",
+  "dependencies": {
+    "@antongolub/iso8601": "^1.2.2",
+    "iso8601": "^1.1.1"
+  }
 }
