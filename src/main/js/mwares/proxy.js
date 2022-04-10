@@ -5,7 +5,7 @@ export const proxy = async (req, res, next) => {
   // const remote = 'https://registry.npm.taobao.org'
   // const remote = 'https://r.cnpmjs.org'
   // const remote = 'https://registry.npmjs.org'
-  const dst = `${remote}${req.url}`
+  const url = `${remote}${req.url}`
 
-  request(dst, req.method, null, {req, res})
+  await request({ url, method: req.method, pipe: {req, res}, followRedirects: true})
 }

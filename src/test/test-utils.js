@@ -1,8 +1,19 @@
 import {fileURLToPath} from 'node:url'
 import {relative} from 'node:path'
 import {promisify} from 'node:util'
+import assert from 'node:assert'
 
-export {strict as assert} from 'node:assert'
+export const objectContaining = (a, b) => {
+  // TODO add recursion
+  assert.deepEqual(Object.entries(a).reduce((m, [k, v]) => {
+    if (b.hasOwnProperty(k)) {
+      m[k] = v
+    }
+    return m
+  }, {}), b)
+}
+
+export {assert}
 
 export const sleep = promisify(setTimeout)
 

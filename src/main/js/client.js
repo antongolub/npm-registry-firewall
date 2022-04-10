@@ -10,7 +10,8 @@ const makeDeferred = () => {
   return {resolve, reject, promise}
 }
 
-export const request = async (url, method = 'GET', postData, pipe) => {
+export const request = async (opts) => {
+  const {url, method = 'GET', postData, pipe, followRedirects} = opts
   const {
     protocol,
     isSecure = protocol === 'https:',
@@ -34,9 +35,17 @@ export const request = async (url, method = 'GET', postData, pipe) => {
   const req = lib.request(params, res => {
     res.req = req
     req.res = res
+    const statusCode = res.statusCode
 
-    if (res.statusCode < 200 || res.statusCode >= 300) {
-      const err = new Error(`HTTP ${res.statusCode} ${host}${path}`)
+    if (statusCode < 200 || statusCode >= 300) {
+      if (statusCode === 302 && followRedirects && res.headers.location) {
+        return request({
+          ...opts,
+          url: res.headers.location
+        }).then(resolve, reject)
+      }
+
+      const err = new Error(`HTTP ${res.statusCode} ${host}${path} ${res.statusMessage}`)
       Object.defineProperty(err, 'res', {enumerable: false, value: res})
 
       return reject(err)
