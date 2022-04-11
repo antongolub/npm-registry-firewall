@@ -7,7 +7,7 @@ npm registry proxy with on-the-fly filtering
 [![npm (tag)](https://img.shields.io/npm/v/npm-registry-firewall)](https://www.npmjs.com/package/npm-registry-firewall)
 
 ## Key Features
-* Restricts access to remote packages by a predicate: `name`, `org`, `semver`, `license`, `dateRange`
+* Restricts access to remote packages by predicate: `name`, `org`, `semver`, `license`, `dateRange`
 * [expressjs](https://expressjs.com/en/guide/using-middleware.html)-inspired server implementation.
 * Has no deps. Literally zero.
 
@@ -153,9 +153,15 @@ await app.start()
       "license": "dbad"
     },
     {
+      "policy": "allow",
+      "name": "d",
+      // `allow` is upper, so it protects `< 1.0.0`-ranged versions that might be omitted on next steps
+      "version": "< 1.0.0"
+    },
+    {
       "policy": "deny",
       // Checks pkg version publish date against the range
-      "dateRange": ["2022-01-01T00:00:00.000Z", "2025-01-01T00:00:00.000Z"]
+      "dateRange": ["2010-01-01T00:00:00.000Z", "2025-01-01T00:00:00.000Z"]
     }
   ]
 }
