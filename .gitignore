@@ -105,4 +105,5 @@ dist
 
 # Temp testing lockfiles
 yarn.lock
-package-lock.json
+_.npmrc
+.npmrc

@@ -1,14 +1,16 @@
 {
   "name": "npm-registry-firewall",
-  "version": "0.0.0-pre.4",
+  "version": "0.0.0-pre.5",
   "description": "nodejs-based npm registry proxy with on-the-fly filtering",
   "main": "src/main/js/index.js",
   "bin": "src/main/js/cli.js",
   "type": "module",
   "exports": "./src/main/js/index.js",
   "scripts": {
+    "docs": "mkdir -p docs && cp ./README.md ./docs/README.md",
     "start": "node src/main/js/cli.js config.json",
-    "test": "node src/test/js/index.js"
+    "test": "node src/test/js/index.js",
+    "test:cov": "npx c8 npm run test && c8 report -r lcov"
   },
   "files": [
     "src/main"
