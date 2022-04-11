@@ -42,26 +42,28 @@ const getDirective = (rules, times, {name, org}, {version, license}) => rules.re
 
 }, null)
 
+const filterVersions = (packument, cfg, routeParams) => Object.values(packument.versions).reduce((m, v) => {
+  if (getDirective(cfg.rules, packument.time, routeParams, v) === 'deny') {
+    return m
+  }
+  v.dist.tarball = v.dist.tarball.replace(cfg.registry, cfg.server.entrypoint)
+  m[v.version] = v
+  return m
+}, {})
+
+const filterTime = (versions, time) => Object.entries(time).reduce((m, [k, v]) => {
+  if (versions[k]) {
+    m[k] = v
+  }
+  return m
+}, {
+  created: time.created,
+  modified: time.modified,
+})
+
 const patchPackument = (packument, cfg, routeParams) => {
-  const versions = Object.values(packument.versions).reduce((m, v) => {
-    if (getDirective(cfg.rules, packument.time, routeParams, v) === 'deny') {
-      return m
-    }
-    v.dist.tarball = v.dist.tarball.replace(cfg.registry, cfg.server.entrypoint)
-    m[v.version] = v
-
-    return m
-  }, {})
-
-  const time = Object.entries(packument.time).reduce((m, [k, v]) => {
-    if (versions[k]) {
-      m[k] = v
-    }
-    return m
-  }, {
-    created: packument.time.created,
-    modified: packument.time.modified,
-  })
+  const versions = filterVersions(packument, cfg, routeParams)
+  const time = filterTime(versions, packument.time)
 
   const latestVersion = Object.keys(versions).reduce((m, v) => time[m] > time[v] ? m : v );
   const latestEntry = versions[latestVersion]

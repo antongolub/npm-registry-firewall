@@ -6,13 +6,8 @@ npm registry proxy with on-the-fly filtering
 [![Test Coverage](https://api.codeclimate.com/v1/badges/ed66fb48706b02e64f8e/test_coverage)](https://codeclimate.com/github/antongolub/npm-registry-firewall/test_coverage)
 [![npm (tag)](https://img.shields.io/npm/v/npm-registry-firewall)](https://www.npmjs.com/package/npm-registry-firewall)
 
-## Key Features
-* Restricts access to remote packages by predicate: `name`, `org`, `semver`, `license`, `dateRange`
-* [expressjs](https://expressjs.com/en/guide/using-middleware.html)-inspired server implementation.
-* Has no deps. Literally zero.
-
 ## Motivation
-To reduce security and legal risks
+To mitigate security and legal risks
 
 <details>
   <summary>Details</summary>
@@ -84,6 +79,11 @@ License agreement is an attribute of the moment: it can suddenly change and affe
 Uncontrolled use of new versions may have legal and financial consequences. Therefore, automated license checks should be part of CI/CD pipeline or the registry's own feature.
 
 </details>
+
+## Key Features
+* Restricts access to remote packages by predicate: `name`, `org`, `semver`, `license`, `dateRange`
+* [expressjs](https://expressjs.com/en/guide/using-middleware.html)-inspired server implementation.
+* Has no deps. Literally zero.
 
 ## Install
 ```shell
