@@ -157,8 +157,3 @@ await app.start()
 
 ## License
 [MiT](./LICENSE)
-
-1) заказать доступы для тестового пула до
-* https://registry.yarnpkg.com
-* https://registry.npmjs.org
-* https://r.cnpmjs.org/
