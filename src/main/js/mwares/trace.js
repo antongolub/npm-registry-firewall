@@ -1,7 +1,7 @@
 export const trace = async (req, res, next) => {
   req.log = res.log = req.log.nest({
     traceId: req.id,
-    remoteIp: req.headers['x-forwarded-for'] || req.socket.remoteAddress
+    clientIp: req.headers['x-forwarded-for'] || req.socket.remoteAddress
   })
   req.log.info(req.method, req.url)
 

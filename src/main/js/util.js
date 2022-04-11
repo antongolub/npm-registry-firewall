@@ -13,4 +13,8 @@ export const once = (fn) => (() => {
   return (...args) => r || (r = fn(...args))
 })()
 
-export const asArray = (v) => Array.isArray(v) ? v : [v]
+export const asArray = v => Array.isArray(v) ? v : [v]
+
+export const asRegExp = v => v instanceof RegExp
+  ? v
+  : new RegExp(`^${v.replaceAll('*', '.+')}$`, 'i')

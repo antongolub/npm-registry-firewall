@@ -1,5 +1,6 @@
 import fs from 'node:fs'
 import {strict as assert} from 'node:assert'
+import {asRegExp} from './util.js'
 
 const populate = (config) => {
   assert.ok(config.registry, 'cfg: registry')
@@ -31,11 +32,30 @@ const populate = (config) => {
     }
   })
 
+  const rules = config.rules.map(({
+    policy,
+    name = '*',
+    org = '*',
+    dateRange
+  }) => {
+    assert.ok(policy, 'cfg: rules.policy')
+
+    return {
+      org: asRegExp(org),
+      name: asRegExp(name),
+      dateRange: dateRange ? dateRange.map(d => typeof d === 'string' ? Date.parse(d) : d|0) : null,
+      policy
+    }
+  })
+
   return {
     server,
-    rules: config.rules,
+    rules,
     registry: config.registry,
   }
 }
 
-export const getConfig = (file) => populate(JSON.parse(fs.readFileSync(file, 'utf8')))
+export const getConfig = (file) => populate(typeof file === 'string'
+  ? JSON.parse(fs.readFileSync(file, 'utf8'))
+  : file
+)

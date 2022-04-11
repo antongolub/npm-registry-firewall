@@ -48,7 +48,13 @@ export const createRouter = (routes) => async (req, res) => {
     req.routeParams = rmap && pattern instanceof RegExp
       ? pattern.exec(url)
         .slice(1)
-        .reduce((m, v, k) => { m[rmap[k]] = v; return m }, {})
+        .reduce((m, v, k) => {
+          const _k = rmap[k]
+          if (_k) {
+            m[_k] = v?.replace('%2f', '/')
+          }
+          return m
+        }, {})
       : {}
 
     try {
