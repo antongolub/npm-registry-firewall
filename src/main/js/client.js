@@ -2,16 +2,10 @@ import http from 'node:http'
 import https from 'node:https'
 import {parse} from 'node:url'
 
-const makeDeferred = () => {
-  let resolve
-  let reject
-  const promise = new Promise((res, rej) => { resolve = res; reject = rej })
-
-  return {resolve, reject, promise}
-}
+import { makeDeferred } from './util.js'
 
 export const request = async (opts) => {
-  const {url, method = 'GET', postData, pipe, followRedirects} = opts
+  const {url, method = 'GET', postData, pipe, followRedirects, timeout = 30_000} = opts
   const {
     protocol,
     isSecure = protocol === 'https:',
@@ -29,6 +23,7 @@ export const request = async (opts) => {
     host: hostname,
     port,
     path,
+    timeout,
     headers: {...pipe?.req?.headers, host },
   }
 
@@ -69,6 +64,9 @@ export const request = async (opts) => {
     }
   })
   req.on('error', reject)
+  req.on('timeout', () => {
+    req.destroy()
+  })
 
   promise.req = req
 

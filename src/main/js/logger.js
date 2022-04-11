@@ -2,7 +2,7 @@ export const format = ({level = 'INFO', msgChunks = [], extra}) => JSON.stringif
   level,
   timestamp: new Date(),
   ...extra,
-  message: msgChunks.map(c => JSON.stringify(c)).join(' '),
+  message: msgChunks.map(c => typeof c === 'object' ? JSON.stringify(c) : `${c}`).join(' '),
 })
 
 export const levels = ['info', 'warn', 'error']

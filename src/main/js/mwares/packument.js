@@ -7,6 +7,5 @@ export const packument = async (req, res, next) => {
   req.packument = await request({url: `${req.cfg.registry}/${req.routeParams.name}`})
     .then(({body}) => JSON.parse(body))
 
-
   next()
 }

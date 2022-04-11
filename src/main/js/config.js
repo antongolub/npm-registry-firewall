@@ -4,7 +4,14 @@ import {strict as assert} from 'node:assert'
 const populate = (config) => {
   assert.ok(config.registry, 'cfg: registry')
 
-  const server = config.server.map(({host, port, secure: _secure} ) => {
+  const server = config.server.map(({
+    host,
+    port,
+    secure: _secure,
+    keepAliveTimeout = 61_000,
+    headersTimeout = 62_000,
+    requestTimeout = 30_000
+  }) => {
     assert.ok(host, 'cfg: server.host')
     assert.ok(port, 'cfg: server.port')
 
@@ -17,7 +24,10 @@ const populate = (config) => {
     return {
       secure,
       host,
-      port
+      port,
+      requestTimeout,
+      headersTimeout,
+      keepAliveTimeout,
     }
   })
 
