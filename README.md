@@ -1,6 +1,9 @@
 # npm-registry-firewall
 npm registry proxy with on-the-fly filtering
 
+## Status
+🚧 ⚠️ Work in progress / MVP#0 is available for testing 
+
 ## Key Features
 * Restricts access to remote packages by a predicate.
 * Dead simple and easily extensible implementation.
@@ -113,7 +116,7 @@ await app.start()
 ```
 
 ### Config
-```json
+```json5
 {
   "server": [
     {
@@ -135,7 +138,13 @@ await app.start()
     },
     {
       "policy": "allow",
-      "org": "@antongolub"
+      "name": "@babel/*"
+    },
+    {
+      "policy": "deny",
+      "name": "colors",
+      // Any semver range
+      "version": ">= v1.4.0"
     },
     {
       "policy": "deny",
@@ -148,3 +157,8 @@ await app.start()
 
 ## License
 [MiT](./LICENSE)
+
+1) заказать доступы для тестового пула до
+* https://registry.yarnpkg.com
+* https://registry.npmjs.org
+* https://r.cnpmjs.org/

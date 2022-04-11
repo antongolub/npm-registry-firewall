@@ -4,7 +4,7 @@ import https from 'node:https'
 import { logger } from '../logger.js'
 import { makeDeferred } from '../util.js'
 
-export const createServer = ({host, port, secure, router, keepAliveTimeout, headersTimeout, requestTimeout}) => {
+export const createServer = ({host, port, secure, router, entrypoint, keepAliveTimeout, headersTimeout, requestTimeout}) => {
   const lib = secure ? https : http
   const options = {...secure}
   const server = lib.createServer(options, async (req, res) => {
@@ -33,7 +33,7 @@ export const createServer = ({host, port, secure, router, keepAliveTimeout, head
         return reject(err)
       }
       resolve()
-      logger.info(`npm-registry-firewall is ready for connections: ${secure ? 'https' : 'http'}://${host}:${port}`)
+      logger.info(`npm-registry-firewall is ready for connections: ${entrypoint}`)
     })
 
     return promise
@@ -46,7 +46,7 @@ export const createServer = ({host, port, secure, router, keepAliveTimeout, head
         return reject(err)
       }
       resolve()
-      logger.info(`npm-registry-firewall has been stopped: ${secure ? 'https' : 'http'}://${host}:${port}`)
+      logger.info(`npm-registry-firewall has been stopped: ${entrypoint}`)
     })
 
     return promise

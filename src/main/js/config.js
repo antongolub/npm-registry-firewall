@@ -1,11 +1,12 @@
 import fs from 'node:fs'
 import {strict as assert} from 'node:assert'
-import {asRegExp} from './util.js'
+import {asRegExp, asArray} from './util.js'
+import { semver } from './semver.js'
 
 const populate = (config) => {
   assert.ok(config.registry, 'cfg: registry')
 
-  const server = config.server.map(({
+  const server = asArray(config.server).map(({
     host,
     port,
     secure: _secure,
@@ -21,11 +22,13 @@ const populate = (config) => {
         key: fs.readFileSync(_secure.key, 'utf8'),
         cert: fs.readFileSync(_secure.cert, 'utf8'),
       } : null
+    const entrypoint = `${secure ? 'https' : 'http'}://${host}:${port}`
 
     return {
       secure,
       host,
       port,
+      entrypoint,
       requestTimeout,
       headersTimeout,
       keepAliveTimeout,
@@ -36,15 +39,18 @@ const populate = (config) => {
     policy,
     name = '*',
     org = '*',
-    dateRange
+    dateRange,
+    version
   }) => {
     assert.ok(policy, 'cfg: rules.policy')
+    version && assert.ok(semver.validRange(version), 'cfg: rules.version semver')
 
     return {
+      policy,
       org: asRegExp(org),
       name: asRegExp(name),
-      dateRange: dateRange ? dateRange.map(d => typeof d === 'string' ? Date.parse(d) : d|0) : null,
-      policy
+      version,
+      dateRange: dateRange ? dateRange.map(d => typeof d === 'string' ? Date.parse(d) : d|0) : null
     }
   })
 

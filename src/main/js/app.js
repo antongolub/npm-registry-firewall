@@ -17,7 +17,7 @@ export const createApp = (cfg) => {
       [ ctx({...config, server: s}) ],
       [ timeout ],
       [ trace ],
-      ['GET', '/status/', healthcheck],
+      ['GET', '/healthcheck/', healthcheck],
       [
         '*',
         [

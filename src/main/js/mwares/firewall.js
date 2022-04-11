@@ -1,8 +1,9 @@
 import {request} from '../http/client.js'
+import {semver} from '../semver.js'
 
 export const firewall = async (req, res, next) => {
   if (!req?.cfg?.registry) {
-    throw new Error('packument-mware: req.cfg.registry is required')
+    throw new Error('firewall: req.cfg.registry is required')
   }
 
   const { name, org, version } = req.routeParams
@@ -15,7 +16,8 @@ export const firewall = async (req, res, next) => {
   const err = new Error('Access Denied')
   err.status = 403
 
-  if (rule.dateRange) {
+
+  if (rule.dateRange || rule.version) {
     const { body, headers } = await request({url: `${req.cfg.registry}/${name}`})
     const packument = JSON.parse(body)
     const _packument = patchPackument(packument, rule, req.cfg)
@@ -49,10 +51,11 @@ const patchPackument = (packument, rule, cfg) => {
       return m
     }
 
-    const {host, port, secure} = cfg.server
-    const registry = `${secure ? 'https' : 'http'}://${host}:${port}`
+    if (rule.version && semver.satisfies(version, rule.version)) {
+      return m
+    }
 
-    v.dist.tarball = v.dist.tarball.replace(cfg.registry, registry)
+    v.dist.tarball = v.dist.tarball.replace(cfg.registry, cfg.entrypoint)
     m[version] = v
 
     return m
