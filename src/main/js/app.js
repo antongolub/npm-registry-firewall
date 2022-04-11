@@ -1,14 +1,17 @@
 import { createServer } from './http/server.js'
 import { createRouter } from './http/router.js'
-import { healthcheck } from './mwares/healthcheck.js'
-import { errorBoundary } from './mwares/error-boundary.js'
-import { notFound } from './mwares/not-found.js'
-import { trace } from './mwares/trace.js'
-import { proxy } from './mwares/proxy.js'
+import {
+  healthcheck,
+  errorBoundary,
+  notFound,
+  trace,
+  proxy,
+  ctx,
+  timeout,
+  firewall,
+} from './mwares/index.js'
+
 import { getConfig } from './config.js'
-import { ctx } from './mwares/ctx.js'
-import { timeout } from './mwares/timeout.js'
-import { firewall } from './mwares/firewall.js'
 
 export const createApp = (cfg) => {
   const config = getConfig(cfg)
@@ -40,7 +43,6 @@ export const createApp = (cfg) => {
     ])
     return createServer({...s, router})
   })
-
   return {
     servers,
     config,

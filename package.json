@@ -7,7 +7,7 @@
   "type": "module",
   "exports": "./src/main/js/index.js",
   "scripts": {
-    "start": "node src/main/js/cli.js",
+    "start": "node src/main/js/cli.js config.json",
     "test": "node src/test/js/index.js"
   },
   "files": [

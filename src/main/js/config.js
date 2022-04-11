@@ -65,7 +65,11 @@ const populate = (config) => {
   }
 }
 
-export const getConfig = (file) => populate(typeof file === 'string'
-  ? JSON.parse(fs.readFileSync(file, 'utf8'))
-  : file
-)
+export const getConfig = (file) => {
+  assert.ok(file, 'cfg: config must be specified')
+
+  return populate(typeof file === 'string'
+    ? JSON.parse(fs.readFileSync(file, 'utf8'))
+    : file
+  )
+}

@@ -96,7 +96,7 @@ yarn add npm-registry-firewall
 ## Usage
 ### CLI
 ```shell
-npm-registry-firewall -c=/path/to/config.json
+npm-registry-firewall /path/to/config.json
 ```
 
 ### JS API

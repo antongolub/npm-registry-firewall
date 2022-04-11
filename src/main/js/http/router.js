@@ -66,9 +66,3 @@ export const createRouter = (routes) => async (req, res) => {
 
   await getNext()
 }
-
-const routes = [
-  ['GET', /^\/(@\w+(?:%2f)?)(\w+)$/i, {org: 0, name: 1}, (req, res, next, params) => {
-
-  }]
-]
