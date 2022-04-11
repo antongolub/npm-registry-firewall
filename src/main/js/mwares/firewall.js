@@ -20,7 +20,7 @@ export const firewall = async (req, res, next) => {
   const packumentBuffer = Buffer.from(JSON.stringify(_packument))
   res.writeHead(200, {
     ...headers,
-    'content-length': packumentBuffer.length
+    'content-length': '' + packumentBuffer.length
   })
   res.write(packumentBuffer)
   res.end()
@@ -47,8 +47,7 @@ const patchPackument = (packument, cfg, routeParams) => {
     if (getDirective(cfg.rules, packument.time, routeParams, v) === 'deny') {
       return m
     }
-
-    v.dist.tarball = v.dist.tarball.replace(cfg.registry, cfg.entrypoint)
+    v.dist.tarball = v.dist.tarball.replace(cfg.registry, cfg.server.entrypoint)
     m[v.version] = v
 
     return m
@@ -64,8 +63,18 @@ const patchPackument = (packument, cfg, routeParams) => {
     modified: packument.time.modified,
   })
 
+  const latestVersion = Object.keys(versions).reduce((m, v) => time[m] > time[v] ? m : v );
+  const latestEntry = versions[latestVersion]
+  const distTags = {
+    latest: latestVersion
+  }
+
   return {
     ...packument,
+    author: latestEntry.author,
+    license: latestEntry.license,
+    maintainer: latestEntry.maintainer,
+    'dist-tags': distTags,
     time,
     versions
   }

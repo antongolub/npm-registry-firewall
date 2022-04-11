@@ -160,6 +160,23 @@ await app.start()
   ]
 }
 ```
+**.npmrc**
+```yaml
+registry=https://localhost:3000
+strict-ssl=false
+```
+**npm view**
+```shell
+npm-registry-firewall % npm view d versions                          
+[ '0.1.0', '0.1.1' ]
+```
+**output**
+```shell
+$ node src/main/js/cli.js config.json
+{"level":"INFO","timestamp":"2022-04-11T20:56:47.031Z","message":"npm-registry-firewall is ready for connections: https://localhost:3000"}
+{"level":"INFO","timestamp":"2022-04-11T20:56:49.568Z","traceId":"44f21c050d8c6","clientIp":"127.0.0.1","message":"GET /d"}
+{"level":"INFO","timestamp":"2022-04-11T20:56:50.015Z","traceId":"44f21c050d8c6","clientIp":"127.0.0.1","message":"HTTP 200 446ms"}
+```
 
 ## Contributing
 Feel free to open any issues: bug reports, feature requests or questions.
