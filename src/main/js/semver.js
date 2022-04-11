@@ -1,7 +1,8 @@
-import {resolve} from 'node:path'
+import { createRequire } from 'node:module'
 import {spawnSync} from 'node:child_process'
+const require = createRequire(import.meta.url)
 
-const nm = resolve(spawnSync('npm', ['list', '-g', '--depth=0', 'npm']).stdout.toString().split('\n').shift(), 'node_modules')
+const pkgRoot = spawnSync('npm', ['list', '--global', '--parseable', '--depth=1', 'semver'])
+  .stdout.toString().trim().split('\n').sort()[0]
 
-export const semver = (await import(`${nm}/npm/node_modules/semver/index.js`)).default
-
+export const semver = require(`${pkgRoot}`)
