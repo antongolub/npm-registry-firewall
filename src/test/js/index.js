@@ -17,8 +17,8 @@ await app.start()
 ;[
   [
     'returns healthcheck',
-    { url: 'http://localhost:3001/status/', method: 'GET'},
-    {}
+    { url: 'http://localhost:3001/healthcheck/', method: 'GET'},
+    {statusCode: 200, body: '{"status":"OK"}' }
   ],
   [
     '404 if not found',
@@ -42,6 +42,7 @@ await app.start()
 
       result = {
         statusCode: res.statusCode,
+        body: res.body,
         hash,
       }
     } catch ({res}) {
