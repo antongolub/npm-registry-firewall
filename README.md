@@ -1,5 +1,10 @@
 # npm-registry-firewall
-nodejs-based npm registry proxy with on-the-fly filtering
+npm registry proxy with on-the-fly filtering
+
+## Key Features
+* Restricts access to remote packages by a predicate.
+* Dead simple and easily extensible implementation.
+* Has no deps. Literally zero.
 
 ## Motivation
 To reduce security and legal risks
@@ -86,8 +91,59 @@ yarn add npm-registry-firewall
 ```
 
 ## Usage
+### CLI
 ```shell
 npm-registry-firewall -c=/path/to/config.json
+```
+
+### JS API
+```js
+import {createApp} from 'npm-registry-firewall'
+
+const app = createApp({
+  server: [{
+    host: 'localhost',
+    port: 3001,
+  }],
+  registry: 'https://registry.npmmirror.com',
+  rules: {...}
+})
+
+await app.start()
+```
+
+### Config
+```json
+{
+  "server": [
+    {
+      "host": "localhost",
+      "port": 3000,
+      // Optional. If declared serves via https
+      "secure": {
+        "cert": "ssl/cert.pem",
+        "key": "ssl/key.pem"
+      }
+    }
+  ],
+  // Remote registry
+  "registry": "https://registry.npmmirror.com",
+  "rules": [
+    {
+      "policy": "allow",
+      "org": "@qiwi"
+    },
+    {
+      "policy": "allow",
+      "org": "@antongolub"
+    },
+    {
+      "policy": "deny",
+      // Checks pkg version publish date against the range
+      "dateRange": ["2022-01-01T00:00:00.000Z", "2025-01-01T00:00:00.000Z"]
+    }
+  ]
+}
 ```
 
 ## License

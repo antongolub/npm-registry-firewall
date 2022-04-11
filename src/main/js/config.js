@@ -32,7 +32,7 @@ const populate = (config) => {
     }
   })
 
-  const rules = config.rules.map(({
+  const rules = (config.rules || []).map(({
     policy,
     name = '*',
     org = '*',
