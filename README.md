@@ -6,12 +6,9 @@ npm registry proxy with on-the-fly filtering
 [![Test Coverage](https://api.codeclimate.com/v1/badges/ed66fb48706b02e64f8e/test_coverage)](https://codeclimate.com/github/antongolub/npm-registry-firewall/test_coverage)
 [![npm (tag)](https://img.shields.io/npm/v/npm-registry-firewall)](https://www.npmjs.com/package/npm-registry-firewall)
 
-## Status
-🚧 ⚠️ Work in progress / MVP#0 is available for testing 
-
 ## Key Features
-* Restricts access to remote packages by a predicate.
-* Dead simple and easily extensible implementation.
+* Restricts access to remote packages by a predicate: `name`, `org`, `semver`, `license`, `dateRange`
+* [expressjs](https://expressjs.com/en/guide/using-middleware.html)-inspired server implementation.
 * Has no deps. Literally zero.
 
 ## Motivation
@@ -77,8 +74,7 @@ If this reliability level is not enough, you can easily run one more registry:
 * [verdaccio.org](https://verdaccio.org/)
 
 ### Security risks
-Any code may not work properly. Due to error or malice — this is not so important. 
-Keep in mind that most OSS licenses **exclude any liability for damages**. It's also important to always remember that oss code is **not verified** before being published.
+Any code may not work properly. Due to error or malice. Keep in mind that most OSS licenses **exclude any liability for damages**. It's also important to always remember that oss code is **not verified** before being published.
 These two circumstances sometimes give rise to dangerous incidents like [colors.js](https://security.snyk.io/vuln/SNYK-JS-COLORS-2331906) or [node-ipc](https://snyk.io/blog/peacenotwar-malicious-npm-node-ipc-package-vulnerability/).
 
 The independent audit process is expensive, time consuming, so only setting a delay before using new pkg version might be effective countermeasure.
@@ -164,6 +160,11 @@ await app.start()
   ]
 }
 ```
+
+## Contributing
+Feel free to open any issues: bug reports, feature requests or questions.
+You're always welcome to suggest a PR. Just fork this repo, write some code, put some tests and push your changes.
+Any feedback is appreciated.
 
 ## License
 [MIT](./LICENSE)
