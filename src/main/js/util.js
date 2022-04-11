@@ -17,4 +17,4 @@ export const asArray = v => Array.isArray(v) ? v : [v]
 
 export const asRegExp = v => v instanceof RegExp
   ? v
-  : new RegExp(`^${v.replace(/\*/, '.+')}$`, 'i')
+  : new RegExp(`^${v.replace(/\*/g, '.+')}$`, 'i')

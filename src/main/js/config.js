@@ -52,7 +52,7 @@ const populate = (config) => {
       org: asRegExp(org),
       name: asRegExp(name),
       version,
-      license: license ? license.toLowerCase().split(/\s*,\s*/) : null,
+      license: license ? license.toLowerCase().split(',').map(s => s.trim()) : null, // split(/\s*,\s*/) seems unsafe
       dateRange: dateRange ? dateRange.map(d => typeof d === 'string' ? Date.parse(d) : d|0) : null
     }
   })
