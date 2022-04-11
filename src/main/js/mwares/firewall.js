@@ -34,9 +34,9 @@ const getDirective = (rules, times, {name, org}, {version, license}) => rules.re
   const time = Date.parse(times[version])
   const matched = r.org.test(org)
     && r.name.test(name)
-    && (r.license ? r.license.includes(license?.toLowerCase()) : false)
-    && (r.dateRange ? time >= r.dateRange[0] && time <= r.dateRange[1] : false)
-    && (r.version ? semver.satisfies(version, r.version): false)
+    && (r.license ? r.license.includes(license?.toLowerCase()) : true)
+    && (r.dateRange ? time >= r.dateRange[0] && time <= r.dateRange[1] : true)
+    && (r.version ? semver.satisfies(version, r.version): true)
 
   return matched && r.policy
 

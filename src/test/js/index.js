@@ -9,7 +9,14 @@ const app = createApp({
     host: 'localhost',
     port: 3001,
   }],
-  registry: 'https://registry.npmmirror.com'
+  registry: 'https://registry.npmmirror.com',
+  rules: [
+    {
+      "policy": "deny",
+      "name": "colors",
+      "version": ">= v1.3.0"
+    },
+  ]
 })
 
 await app.start()
@@ -29,7 +36,12 @@ await app.start()
     'gets tarball if allowed',
     { url: 'http://localhost:3001/@antongolub/git-root/-/git-root-1.5.6.tgz', method: 'GET'},
     { hash: 'uMs0P/SZUnoc+oF6E0VVPSnkXphOfg1GXRl+wnx/tElmLNPtNCuh2n7EVbSJU5hv73q96YK04bBVRQmS2p2Cjw==' }
-  ]
+  ],
+  [
+    'reads packument',
+    { url: 'http://localhost:3001/colors', method: 'GET'},
+    { statusCode: 200 }
+  ],
 ].forEach(([name, {url, method}, expected]) => {
   test(name, async () => {
     let result

@@ -22,7 +22,7 @@
     {
       "policy": "deny",
       "name": "colors",
-      "version": ">= v1.4.0"
+      "version": ">= v1.3.0"
     },
     {
       "policy": "deny",
