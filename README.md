@@ -148,6 +148,11 @@ await app.start()
     },
     {
       "policy": "deny",
+      // Comma-separate license types
+      "license": "dbad"
+    },
+    {
+      "policy": "deny",
       // Checks pkg version publish date against the range
       "dateRange": ["2022-01-01T00:00:00.000Z", "2025-01-01T00:00:00.000Z"]
     }
@@ -156,4 +161,4 @@ await app.start()
 ```
 
 ## License
-[MiT](./LICENSE)
+[MIT](./LICENSE)

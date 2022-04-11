@@ -35,12 +35,14 @@ const populate = (config) => {
     }
   })
 
+  const defaultPolicy = config.defaultPolicy || 'allow'
   const rules = (config.rules || []).map(({
     policy,
     name = '*',
     org = '*',
     dateRange,
-    version
+    version,
+    license
   }) => {
     assert.ok(policy, 'cfg: rules.policy')
     version && assert.ok(semver.validRange(version), 'cfg: rules.version semver')
@@ -50,6 +52,7 @@ const populate = (config) => {
       org: asRegExp(org),
       name: asRegExp(name),
       version,
+      license: license ? license.toLowerCase().split(/\s*,\s*/) : null,
       dateRange: dateRange ? dateRange.map(d => typeof d === 'string' ? Date.parse(d) : d|0) : null
     }
   })
@@ -57,6 +60,7 @@ const populate = (config) => {
   return {
     server,
     rules,
+    defaultPolicy,
     registry: config.registry,
   }
 }
