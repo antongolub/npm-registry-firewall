@@ -10,7 +10,7 @@
     "docs": "mkdir -p docs && cp ./README.md ./docs/README.md",
     "start": "node src/main/js/cli.js config.json",
     "test": "node src/test/js/index.js",
-    "test:cov": "npx c8 npm run test && c8 report -r lcov"
+    "test:cov": "npm_config_yes=true npx c8 npm run test && npx c8 report -r lcov"
   },
   "files": [
     "src/main"
