@@ -1,7 +1,7 @@
 import crypto from 'node:crypto'
 import { testFactory, assert, sleep, objectContaining } from '../test-utils.js'
 import { createApp } from '../../main/js/index.js'
-import { request } from '../../main/js/client.js'
+import { request } from '../../main/js/http/client.js'
 
 const test = testFactory('app', import.meta)
 const app = createApp({

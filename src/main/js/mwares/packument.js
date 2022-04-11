@@ -1,4 +1,4 @@
-import {request} from '../client.js'
+import {request} from '../http/client.js'
 
 export const packument = async (req, res, next) => {
   if (!req?.cfg?.registry) {

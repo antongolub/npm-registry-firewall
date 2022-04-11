@@ -1,4 +1,4 @@
-import {asArray, once} from './util.js'
+import {asArray, once} from '../util.js'
 
 const normalizeRoute = ([m, p, cb]) => {
   if (typeof m === 'function') {

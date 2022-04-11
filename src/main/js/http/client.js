@@ -2,7 +2,7 @@ import http from 'node:http'
 import https from 'node:https'
 import {parse} from 'node:url'
 
-import { makeDeferred } from './util.js'
+import { makeDeferred } from '../util.js'
 
 export const request = async (opts) => {
   const {url, method = 'GET', postData, pipe, followRedirects, timeout = 30_000} = opts
