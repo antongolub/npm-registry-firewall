@@ -14,7 +14,7 @@ const agentHttps = new https.Agent(agentOpts)
 const agentHttp = new http.Agent(agentOpts)
 
 export const request = async (opts) => {
-  const {url, method = 'GET', postData, pipe, followRedirects, timeout = 10_000} = opts
+  const {url, method = 'GET', postData, pipe, followRedirects, timeout = 30_000} = opts
   const {
     protocol,
     isSecure = protocol === 'https:',
