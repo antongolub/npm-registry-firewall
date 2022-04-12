@@ -9,14 +9,16 @@ const app = createApp({
     host: 'localhost',
     port: 3001,
   }],
-  registry: 'https://registry.npmmirror.com',
-  rules: [
-    {
-      "policy": "deny",
-      "name": "colors",
-      "version": ">= v1.3.0"
-    },
-  ]
+  firewall: {
+    registry: 'https://registry.npmmirror.com',
+    rules: [
+      {
+        "policy": "deny",
+        "name": "colors",
+        "version": ">= v1.3.0"
+      },
+    ]
+  }
 })
 
 await app.start()

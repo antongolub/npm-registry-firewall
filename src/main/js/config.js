@@ -4,70 +4,82 @@ import {asRegExp, asArray, normalizePath} from './util.js'
 import { semver } from './semver.js'
 
 const populate = (config) => {
-  assert.ok(config.registry, 'cfg: registry')
+  const profiles = asArray(config).map(p => {
+    assert.ok(p.server, 'cfg: server')
+    assert.ok(p.firewall, 'cfg: server')
 
-  const server = asArray(config.server).map(({
-    host,
-    port,
-    base = '/',
-    api = '/',
-    healthcheck = '/healthcheck',
-    secure: _secure,
-    keepAliveTimeout = 61_000,
-    headersTimeout = 62_000,
-    requestTimeout = 30_000
-  }) => {
-    assert.ok(host, 'cfg: server.host')
-    assert.ok(port, 'cfg: server.port')
-
-    const secure = _secure
-      ? {
-        key: fs.readFileSync(_secure.key, 'utf8'),
-        cert: fs.readFileSync(_secure.cert, 'utf8'),
-      } : null
-    const entrypoint = normalizePath(`${secure ? 'https' : 'http'}://${host}:${port}${base}${api}`)
-
-    return {
-      secure,
+    const server = asArray(p.server).map(({
       host,
       port,
-      base,
-      healthcheck,
-      api,
-      entrypoint,
-      requestTimeout,
-      headersTimeout,
-      keepAliveTimeout,
-    }
-  })
+      base = '/',
+      healthcheck = '/healthcheck',
+      secure: _secure,
+      keepAliveTimeout = 61_000,
+      headersTimeout = 62_000,
+      requestTimeout = 30_000
+    }) => {
+      assert.ok(host, 'cfg: server.host')
+      assert.ok(port, 'cfg: server.port')
 
-  const defaultPolicy = config.defaultPolicy || 'allow'
-  const rules = (config.rules || []).map(({
-    policy,
-    name = '*',
-    org = '*',
-    dateRange,
-    version,
-    license
-  }) => {
-    assert.ok(policy, 'cfg: rules.policy')
-    version && assert.ok(semver.validRange(version), 'cfg: rules.version semver')
+      const secure = _secure
+        ? {
+          key: fs.readFileSync(_secure.key, 'utf8'),
+          cert: fs.readFileSync(_secure.cert, 'utf8'),
+        } : null
+      const entrypoint = normalizePath(`${secure ? 'https' : 'http'}://${host}:${port}`)
+
+      return {
+        secure,
+        host,
+        port,
+        base,
+        entrypoint,
+        healthcheck,
+        requestTimeout,
+        headersTimeout,
+        keepAliveTimeout,
+      }
+    })
+
+    const firewall = asArray(p.firewall).map(f => {
+      assert.ok(f.registry, 'cfg: firewall.registry')
+
+      const rules = (p.firewall.rules || []).map(({
+        policy,
+        name = '*',
+        org = '*',
+        dateRange,
+        version,
+        license
+      }) => {
+        assert.ok(policy, 'cfg: firewall.rules.policy')
+        version && assert.ok(semver.validRange(version), 'cfg: firewall.rules.version semver')
+
+        return {
+          policy,
+          org: asRegExp(org),
+          name: asRegExp(name),
+          version,
+          license: license ? license.toLowerCase().split(',').map(s => s.trim()) : null, // split(/\s*,\s*/) seems unsafe
+          dateRange: dateRange ? dateRange.map(d => typeof d === 'string' ? Date.parse(d) : d|0) : null
+        }
+      })
+
+      return {
+        rules,
+        registry: f.registry,
+        base: f.base || '/'
+      }
+    })
 
     return {
-      policy,
-      org: asRegExp(org),
-      name: asRegExp(name),
-      version,
-      license: license ? license.toLowerCase().split(',').map(s => s.trim()) : null, // split(/\s*,\s*/) seems unsafe
-      dateRange: dateRange ? dateRange.map(d => typeof d === 'string' ? Date.parse(d) : d|0) : null
+      server,
+      firewall
     }
   })
 
   return {
-    server,
-    rules,
-    defaultPolicy,
-    registry: config.registry,
+    profiles,
   }
 }
 

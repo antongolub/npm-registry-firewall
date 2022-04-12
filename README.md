@@ -130,46 +130,49 @@ await app.start()
       },
       // Optional. Defaults to '/'
       "base": "/",
-      // Optional. Defaults to '/'
-      "api": "/",
+
       // Optional. Defaults to '/healthcheck'. Pass null to disable
       "healthcheck": "/health"
     }
   ],
-  // Remote registry
-  "registry": "https://registry.npmmirror.com",
-  "rules": [
-    {
-      "policy": "allow",
-      "org": "@qiwi"
-    },
-    {
-      "policy": "allow",
-      "name": "@babel/*"
-    },
-    {
-      "policy": "deny",
-      "name": "colors",
-      // Any semver range
-      "version": ">= v1.4.0"
-    },
-    {
-      "policy": "deny",
-      // Comma-separated license types
-      "license": "dbad"
-    },
-    {
-      "policy": "allow",
-      "name": "d",
-      // `allow` is upper, so it protects `< 1.0.0`-ranged versions that might be omitted on next steps
-      "version": "< 1.0.0"
-    },
-    {
-      "policy": "deny",
-      // Checks pkg version publish date against the range
-      "dateRange": ["2010-01-01T00:00:00.000Z", "2025-01-01T00:00:00.000Z"]
-    }
-  ]
+  "firewall": {
+    // Optional. Defaults to '/'
+    "base": "/",
+    // Remote registry
+    "registry": "https://registry.npmmirror.com",
+    "rules": [
+      {
+        "policy": "allow",
+        "org": "@qiwi"
+      },
+      {
+        "policy": "allow",
+        "name": "@babel/*"
+      },
+      {
+        "policy": "deny",
+        "name": "colors",
+        // Any semver range
+        "version": ">= v1.4.0"
+      },
+      {
+        "policy": "deny",
+        // Comma-separated license types
+        "license": "dbad"
+      },
+      {
+        "policy": "allow",
+        "name": "d",
+        // `allow` is upper, so it protects `< 1.0.0`-ranged versions that might be omitted on next steps
+        "version": "< 1.0.0"
+      },
+      {
+        "policy": "deny",
+        // Checks pkg version publish date against the range
+        "dateRange": ["2010-01-01T00:00:00.000Z", "2025-01-01T00:00:00.000Z"]
+      }
+    ]
+  }
 }
 ```
 **.npmrc**

@@ -14,16 +14,17 @@ import {
 import { getConfig } from './config.js'
 
 export const createApp = (cfg) => {
+  // // const entrypoint = normalizePath(`${secure ? 'https' : 'http'}://${host}:${port}${base}${api}`)
   const config = getConfig(cfg)
-  const servers = config.server.map(s => {
-    const api = createRouter([
+  const servers = config.profiles.reduce((m, p) => {
+    const firewalls = p.firewall.map(({base, registry, rules}) => createRouter([
       [
         '*',
         [
           /^\/(((@[a-z0-9\-]+)(%2f|\/))?[a-z0-9\-]+)\/-\/[a-z0-9\-]+-(\d+\.\d+\.\d+(?:-.+)?)\.tgz$/,
           ['name', null, 'org', null, 'version']
         ],
-        firewall
+        firewall(registry, rules)
       ],
       [
         '*',
@@ -31,24 +32,30 @@ export const createApp = (cfg) => {
           /^\/(((@[a-z0-9\-]+)(%2f|\/))?[a-z0-9\-]+)\/?$/,
           ['name', null, 'org']
         ],
-        firewall
+        firewall(registry, rules)
       ],
-      proxy,
+      proxy(registry),
       errorBoundary,
-    ], s.api)
+    ], base))
 
-    const router = createRouter([
-      ctx({...config, server: s}),
-      timeout,
-      trace,
-      ['GET', s.healthcheck, healthcheck],
-      api,
-      notFound,
-      errorBoundary,
-    ], s.base)
+    const servers = p.server.map(s => {
+      const router = createRouter([
+        ctx({...config, server: s}),
+        timeout,
+        trace,
+        ['GET', s.healthcheck, healthcheck],
+        ...firewalls,
+        notFound,
+        errorBoundary,
+      ], s.base)
 
-    return createServer({...s, router})
-  })
+      return createServer({...s, router})
+    })
+
+    m.push(...servers)
+    return m
+  }, [])
+
   return {
     servers,
     config,

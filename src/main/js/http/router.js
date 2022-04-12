@@ -35,6 +35,7 @@ const matchUrl = (url, [pattern]) => {
 
 export const createRouter = (routes, base = '/') => async (req, res, next = () => {}) => {
   if (req.url.startsWith(base)) {
+    req.base = (req.base || '' ) + base
     req.url = req.url.replace(base, '/')
   } else {
     return next()
