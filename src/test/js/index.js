@@ -11,6 +11,7 @@ const app = createApp([{
   ],
   firewall: {
     registry: 'https://registry.npmmirror.com',
+    base: '/registry',
     rules: [
       {
         "policy": "deny",
@@ -37,17 +38,17 @@ await app.start()
   ],
   [
     '404 if not found',
-    { url: 'http://localhost:3001/not-found/path/on/remote', method: 'GET'},
+    { url: 'http://localhost:3001/registry/not-found/path/on/remote', method: 'GET'},
     { statusCode: 404 }
   ],
   [
     'gets tarball if allowed',
-    { url: 'http://localhost:3001/@antongolub/git-root/-/git-root-1.5.6.tgz', method: 'GET'},
+    { url: 'http://localhost:3001/registry/@antongolub/git-root/-/git-root-1.5.6.tgz', method: 'GET'},
     { hash: 'uMs0P/SZUnoc+oF6E0VVPSnkXphOfg1GXRl+wnx/tElmLNPtNCuh2n7EVbSJU5hv73q96YK04bBVRQmS2p2Cjw==' }
   ],
   [
     'reads packument',
-    { url: 'http://localhost:3001/colors', method: 'GET'},
+    { url: 'http://localhost:3001/registry/colors', method: 'GET'},
     { statusCode: 200 }
   ],
 ].forEach(([name, {url, method}, expected]) => {

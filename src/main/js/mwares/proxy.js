@@ -6,6 +6,5 @@ export const proxy = (registry) => async (req, res, next) => {
   }
 
   const url = `${registry}${req.url}`
-
   await request({ url, method: req.method, pipe: {req, res}, followRedirects: true})
 }

@@ -21,7 +21,7 @@ export const createApp = (cfg) => {
       [
         '*',
         [
-          /^\/(((@[a-z0-9\-]+)(%2f|\/))?[a-z0-9\-]+)\/-\/[a-z0-9\-]+-(\d+\.\d+\.\d+(?:-.+)?)\.tgz$/,
+          /^\/(((@[a-z0-9\-]+)(%2f|\/))?[a-z0-9\-]+)\/-\/[a-z0-9\-]+-(\d+\.\d+\.\d+(-[+\-.a-z0-9]+)?)\.tgz$/,
           ['name', null, 'org', null, 'version']
         ],
         firewall(registry, rules)
