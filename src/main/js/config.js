@@ -9,8 +9,8 @@ const populate = (config) => {
     assert.ok(p.firewall, 'cfg: server')
 
     const server = asArray(p.server).map(({
-      host,
-      port,
+      host = '127.0.0.1',
+      port = 8080,
       base = '/',
       healthcheck = '/healthcheck',
       secure: _secure,
@@ -18,8 +18,8 @@ const populate = (config) => {
       headersTimeout = 62_000,
       requestTimeout = 30_000
     }) => {
-      assert.ok(host, 'cfg: server.host')
-      assert.ok(port, 'cfg: server.port')
+      // assert.ok(host, 'cfg: server.host')
+      // assert.ok(port, 'cfg: server.port')
 
       const secure = _secure
         ? {
