@@ -153,7 +153,7 @@ await app.start()
       },
       {
         "policy": "deny",
-        "license": "dbad"       // Comma-separated license types
+        "license": "dbad"       // Comma-separated license types or string[]
       },
       {
         "policy": "allow",
