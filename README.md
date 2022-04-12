@@ -106,12 +106,23 @@ npm-registry-firewall /path/to/config.json
 import {createApp} from 'npm-registry-firewall'
 
 const app = createApp({
-  server: [{
+  server: {
     host: 'localhost',
     port: 3001,
-  }],
-  registry: 'https://registry.npmmirror.com',
-  rules: {...}
+  },
+  firewall: {
+    registry: 'https://registry.npmmirror.com',
+    rules: [
+      {
+        policy: 'allow',
+        org: '@qiwi'
+      },
+      {
+        policy: 'deny',
+        name: '@babel/*'
+      },
+    ]
+  }
 })
 
 await app.start()
