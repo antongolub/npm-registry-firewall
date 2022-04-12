@@ -1,5 +1,5 @@
 # npm-registry-firewall
-npm registry proxy with on-the-fly filtering
+npm registry proxy with on-the-fly filtering 📦📦📦🔥
 
 [![CI](https://github.com/antongolub/npm-registry-firewall/workflows/CI/badge.svg)](https://github.com/antongolub/npm-registry-firewall/actions)
 [![Maintainability](https://api.codeclimate.com/v1/badges/ed66fb48706b02e64f8e/maintainability)](https://codeclimate.com/github/antongolub/npm-registry-firewall/maintainability)
@@ -83,7 +83,7 @@ Uncontrolled use of new versions may have legal and financial consequences. Ther
 ## Key Features
 * Restricts access to remote packages by predicate: `name`, `org`, `version` ([semver range](https://github.com/npm/node-semver#ranges)), `license`, `dateRange`, `username`.
 * Multi-configuration: define as many `port/context-path/rules` combinations as you need.
-* [expressjs](https://expressjs.com/en/guide/using-middleware.html)-inspired server implementation.
+* [Expressjs](https://expressjs.com/en/guide/using-middleware.html)-inspired server implementation.
 * Has no deps. Literally zero.
 
 ## Install
@@ -132,10 +132,9 @@ await app.start()
 ```json5
 {
   "server": {
-    "host": "localhost",
-    "port": 3000,
-    // Optional. If declared serves via https
-    "secure": {
+    "host": "localhost",        // Defaults to 127.0.0.1
+    "port": 3000,               // 8080 by default
+    "secure": {                 // Optional. If declared serves via https
       "cert": "ssl/cert.pem",
       "key": "ssl/key.pem"
     },
@@ -147,7 +146,7 @@ await app.start()
   },
   "firewall": {
     "registry": "https://registry.npmmirror.com",  // Remote registry
-    "base": "/", // Optional. Defaults to '/'
+    "base": "/",                // Optional. Defaults to '/'
     "rules": [
       {
         "policy": "allow",
@@ -185,6 +184,7 @@ await app.start()
   }
 }
 ```
+
 ### Multi-config
 ```json5
 // Array at the top level
