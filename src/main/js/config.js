@@ -46,8 +46,8 @@ const populate = (config) => {
 
       const rules = asArray((p.firewall.rules || [])).map(({
         policy,
-        name = '*',
-        org = '*',
+        name,
+        org,
         dateRange,
         version,
         license,
@@ -58,8 +58,8 @@ const populate = (config) => {
 
         return {
           policy,
-          org: asRegExp(org),
-          name: asRegExp(name),
+          org: org && splitStr(org).map(asRegExp),
+          name: name && splitStr(name).map(asRegExp),
           version,
           license: splitStr(license),
           username: splitStr(username),
