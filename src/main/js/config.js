@@ -44,7 +44,7 @@ const populate = (config) => {
     const firewall = asArray(p.firewall).map(f => {
       assert.ok(f.registry, 'cfg: firewall.registry')
 
-      const rules = (p.firewall.rules || []).map(({
+      const rules = asArray((p.firewall.rules || [])).map(({
         policy,
         name = '*',
         org = '*',
