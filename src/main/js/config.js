@@ -6,7 +6,7 @@ import { semver } from './semver.js'
 const populate = (config) => {
   const profiles = asArray(config).map(p => {
     assert.ok(p.server, 'cfg: server')
-    assert.ok(p.firewall, 'cfg: server')
+    assert.ok(p.firewall, 'cfg: firewall')
 
     const server = asArray(p.server).map(({
       host = '127.0.0.1',

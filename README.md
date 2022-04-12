@@ -176,7 +176,7 @@ await app.start()
 ```
 ### Multi-config
 ```json5
-// Array on top level
+// Array at the top level
 [
   // Two servers (for example, http and https) share the same preset
   {
