@@ -4,11 +4,11 @@ import { createApp } from '../../main/js/index.js'
 import { request } from '../../main/js/http/client.js'
 
 const test = testFactory('app', import.meta)
-const app = createApp({
-  server: [{
-    host: 'localhost',
-    port: 3001,
-  }],
+const app = createApp([{
+  server: [
+    { host: 'localhost', port: 3001 },
+    { host: 'localhost', port: 3002 },
+  ],
   firewall: {
     registry: 'https://registry.npmmirror.com',
     rules: [
@@ -19,7 +19,13 @@ const app = createApp({
       },
     ]
   }
-})
+}, {
+  server: { port: 3003 },
+  firewall: {
+    registry: 'https://registry.npmmirror.com',
+    rules: { policy: 'deny', name: '*' }
+  }
+}])
 
 await app.start()
 
