@@ -81,7 +81,8 @@ Uncontrolled use of new versions may have legal and financial consequences. Ther
 </details>
 
 ## Key Features
-* Restricts access to remote packages by predicate: `name`, `org`, `semver`, `license`, `dateRange`
+* Restricts access to remote packages by predicate: `name`, `org`, `semver`, `license`, `dateRange`.
+* Multi-configuration: define as many `port/context-path/rules` combinations as you need.
 * [expressjs](https://expressjs.com/en/guide/using-middleware.html)-inspired server implementation.
 * Has no deps. Literally zero.
 
@@ -119,22 +120,20 @@ await app.start()
 ### Config
 ```json5
 {
-  "server": [
-    {
-      "host": "localhost",
-      "port": 3000,
-      // Optional. If declared serves via https
-      "secure": {
-        "cert": "ssl/cert.pem",
-        "key": "ssl/key.pem"
-      },
-      // Optional. Defaults to '/'
-      "base": "/",
+  "server": {
+    "host": "localhost",
+    "port": 3000,
+    // Optional. If declared serves via https
+    "secure": {
+      "cert": "ssl/cert.pem",
+      "key": "ssl/key.pem"
+    },
+    // Optional. Defaults to '/'
+    "base": "/",
 
-      // Optional. Defaults to '/healthcheck'. Pass null to disable
-      "healthcheck": "/health"
-    }
-  ],
+    // Optional. Defaults to '/healthcheck'. Pass null to disable
+    "healthcheck": "/health"
+  },
   "firewall": {
     // Optional. Defaults to '/'
     "base": "/",
@@ -174,6 +173,32 @@ await app.start()
     ]
   }
 }
+```
+### Multi-config
+```json5
+// Array on top level
+[
+  // Two servers (for example, http and https) share the same preset
+  {
+    "server": [
+      {"port": 3001},
+      {"port": 3002},
+    ],
+    "firewall": {
+      "registry": "https://registry.yarnpkg.com",
+      "rules": {"policy": "deny", "org": "@qiwi"}
+    }
+  },
+  // One server has a pair of separately configured endpoints
+  {
+    "server": {"port": 3003},
+    "firewall": [
+      {"base": "/foo", "registry": "https://registry.npmjs.org", "rules": {"policy": "deny", "org": "@qiwi"}},
+      {"base": "/bar", "registry": "https://registry.yarnpkg.com", "rules": {"policy": "deny", "org": "@babel"}}
+    ]
+  }
+]
+
 ```
 **.npmrc**
 ```yaml
