@@ -4,8 +4,17 @@ import {parse} from 'node:url'
 
 import {makeDeferred, normalizePath} from '../util.js'
 
+const agentOpts = {
+  keepAliveMsecs: 500,
+  keepAlive: true,
+  maxSockets: 10000,
+  timeout: 10000
+}
+const agentHttps = new https.Agent(agentOpts)
+const agentHttp = new http.Agent(agentOpts)
+
 export const request = async (opts) => {
-  const {url, method = 'GET', postData, pipe, followRedirects, timeout = 30_000} = opts
+  const {url, method = 'GET', postData, pipe, followRedirects, timeout = 10_000} = opts
   const {
     protocol,
     isSecure = protocol === 'https:',
@@ -13,17 +22,17 @@ export const request = async (opts) => {
     host,
     hostname,
     port = isSecure ? 443 : 80,
+    agent = isSecure ? agentHttps : agentHttp,
     lib = isSecure ? https : http
   } = parse(normalizePath(url))
-
   const {promise, resolve, reject} = makeDeferred()
-
   const params = {
     method,
     host: hostname,
     port,
     path,
     timeout,
+    agent,
     headers: {...pipe?.req?.headers, host },
   }
 
@@ -31,6 +40,11 @@ export const request = async (opts) => {
     res.req = req
     req.res = res
     const statusCode = res.statusCode
+
+    if (pipe) {
+      pipe.res.writeHead(res.statusCode, res.headers)
+      res.pipe(pipe.res, { end: true })
+    }
 
     if (statusCode < 200 || statusCode >= 300) {
       if (statusCode === 302 && followRedirects && res.headers.location) {
@@ -57,22 +71,15 @@ export const request = async (opts) => {
       })
       resolve(res)
     })
-
-    if (pipe) {
-      pipe.res.writeHead(res.statusCode, res.headers);
-      res.pipe(pipe.res, { end: true })
-    }
   })
   req.on('error', reject)
-  req.on('timeout', () => {
-    req.destroy()
-  })
+  req.on('timeout', () => req.destroy())
 
   promise.req = req
 
   if (pipe) {
     pipe.req.on('error', reject)
-    pipe.req.pipe(req, { end: true })// .pipe(pipe.res)
+    pipe.req.pipe(req, { end: true })//.pipe(pipe.res)
 
   } else {
     if (postData) {

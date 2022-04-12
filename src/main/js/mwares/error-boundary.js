@@ -4,7 +4,10 @@ export const errorBoundary = async (err, req, res, next) => {
 
   req.log.error(err)
 
-  res
-    .writeHead(code + '\n')
-    .end(message + '\n')
+  res.writeHead(code, {
+    'Content-Type': 'text/plain',
+    'Connection': 'keep-alive',
+    'Content-Length': Buffer.byteLength(message),
+  })
+    .end(message)
 }
