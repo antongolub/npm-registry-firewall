@@ -4,10 +4,25 @@ import https from 'node:https'
 import { logger } from '../logger.js'
 import { makeDeferred } from '../util.js'
 
+const createSocketPool = () => {
+  const sockets = new Set()
+  return {
+    add(socket) {
+      sockets.add(socket)
+      socket.on('close', () => sockets.delete(socket))
+    },
+    destroyAll() {
+      for (const socket of sockets.values()) {
+        socket.destroy()
+      }
+    }
+  }
+}
+
 export const createServer = ({host, port, secure, router, entrypoint, keepAliveTimeout, headersTimeout, requestTimeout}) => {
   const lib = secure ? https : http
   const options = {...secure}
-  const sockets = new Set()
+  const sockets = createSocketPool()
   const server = lib.createServer(options, async (req, res) => {
     try {
       await router(req, res)
@@ -27,10 +42,7 @@ export const createServer = ({host, port, secure, router, entrypoint, keepAliveT
   server.headersTimeout = headersTimeout
   server.timeout = requestTimeout * 2 // Final bastion
 
-  server.on('connection', socket => {
-    sockets.add(socket);
-    socket.on('close', () => sockets.delete(socket))
-  })
+  server.on('connection', socket => sockets.add(socket))
 
   server.start = async () => {
     const {promise, resolve, reject} = makeDeferred()
@@ -47,9 +59,8 @@ export const createServer = ({host, port, secure, router, entrypoint, keepAliveT
 
   server.stop = async () => {
     const {promise, resolve, reject} = makeDeferred()
-    for (const socket of sockets.values()) {
-      socket.destroy()
-    }
+
+    sockets.destroyAll()
     server.close((err) => {
       if (err) {
         return reject(err)
