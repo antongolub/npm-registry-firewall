@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 import {strict as assert} from 'node:assert'
-import {asRegExp, asArray, normalizePath} from './util.js'
+import {asRegExp, asArray, normalizePath, splitStr} from './util.js'
 import { semver } from './semver.js'
 
 const populate = (config) => {
@@ -50,7 +50,8 @@ const populate = (config) => {
         org = '*',
         dateRange,
         version,
-        license
+        license,
+        username
       }) => {
         assert.ok(policy, 'cfg: firewall.rules.policy')
         version && assert.ok(semver.validRange(version), 'cfg: firewall.rules.version semver')
@@ -60,11 +61,8 @@ const populate = (config) => {
           org: asRegExp(org),
           name: asRegExp(name),
           version,
-          license: license
-            ? Array.isArray(license)
-              ? license
-              : license.split(',').map(s => s.toLowerCase().trim())
-            : null, // split(/\s*,\s*/) seems unsafe
+          license: splitStr(license),
+          username: splitStr(username),
           dateRange: dateRange ? dateRange.map(d => typeof d === 'string' ? Date.parse(d) : d|0) : null
         }
       })

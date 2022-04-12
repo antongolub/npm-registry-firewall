@@ -33,7 +33,7 @@ export const firewall = (registry, rules) => async (req, res, next) => {
   res.end()
 }
 
-const getDirective = (rules, times, {name, org}, {version, license}) => rules.reduce((m, r) => {
+const getDirective = (rules, times, {name, org}, {version, license, _npmUser}) => rules.reduce((m, r) => {
   if (m) {
     return m
   }
@@ -42,6 +42,7 @@ const getDirective = (rules, times, {name, org}, {version, license}) => rules.re
   const matched = r.org.test(org)
     && r.name.test(name)
     && (r.license ? r.license.includes(license?.toLowerCase()) : true)
+    && (r.username ? r.username.includes(_npmUser?.name?.toLowerCase()) : true)
     && (r.dateRange ? time >= r.dateRange[0] && time <= r.dateRange[1] : true)
     && (r.version ? semver.satisfies(version, r.version): true)
 

@@ -24,6 +24,7 @@ type TRule = {
   dateRange?: [string, string],
   version?: string,
   license?: string | string[]
+  username?: string | string[]
 }
 
 type TFirewallConfig = {
