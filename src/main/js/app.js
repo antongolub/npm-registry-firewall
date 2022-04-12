@@ -16,11 +16,7 @@ import { getConfig } from './config.js'
 export const createApp = (cfg) => {
   const config = getConfig(cfg)
   const servers = config.server.map(s => {
-    const router = createRouter([
-      [ ctx({...config, server: s}) ],
-      [ timeout ],
-      [ trace ],
-      ['GET', '/healthcheck/', healthcheck],
+    const api = createRouter([
       [
         '*',
         [
@@ -37,10 +33,20 @@ export const createApp = (cfg) => {
         ],
         firewall
       ],
-      [ proxy ],
-      [ notFound ],
-      [ errorBoundary ],
-    ])
+      proxy,
+      errorBoundary,
+    ], s.api)
+
+    const router = createRouter([
+      ctx({...config, server: s}),
+      timeout,
+      trace,
+      ['GET', s.healthcheck, healthcheck],
+      api,
+      notFound,
+      errorBoundary,
+    ], s.base)
+
     return createServer({...s, router})
   })
   return {

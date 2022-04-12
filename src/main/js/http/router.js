@@ -1,12 +1,14 @@
-import {asArray, once} from '../util.js'
+import {asArray, normalizePath, once} from '../util.js'
 
-const normalizeRoute = ([m, p, cb]) => {
+const normalizeRoute = (item) => {
+  const [m, p, cb] = asArray(item)
+
   if (typeof m === 'function') {
-    return ['*', [null], m]
+    return ['*', [true], m]
   }
 
   if (typeof p === 'function') {
-    return [m, [null], p]
+    return [m, [true], p]
   }
 
   return [m, asArray(p), cb]
@@ -16,8 +18,12 @@ const matchMethod = (method, expected) =>
   method === expected || expected === '*' || expected === 'ALL'
 
 const matchUrl = (url, [pattern]) => {
+  if (pattern === null) {
+    return false
+  }
+
   if (typeof pattern === 'string') {
-    return url.startsWith(pattern)
+    return url === pattern || url.startsWith(pattern) && url.charAt(pattern.length) === '/'
   }
 
   if (pattern instanceof RegExp) {
@@ -27,8 +33,14 @@ const matchUrl = (url, [pattern]) => {
   return true
 }
 
-export const createRouter = (routes) => async (req, res) => {
-  const url = req.url
+export const createRouter = (routes, base = '/') => async (req, res, next = () => {}) => {
+  if (req.url.startsWith(base)) {
+    req.url = req.url.replace(base, '/')
+  } else {
+    return next()
+  }
+
+  const url = normalizePath(req.url)
   const matched = routes
     .map(normalizeRoute)
     .filter(([method, pattern]) => matchMethod(req.method, method) && matchUrl(url, pattern))

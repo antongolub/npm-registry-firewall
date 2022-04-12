@@ -6,7 +6,9 @@
       "secure": {
         "cert": "ssl/cert.pem",
         "key": "ssl/key.pem"
-      }
+      },
+      "healthcheck": null,
+      "api": "/registry"
     }
   ],
   "registry": "https://registry.npmmirror.com",
