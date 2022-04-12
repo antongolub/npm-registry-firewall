@@ -128,17 +128,15 @@ await app.start()
       "cert": "ssl/cert.pem",
       "key": "ssl/key.pem"
     },
-    // Optional. Defaults to '/'
-    "base": "/",
-
-    // Optional. Defaults to '/healthcheck'. Pass null to disable
-    "healthcheck": "/health"
+    "base": "/",                // Optional. Defaults to '/'
+    "healthcheck": "/health",   // Optional. Defaults to '/healthcheck'. Pass null to disable
+    "keepAliveTimeout": 15000,  // Optional. Defaults 61000
+    "headersTimeout": 20000,    // Optional. Defaults 62000
+    "requestTimeout": 10000     // Optional. Defaults 30000
   },
   "firewall": {
-    // Optional. Defaults to '/'
-    "base": "/",
-    // Remote registry
-    "registry": "https://registry.npmmirror.com",
+    "registry": "https://registry.npmmirror.com",  // Remote registry
+    "base": "/", // Optional. Defaults to '/'
     "rules": [
       {
         "policy": "allow",
@@ -151,13 +149,11 @@ await app.start()
       {
         "policy": "deny",
         "name": "colors",
-        // Any semver range
-        "version": ">= v1.4.0"
+        "version": ">= v1.4.0"  // Any semver range
       },
       {
         "policy": "deny",
-        // Comma-separated license types
-        "license": "dbad"
+        "license": "dbad"       // Comma-separated license types
       },
       {
         "policy": "allow",
