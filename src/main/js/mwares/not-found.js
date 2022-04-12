@@ -1,6 +1,5 @@
-export const notFound = async (req, res, next) => {
-  const err = new Error('Not Found')
-  err.status = 404
+import {notFoundErr} from '../http/index.js'
 
-  next(err)
+export const notFound = async (req, res, next) => {
+  next(notFoundErr)
 }

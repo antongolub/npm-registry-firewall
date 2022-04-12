@@ -1,4 +1,4 @@
-import {request} from '../http/client.js'
+import {request, notFoundErr, accessDeniedErr} from '../http/index.js'
 import {semver} from '../semver.js'
 import {normalizePath} from '../util.js'
 
@@ -16,10 +16,14 @@ export const firewall = (registry, rules) => async (req, res, next) => {
 
   // Tarball request
   if (version) {
-    return !_packument.versions[version] ? next(err) : next()
+    return !_packument.versions[version] ? next(accessDeniedErr) : next()
   }
 
   // Packument request
+  if (Object.keys(_packument.versions).length === 0) {
+    return next(notFoundErr)
+  }
+
   const packumentBuffer = Buffer.from(JSON.stringify(_packument))
   res.writeHead(200, {
     ...headers,
@@ -43,7 +47,7 @@ const getDirective = (rules, times, {name, org}, {version, license}) => rules.re
 
   return matched && r.policy
 
-}, null)
+}, false)
 
 const filterVersions = ({packument, routeParams, entrypoint, rules, registry}) => Object.values(packument.versions).reduce((m, v) => {
   if (getDirective(rules, packument.time, routeParams, v) === 'deny') {
@@ -69,11 +73,9 @@ const patchPackument = ({packument, routeParams, entrypoint, rules, registry}) =
   const versions = filterVersions({packument, routeParams, entrypoint, registry, rules})
   const time = filterTime(versions, packument.time)
 
-  const latestVersion = Object.keys(versions).reduce((m, v) => time[m] > time[v] ? m : v );
-  const latestEntry = versions[latestVersion]
-  const distTags = {
-    latest: latestVersion
-  }
+  const latestVersion = Object.keys(versions).reduce((m, v) => time[m] > time[v] ? m : v , null);
+  const distTags = { latest: latestVersion }
+  const latestEntry = versions[latestVersion] || {}
 
   return {
     ...packument,
