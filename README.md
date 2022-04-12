@@ -155,12 +155,12 @@ await app.start()
       },
       {
         "policy": "allow",
-        "name": "@babel/*"
+        "name": ["@babel/*", "@jest/*", "lodash"] // string[] or "comma,separated,list". * works as .+ in regexp
       },
       {
         "policy": "deny",
         "name": "colors",
-        "version": ">= v1.4.0"  // Any semver range
+        "version": ">= v1.4.0"  // Any semver range: https://github.com/npm/node-semver#ranges
       },
       {
         "policy": "deny",
@@ -168,7 +168,7 @@ await app.start()
       },
       {
         "policy": "allow",
-        "username": ["sindresorhus", "isaacs"] // Trusted npm authors. string[] or "comma,separated,list"
+        "username": ["sindresorhus", "isaacs"] // Trusted npm authors.
       },
       {
         "policy": "allow",

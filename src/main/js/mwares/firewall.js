@@ -39,8 +39,9 @@ const getDirective = (rules, times, {name, org}, {version, license, _npmUser}) =
   }
 
   const time = Date.parse(times[version])
-  const matched = r.org.test(org)
-    && r.name.test(name)
+  const matched =
+    (r.org ? org && r.org.some(e => e.test(org)) : true)
+    && (r.name ? r.name.some(e => e.test(org)) : true)
     && (r.license ? r.license.includes(license?.toLowerCase()) : true)
     && (r.username ? r.username.includes(_npmUser?.name?.toLowerCase()) : true)
     && (r.dateRange ? time >= r.dateRange[0] && time <= r.dateRange[1] : true)
