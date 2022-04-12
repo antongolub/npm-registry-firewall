@@ -7,6 +7,7 @@ import { makeDeferred } from '../util.js'
 export const createServer = ({host, port, secure, router, entrypoint, keepAliveTimeout, headersTimeout, requestTimeout}) => {
   const lib = secure ? https : http
   const options = {...secure}
+  const sockets = new Set()
   const server = lib.createServer(options, async (req, res) => {
     try {
       await router(req, res)
@@ -26,6 +27,11 @@ export const createServer = ({host, port, secure, router, entrypoint, keepAliveT
   server.headersTimeout = headersTimeout
   server.timeout = requestTimeout * 2 // Final bastion
 
+  server.on('connection', socket => {
+    sockets.add(socket);
+    socket.on('close', () => sockets.delete(socket))
+  })
+
   server.start = async () => {
     const {promise, resolve, reject} = makeDeferred()
     server.listen(port, host, (err) => {
@@ -41,12 +47,16 @@ export const createServer = ({host, port, secure, router, entrypoint, keepAliveT
 
   server.stop = async () => {
     const {promise, resolve, reject} = makeDeferred()
+    for (const socket of sockets.values()) {
+      socket.destroy()
+    }
     server.close((err) => {
       if (err) {
         return reject(err)
       }
-      resolve()
+
       logger.info(`npm-registry-firewall has been stopped: ${entrypoint}`)
+      resolve()
     })
 
     return promise
