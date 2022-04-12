@@ -1,15 +1,18 @@
 import {request} from '../http/client.js'
 import {semver} from '../semver.js'
+import {normalizePath} from '../util.js'
 
-export const firewall = async (req, res, next) => {
-  if (!req?.cfg?.registry) {
+export const firewall = (registry, rules) => async (req, res, next) => {
+  if (!registry) {
     throw new Error('firewall: req.cfg.registry is required')
   }
 
   const {name, version} = req.routeParams
-  const {body, headers} = await request({url: `${req.cfg.registry}/${name}`})
+  const {body, headers} = await request({url: `${registry}/${name}`})
   const packument = JSON.parse(body)
-  const _packument = patchPackument(packument, req.cfg, req.routeParams)
+  const {cfg, routeParams, base} = req
+  const entrypoint = normalizePath(`${cfg.server.entrypoint}${base}`)
+  const _packument = patchPackument({packument, routeParams, entrypoint, rules, registry})
 
   // Tarball request
   if (version) {
@@ -42,11 +45,12 @@ const getDirective = (rules, times, {name, org}, {version, license}) => rules.re
 
 }, null)
 
-const filterVersions = (packument, cfg, routeParams) => Object.values(packument.versions).reduce((m, v) => {
-  if (getDirective(cfg.rules, packument.time, routeParams, v) === 'deny') {
+const filterVersions = ({packument, routeParams, entrypoint, rules, registry}) => Object.values(packument.versions).reduce((m, v) => {
+  if (getDirective(rules, packument.time, routeParams, v) === 'deny') {
     return m
   }
-  v.dist.tarball = v.dist.tarball.replace(cfg.registry, cfg.server.entrypoint)
+
+  v.dist.tarball = v.dist.tarball.replace(registry, entrypoint)
   m[v.version] = v
   return m
 }, {})
@@ -61,8 +65,8 @@ const filterTime = (versions, time) => Object.entries(time).reduce((m, [k, v]) =
   modified: time.modified,
 })
 
-const patchPackument = (packument, cfg, routeParams) => {
-  const versions = filterVersions(packument, cfg, routeParams)
+const patchPackument = ({packument, routeParams, entrypoint, rules, registry}) => {
+  const versions = filterVersions({packument, routeParams, entrypoint, registry, rules})
   const time = filterTime(versions, packument.time)
 
   const latestVersion = Object.keys(versions).reduce((m, v) => time[m] > time[v] ? m : v );

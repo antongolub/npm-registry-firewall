@@ -7,33 +7,35 @@
         "cert": "ssl/cert.pem",
         "key": "ssl/key.pem"
       },
-      "healthcheck": null,
-      "api": "/registry"
+      "healthcheck": null
     }
   ],
-  "registry": "https://registry.npmmirror.com",
-  "rules": [
-    {
-      "policy": "allow",
-      "org": "@qiwi"
-    },
-    {
-      "policy": "allow",
-      "org": "@antongolub"
-    },
-    {
-      "policy": "deny",
-      "name": "colors",
-      "version": ">= v1.3.0"
-    },
-    {
-      "policy": "allow",
-      "name": "d",
-      "version": "< 1.0.0"
-    },
-    {
-      "policy": "deny",
-      "dateRange": ["2010-01-01T00:00:00.000Z", "2025-01-01T00:00:00.000Z"]
-    }
-  ]
+  "firewall": {
+    "base": "/registry",
+    "registry": "https://registry.npmmirror.com",
+    "rules": [
+      {
+        "policy": "allow",
+        "org": "@qiwi"
+      },
+      {
+        "policy": "allow",
+        "org": "@antongolub"
+      },
+      {
+        "policy": "deny",
+        "name": "colors",
+        "version": ">= v1.3.0"
+      },
+      {
+        "policy": "allow",
+        "name": "d",
+        "version": "< 1.0.0"
+      },
+      {
+        "policy": "deny",
+        "dateRange": ["2010-01-01T00:00:00.000Z", "2025-01-01T00:00:00.000Z"]
+      }
+    ]
+  }
 }
