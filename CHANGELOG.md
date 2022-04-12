@@ -1,3 +1,10 @@
+## [1.4.6](https://github.com/antongolub/npm-registry-firewall/compare/v1.4.5...v1.4.6) (2022-04-12)
+
+
+### Performance Improvements
+
+* ci tweak ups ([e709abd](https://github.com/antongolub/npm-registry-firewall/commit/e709abde2f9c10da07bd7e47a9cc22ec429a7779))
+
 ## [1.4.5](https://github.com/antongolub/npm-registry-firewall/compare/v1.4.4...v1.4.5) (2022-04-12)
 
 
