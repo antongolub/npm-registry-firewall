@@ -81,7 +81,7 @@ Uncontrolled use of new versions may have legal and financial consequences. Ther
 </details>
 
 ## Key Features
-* Restricts access to remote packages by predicate: `name`, `org`, `semver`, `license`, `dateRange`.
+* Restricts access to remote packages by predicate: `name`, `org`, `version` ([semver range](https://github.com/npm/node-semver#ranges)), `license`, `dateRange`, `username`.
 * Multi-configuration: define as many `port/context-path/rules` combinations as you need.
 * [expressjs](https://expressjs.com/en/guide/using-middleware.html)-inspired server implementation.
 * Has no deps. Literally zero.
@@ -165,6 +165,10 @@ await app.start()
       {
         "policy": "deny",
         "license": "dbad"       // Comma-separated license types or string[]
+      },
+      {
+        "policy": "allow",
+        "username": ["sindresorhus", "isaacs"] // Trusted npm authors. string[] or "comma,separated,list"
       },
       {
         "policy": "allow",

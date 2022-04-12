@@ -25,3 +25,9 @@ export const normalizePath = (url) => url.length > 1
     .replace(':/', '://')
     .slice(0, -1)
   : url
+
+export const splitStr = v => v
+  ? Array.isArray(v)
+    ? v
+    : v.split(',').map(s => s.toLowerCase().trim())
+  : null // split(/\s*,\s*/) seems unsafe
