@@ -1,10 +1,12 @@
 # npm-registry-firewall
-npm registry proxy with on-the-fly filtering 📦📦📦🔥
+npm registry proxy with on-the-fly filtering 
 
 [![CI](https://github.com/antongolub/npm-registry-firewall/workflows/CI/badge.svg)](https://github.com/antongolub/npm-registry-firewall/actions)
 [![Maintainability](https://api.codeclimate.com/v1/badges/ed66fb48706b02e64f8e/maintainability)](https://codeclimate.com/github/antongolub/npm-registry-firewall/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/ed66fb48706b02e64f8e/test_coverage)](https://codeclimate.com/github/antongolub/npm-registry-firewall/test_coverage)
 [![npm (tag)](https://img.shields.io/npm/v/npm-registry-firewall)](https://www.npmjs.com/package/npm-registry-firewall)
+
+# 📦📦🔥🔥🔥
 
 ## Motivation
 To mitigate security and legal risks
@@ -85,6 +87,9 @@ Uncontrolled use of new versions may have legal and financial consequences. Ther
 * Multi-configuration: define as many `port/context-path/rules` combinations as you need.
 * [Expressjs](https://expressjs.com/en/guide/using-middleware.html)-inspired server implementation.
 * Has no deps. Literally zero.
+
+## Requirements
+Node.js >= 14
 
 ## Install
 ```shell

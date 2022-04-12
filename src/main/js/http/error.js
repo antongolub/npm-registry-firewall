@@ -3,3 +3,6 @@ accessDeniedErr.status = 403
 
 export const notFoundErr = new Error('Not Found')
 notFoundErr.status = 404
+
+export const requestTimeoutErr = new Error('Request Timeout')
+requestTimeoutErr.status = 408
