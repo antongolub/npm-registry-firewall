@@ -127,7 +127,13 @@ await app.start()
       "secure": {
         "cert": "ssl/cert.pem",
         "key": "ssl/key.pem"
-      }
+      },
+      // Optional. Defaults to '/'
+      "base": "/",
+      // Optional. Defaults to '/'
+      "api": "/",
+      // Optional. Defaults to '/healthcheck'. Pass null to disable
+      "healthcheck": "/health"
     }
   ],
   // Remote registry

@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 import {strict as assert} from 'node:assert'
-import {asRegExp, asArray} from './util.js'
+import {asRegExp, asArray, normalizePath} from './util.js'
 import { semver } from './semver.js'
 
 const populate = (config) => {
@@ -9,6 +9,9 @@ const populate = (config) => {
   const server = asArray(config.server).map(({
     host,
     port,
+    base = '/',
+    api = '/',
+    healthcheck = '/healthcheck',
     secure: _secure,
     keepAliveTimeout = 61_000,
     headersTimeout = 62_000,
@@ -22,12 +25,15 @@ const populate = (config) => {
         key: fs.readFileSync(_secure.key, 'utf8'),
         cert: fs.readFileSync(_secure.cert, 'utf8'),
       } : null
-    const entrypoint = `${secure ? 'https' : 'http'}://${host}:${port}`
+    const entrypoint = normalizePath(`${secure ? 'https' : 'http'}://${host}:${port}${base}${api}`)
 
     return {
       secure,
       host,
       port,
+      base,
+      healthcheck,
+      api,
       entrypoint,
       requestTimeout,
       headersTimeout,
