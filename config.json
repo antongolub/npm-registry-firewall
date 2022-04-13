@@ -16,6 +16,10 @@
     "entrypoint": "https://r.qiwi.com/registry/npm",
     "rules": [
       {
+        "policy": "warn",
+        "name": "reqresnext"
+      },
+      {
         "policy": "allow",
         "org": "@qiwi"
       },

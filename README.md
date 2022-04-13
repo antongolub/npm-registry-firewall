@@ -162,6 +162,10 @@ await app.start()
         "name": ["@babel/*", "@jest/*", "lodash"] // string[] or "comma,separated,list". * works as .+ in regexp
       },
       {
+        "policy": "warn",       // `warn` directive works like `allow`, but also logs this event
+        "name": "reqresnext"
+      },
+      {
         "policy": "deny",
         "name": "colors",
         "version": ">= v1.4.0"  // Any semver range: https://github.com/npm/node-semver#ranges

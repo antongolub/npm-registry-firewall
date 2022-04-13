@@ -44,16 +44,17 @@ const populate = (config) => {
     const firewall = asArray(p.firewall).map(f => {
       assert.ok(f.registry, 'cfg: firewall.registry')
 
-      const rules = asArray((p.firewall.rules || [])).map(({
-        policy,
-        name,
-        org,
-        dateRange,
-        age,
-        version,
-        license,
-        username
-      }) => {
+      const rules = asArray((p.firewall.rules || [])).map((_raw) => {
+        const {
+          policy,
+          name,
+          org,
+          dateRange,
+          age,
+          version,
+          license,
+          username
+        } = _raw
         assert.ok(policy, 'cfg: firewall.rules.policy')
         version && assert.ok(semver.validRange(version), 'cfg: firewall.rules.version semver')
 
@@ -65,7 +66,8 @@ const populate = (config) => {
           license: splitStr(license),
           username: splitStr(username),
           dateRange: dateRange ? dateRange.map(d => typeof d === 'string' ? Date.parse(d) : d|0) : null,
-          age: age ? asArray(age) : null
+          age: age ? asArray(age) : null,
+          _raw // For 'warn' output
         }
       })
 
