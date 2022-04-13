@@ -1,4 +1,4 @@
-# npm-registry-firewall    📦📦🔥🔥🔥
+# npm-registry-firewall   📦📦🔥🔥🔥
 npm registry proxy with on-the-fly filtering 
 
 [![CI](https://github.com/antongolub/npm-registry-firewall/workflows/CI/badge.svg)](https://github.com/antongolub/npm-registry-firewall/actions)
@@ -81,7 +81,7 @@ Uncontrolled use of new versions may have legal and financial consequences. Ther
 </details>
 
 ## Key Features
-* Restricts access to remote packages by predicate: `name`, `org`, `version` ([semver range](https://github.com/npm/node-semver#ranges)), `license`, `dateRange`, `username`.
+* Restricts access to remote packages by predicate: `name`, `org`, `version` ([semver range](https://github.com/npm/node-semver#ranges)), `license`, `dateRange`, `username`, `age`.
 * Multi-configuration: define as many `port/context-path/rules` combinations as you need.
 * [Expressjs](https://expressjs.com/en/guide/using-middleware.html)-inspired server implementation.
 * Has no deps. Literally zero.
@@ -182,6 +182,10 @@ await app.start()
         "policy": "deny",
         // Checks pkg version publish date against the range
         "dateRange": ["2010-01-01T00:00:00.000Z", "2025-01-01T00:00:00.000Z"]
+      },
+      {
+        "policy": "allow",
+        "age": 5    // Check the package version is older than 5 days. Like quarantine
       }
     ]
   }
