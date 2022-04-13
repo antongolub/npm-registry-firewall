@@ -28,7 +28,9 @@ const app = createApp([{
   }
 }])
 
-await app.start()
+test('is runnable', async () => {
+  await app.start()
+})
 
 ;[
   [
@@ -80,14 +82,3 @@ test('is stoppable', async () => {
   await app.stop()
 })
 
-// test('app ', () => {
-//   assert.ok(false)
-// })
-
-// test('foo', () => {
-//   assert.ok(false)
-// })
-//
-// test.skip('foo', () => {
-//   assert.ok(false)
-// })

@@ -33,26 +33,28 @@ export const firewall = (registry, rules) => async (req, res, next) => {
   res.end()
 }
 
-const getDirective = (rules, times, {name, org}, {version, license, _npmUser}) => rules.reduce((m, r) => {
+export const getDirective = ({rules, name, org, version, time, license, _npmUser}) => rules.reduce((m, r) => {
   if (m) {
     return m
   }
 
-  const time = Date.parse(times[version])
   const matched =
     (r.org ? org && r.org.some(e => e.test(org)) : true)
-    && (r.name ? r.name.some(e => e.test(org)) : true)
+    && (r.name ? r.name.some(e => e.test(name)) : true)
     && (r.license ? r.license.includes(license?.toLowerCase()) : true)
     && (r.username ? r.username.includes(_npmUser?.name?.toLowerCase()) : true)
     && (r.dateRange ? time >= r.dateRange[0] && time <= r.dateRange[1] : true)
     && (r.version ? semver.satisfies(version, r.version): true)
 
-  return matched && r.policy
-
+  return !!matched && r.policy
 }, false)
 
-const filterVersions = ({packument, routeParams, entrypoint, rules, registry}) => Object.values(packument.versions).reduce((m, v) => {
-  if (getDirective(rules, packument.time, routeParams, v) === 'deny') {
+export const filterVersions = ({packument, routeParams, entrypoint, rules, registry}) => Object.values(packument.versions).reduce((m, v) => {
+  const {version, license, _npmUser} = v
+  const {name, org} = routeParams
+  const time = Date.parse(packument.time[version])
+
+  if (getDirective({rules, name, org, version, time, license, _npmUser}) === 'deny') {
     return m
   }
 
@@ -61,7 +63,7 @@ const filterVersions = ({packument, routeParams, entrypoint, rules, registry}) =
   return m
 }, {})
 
-const filterTime = (versions, time) => Object.entries(time).reduce((m, [k, v]) => {
+export const filterTime = (versions, time) => Object.entries(time).reduce((m, [k, v]) => {
   if (versions[k]) {
     m[k] = v
   }
@@ -71,7 +73,7 @@ const filterTime = (versions, time) => Object.entries(time).reduce((m, [k, v]) =
   modified: time.modified,
 })
 
-const patchPackument = ({packument, routeParams, entrypoint, rules, registry}) => {
+export const patchPackument = ({packument, routeParams, entrypoint, rules, registry}) => {
   const versions = filterVersions({packument, routeParams, entrypoint, registry, rules})
   const time = filterTime(versions, packument.time)
 
