@@ -149,6 +149,7 @@ await app.start()
   },
   "firewall": {
     "registry": "https://registry.npmmirror.com",  // Remote registry
+    "entrypoint": "https://r.qiwi.com/npm",        // Optional. Defaults to `${server.secure ? 'https' : 'http'}://${server.host}:${server.port}${route.base}`
     "base": "/",                // Optional. Defaults to '/'
     "rules": [
       {
