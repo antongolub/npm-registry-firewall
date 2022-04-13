@@ -1,3 +1,10 @@
+# [1.7.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.6.0...v1.7.0) (2022-04-13)
+
+
+### Features
+
+* add token auth ([8c0606b](https://github.com/antongolub/npm-registry-firewall/commit/8c0606b8f640b44c17c3de2d138816f695c50728))
+
 # [1.6.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.5.0...v1.6.0) (2022-04-13)
 
 
