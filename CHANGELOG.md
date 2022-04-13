@@ -1,3 +1,10 @@
+# [1.8.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.7.0...v1.8.0) (2022-04-13)
+
+
+### Features
+
+* introduce `warn` directive ([ceef817](https://github.com/antongolub/npm-registry-firewall/commit/ceef817b704cf9a1a8159b8ecf2cba45f979f8c3))
+
 # [1.7.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.6.0...v1.7.0) (2022-04-13)
 
 
