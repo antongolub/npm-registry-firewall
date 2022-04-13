@@ -72,6 +72,7 @@ const populate = (config) => {
       return {
         rules,
         registry: f.registry,
+        entrypoint: f.entrypoint || null,
         base: f.base || '/'
       }
     })

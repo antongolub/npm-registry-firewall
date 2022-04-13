@@ -2,7 +2,7 @@ import {request, notFoundErr, accessDeniedErr} from '../http/index.js'
 import {semver} from '../semver.js'
 import {normalizePath} from '../util.js'
 
-export const firewall = (registry, rules) => async (req, res, next) => {
+export const firewall = ({registry, rules, entrypoint: _entrypoint}) => async (req, res, next) => {
   if (!registry) {
     throw new Error('firewall: req.cfg.registry is required')
   }
@@ -11,7 +11,7 @@ export const firewall = (registry, rules) => async (req, res, next) => {
   const {body, headers} = await request({url: `${registry}/${name}`})
   const packument = JSON.parse(body)
   const {cfg, routeParams, base} = req
-  const entrypoint = normalizePath(`${cfg.server.entrypoint}${base}`)
+  const entrypoint = _entrypoint || normalizePath(`${cfg.server.entrypoint}${base}`)
   const _packument = patchPackument({packument, routeParams, entrypoint, rules, registry})
 
   // Tarball request

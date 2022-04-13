@@ -13,6 +13,7 @@
   "firewall": {
     "base": "/registry",
     "registry": "https://registry.npmmirror.com",
+    "entrypoint": "https://r.qiwi.com/registry/npm",
     "rules": [
       {
         "policy": "allow",

@@ -17,14 +17,14 @@ export const createApp = (cfg) => {
   // // const entrypoint = normalizePath(`${secure ? 'https' : 'http'}://${host}:${port}${base}${api}`)
   const config = getConfig(cfg)
   const servers = config.profiles.reduce((m, p) => {
-    const firewalls = p.firewall.map(({base, registry, rules}) => createRouter([
+    const firewalls = p.firewall.map(({base, entrypoint, registry, rules}) => createRouter([
       [
         '*',
         [
           /^\/(((@[a-z0-9\-]+)(%2f|\/))?[a-z0-9\-]+)\/-\/[a-z0-9\-]+-(\d+\.\d+\.\d+(-[+\-.a-z0-9]+)?)\.tgz$/,
           ['name', null, 'org', null, 'version']
         ],
-        firewall(registry, rules)
+        firewall({registry, rules, entrypoint})
       ],
       [
         '*',
@@ -32,7 +32,7 @@ export const createApp = (cfg) => {
           /^\/(((@[a-z0-9\-]+)(%2f|\/))?[a-z0-9\-]+)\/?$/,
           ['name', null, 'org']
         ],
-        firewall(registry, rules)
+        firewall({registry, rules, entrypoint})
       ],
       proxy(registry),
       errorBoundary,

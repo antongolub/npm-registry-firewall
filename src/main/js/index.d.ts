@@ -30,6 +30,7 @@ type TRule = {
 
 type TFirewallConfig = {
   registry: string
+  entrypoint?: string
   base?: string
   rules?: TRule | TRule[]
 }
