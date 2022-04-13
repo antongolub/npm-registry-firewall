@@ -130,7 +130,7 @@ const test = testFactory('firewall', import.meta)
 
 ].forEach(([name, opts, expected]) => {
   test(name, async () => {
-    const result = getDirective(opts)
+    const result = getDirective(opts)?.policy || false
     assert.equal(result, expected)
   })
 })

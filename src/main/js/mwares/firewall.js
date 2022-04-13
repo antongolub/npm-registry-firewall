@@ -6,22 +6,27 @@ export const firewall = ({registry, rules, entrypoint: _entrypoint, token}) => a
   if (!registry) {
     throw new Error('firewall: req.cfg.registry is required')
   }
-  const {name, version} = req.routeParams
+  const {cfg, routeParams: {name, version, org}, base} = req
   const {body, headers} = await request({
     url: `${registry}/${name}`,
     authorization: token && `Bearer ${token}`
   })
-  const packument = JSON.parse(body)
-  const {cfg, routeParams, base} = req
   const entrypoint = _entrypoint || normalizePath(`${cfg.server.entrypoint}${base}`)
-  const _packument = patchPackument({packument, routeParams, entrypoint, rules, registry})
+  const packument = JSON.parse(body)
+  const directives = getDirectives({ packument, rules, org})
 
   // Tarball request
   if (version) {
-    return !_packument.versions[version] ? next(accessDeniedErr) : next()
+    const policy = getPolicy(directives, version)
+    if (policy === 'warn') {
+      req.log.warn(`${name}@${version}`, 'directive=', directives[version]._raw)
+    }
+    return policy === 'deny' ? next(accessDeniedErr) : next()
   }
 
   // Packument request
+  const _packument = patchPackument({ packument, directives, entrypoint, registry })
+
   if (Object.keys(_packument.versions).length === 0) {
     return next(notFoundErr)
   }
@@ -35,11 +40,17 @@ export const firewall = ({registry, rules, entrypoint: _entrypoint, token}) => a
   res.end()
 }
 
+export const getDirectives = ({packument, rules, org}) =>
+  Object.entries(packument.versions).reduce((m, [k, {version, license, _npmUser, name}]) => {
+    const time = Date.parse(packument.time[version])
+    m[k] = getDirective({rules, name, org, version, time, license, _npmUser})
+    return m
+  }, {})
+
 export const getDirective = ({rules, name, org, version, time, license, _npmUser, now = Date.now()}) => rules.reduce((m, r) => {
   if (m) {
     return m
   }
-
   const day = 24 * 3600 * 1000
   const matched =
     (r.org ? org && r.org.some(e => e.test(org)) : true)
@@ -50,15 +61,13 @@ export const getDirective = ({rules, name, org, version, time, license, _npmUser
     && (r.age ? time <= now - r.age[0] * day && time >= now - (r.age[1] * day || Infinity) : true)
     && (r.version ? semver.satisfies(version, r.version): true)
 
-  return !!matched && r.policy
+  return !!matched && r
 }, false)
 
-export const filterVersions = ({packument, routeParams, entrypoint, rules, registry}) => Object.values(packument.versions).reduce((m, v) => {
-  const {version, license, _npmUser} = v
-  const {name, org} = routeParams
-  const time = Date.parse(packument.time[version])
+export const getPolicy = (directives, version) => directives[version]?.policy
 
-  if (getDirective({rules, name, org, version, time, license, _npmUser}) === 'deny') {
+export const filterVersions = ({packument, directives, entrypoint, registry}) => Object.values(packument.versions).reduce((m, v) => {
+  if (getPolicy(directives, v.version) === 'deny') {
     return m
   }
 
@@ -77,8 +86,8 @@ export const filterTime = (versions, time) => Object.entries(time).reduce((m, [k
   modified: time.modified,
 })
 
-export const patchPackument = ({packument, routeParams, entrypoint, rules, registry}) => {
-  const versions = filterVersions({packument, routeParams, entrypoint, registry, rules})
+export const patchPackument = ({packument, directives, entrypoint, registry}) => {
+  const versions = filterVersions({packument, directives, entrypoint, registry})
   const time = filterTime(versions, packument.time)
 
   const latestVersion = Object.keys(versions).reduce((m, v) => time[m] > time[v] ? m : v , null);

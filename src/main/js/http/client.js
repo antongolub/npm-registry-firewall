@@ -41,19 +41,19 @@ export const request = async (opts) => {
     req.res = res
     const statusCode = res.statusCode
 
+    if (statusCode === 302 && followRedirects && res.headers.location) {
+      return request({
+        ...opts,
+        url: res.headers.location
+      }).then(resolve, reject)
+    }
+
     if (pipe) {
       pipe.res.writeHead(res.statusCode, res.headers)
       res.pipe(pipe.res, { end: true })
     }
 
     if (statusCode < 200 || statusCode >= 300) {
-      if (statusCode === 302 && followRedirects && res.headers.location) {
-        return request({
-          ...opts,
-          url: res.headers.location
-        }).then(resolve, reject)
-      }
-
       const err = new Error(`HTTP ${res.statusCode} ${host}${path} ${res.statusMessage}`)
       Object.defineProperty(err, 'res', {enumerable: false, value: res})
 

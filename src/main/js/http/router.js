@@ -68,7 +68,8 @@ export const createRouter = (routes, base = '/') => async (req, res, next = () =
 
     try {
       await cb(...args)
-    } catch (e) {
+    } catch (e) { // Best debug point
+      console.log('e', e)
       await getNext(e)
     }
   }
