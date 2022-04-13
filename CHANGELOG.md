@@ -1,3 +1,10 @@
+# [1.6.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.5.0...v1.6.0) (2022-04-13)
+
+
+### Features
+
+* add configurable entrypoint for tarballs ([06784d7](https://github.com/antongolub/npm-registry-firewall/commit/06784d77687e849d5710841921a260189cce078b))
+
 # [1.5.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.4.6...v1.5.0) (2022-04-13)
 
 
