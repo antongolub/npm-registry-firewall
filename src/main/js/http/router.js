@@ -18,10 +18,6 @@ const matchMethod = (method, expected) =>
   method === expected || expected === '*' || expected === 'ALL'
 
 const matchUrl = (url, [pattern]) => {
-  if (pattern === null) {
-    return false
-  }
-
   if (typeof pattern === 'string') {
     return url === pattern || url.startsWith(pattern) && url.charAt(pattern.length) === '/'
   }
@@ -30,7 +26,7 @@ const matchUrl = (url, [pattern]) => {
     return pattern.test(url)
   }
 
-  return true
+  return !!pattern
 }
 
 export const createRouter = (routes, base = '/') => async (req, res, next = () => {}) => {
