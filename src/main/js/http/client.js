@@ -14,7 +14,7 @@ const agentHttps = new https.Agent(agentOpts)
 const agentHttp = new http.Agent(agentOpts)
 
 export const request = async (opts) => {
-  const {url, method = 'GET', postData, pipe, followRedirects, timeout = 30_000} = opts
+  const {url, method = 'GET', postData, pipe, followRedirects, timeout = 30_000, authorization = null} = opts
   const {
     protocol,
     isSecure = protocol === 'https:',
@@ -33,7 +33,7 @@ export const request = async (opts) => {
     path,
     timeout,
     agent,
-    headers: {...pipe?.req?.headers, host },
+    headers: {...pipe?.req?.headers, host, authorization },
   }
 
   const req = lib.request(params, res => {
