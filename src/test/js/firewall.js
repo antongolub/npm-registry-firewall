@@ -91,6 +91,42 @@ const test = testFactory('firewall', import.meta)
     },
     'allow'
   ],
+  [
+    'getDirective by age (pos)',
+    {
+      rules: [{
+        policy: 'allow',
+        age: [5]
+      }],
+      now: new Date(2000, 0, 10),
+      time: new Date(2000, 0, 0)
+    },
+    'allow'
+  ],
+  [
+    'getDirective by age (too young)',
+    {
+      rules: [{
+        policy: 'allow',
+        age: [15]
+      }],
+      now: new Date(2000, 0, 10),
+      time: new Date(2000, 0, 0)
+    },
+    false
+  ],
+  [
+    'getDirective by age (too old)',
+    {
+      rules: [{
+        policy: 'allow',
+        age: [0, 5]
+      }],
+      now: new Date(2000, 0, 10),
+      time: new Date(2000, 0, 0)
+    },
+    false
+  ],
 
 ].forEach(([name, opts, expected]) => {
   test(name, async () => {

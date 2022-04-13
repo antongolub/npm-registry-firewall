@@ -12,16 +12,17 @@ type TServerConfig = {
     key: string,
     cert: string
   }
-  requestTimeout?: number,
-  headersTimeout?: number,
-  keepAliveTimeout?: number,
+  requestTimeout?: number
+  headersTimeout?: number
+  keepAliveTimeout?: number
 }
 
 type TRule = {
-  policy: 'allow' | 'deny',
-  name?: string | string[],
-  org?: string | string[],
-  dateRange?: [string, string],
+  policy: 'allow' | 'deny'
+  name?: string | string[]
+  org?: string | string[]
+  dateRange?: [string, string]
+  age?: number | [number] | [number, number]
   version?: string,
   license?: string | string[]
   username?: string | string[]
