@@ -40,7 +40,7 @@ const singleThread = (fn) => {
 
 const run = singleThread((cb, ms) => timeout(cb(), ms))
 
-const warmup = sleep(100)
+const warmup = sleep(1000)
 
 const timeout = (promise, ms = 5000, exception = `TimeoutException: exec time exceeds ${ms}ms`) => {
   let timer
@@ -59,7 +59,7 @@ const log = (name, group, err, file = '') => {
 }
 
 export const test = async function (name, cb, ms, focus, skip) {
-  const filter = RegExp(process.argv[3] || '.')
+  const filter = RegExp(process.argv[2] || '.')
   const {group, meta} = this
   const file = meta ? relative(process.cwd(), fileURLToPath(meta.url)) : ''
 
