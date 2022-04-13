@@ -1,3 +1,15 @@
+# [1.5.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.4.6...v1.5.0) (2022-04-13)
+
+
+### Bug Fixes
+
+* **firewall:** fix filter by name ([6bbdbb0](https://github.com/antongolub/npm-registry-firewall/commit/6bbdbb04fca1351f907db2b9a38adac92ea6ddcd))
+
+
+### Features
+
+* add filter by age ([59a1c7b](https://github.com/antongolub/npm-registry-firewall/commit/59a1c7b211353c245b74217eba7b00d2aa548c3c))
+
 ## [1.4.6](https://github.com/antongolub/npm-registry-firewall/compare/v1.4.5...v1.4.6) (2022-04-12)
 
 
