@@ -49,6 +49,7 @@ const populate = (config) => {
         name,
         org,
         dateRange,
+        age,
         version,
         license,
         username
@@ -63,7 +64,8 @@ const populate = (config) => {
           version,
           license: splitStr(license),
           username: splitStr(username),
-          dateRange: dateRange ? dateRange.map(d => typeof d === 'string' ? Date.parse(d) : d|0) : null
+          dateRange: dateRange ? dateRange.map(d => typeof d === 'string' ? Date.parse(d) : d|0) : null,
+          age: age ? asArray(age) : null
         }
       })
 
