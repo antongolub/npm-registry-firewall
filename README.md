@@ -162,7 +162,7 @@ await app.start()
         "name": ["@babel/*", "@jest/*", "lodash"] // string[] or "comma,separated,list". * works as .+ in regexp
       },
       {
-        "policy": "warn",       // `warn` directive works like `allow`, but also logs this event
+        "policy": "warn",       // `warn` directive works like `allow`, but also logs if someone has requested a tarball matchin the rule
         "name": "reqresnext"
       },
       {
