@@ -41,27 +41,31 @@ export const firewall = ({registry, rules, entrypoint: _entrypoint, token}) => a
 }
 
 export const getDirectives = ({packument, rules, org}) =>
-  Object.entries(packument.versions).reduce((m, [k, {version, license, _npmUser, name}]) => {
-    const time = Date.parse(packument.time[version])
-    m[k] = getDirective({rules, name, org, version, time, license, _npmUser})
+  Object.entries(packument.versions).reduce((m, [k, v]) => {
+    const time = Date.parse(packument.time[v.version])
+    m[k] = getDirective({...v, rules, org, time})
     return m
   }, {})
 
-export const getDirective = ({rules, name, org, version, time, license, _npmUser, now = Date.now()}) => rules.reduce((m, r) => {
-  if (m) {
-    return m
-  }
+export const defaultFilter = ({rule: r, name, org, version, time, license, _npmUser, now = Date.now()}) => {
   const day = 24 * 3600 * 1000
-  const matched =
-    (r.org ? org && r.org.some(e => e.test(org)) : true)
+  return (r.org ? org && r.org.some(e => e.test(org)) : true)
     && (r.name ? r.name.some(e => e.test(name)) : true)
     && (r.license ? r.license.includes(license?.toLowerCase()) : true)
     && (r.username ? r.username.includes(_npmUser?.name?.toLowerCase()) : true)
     && (r.dateRange ? time >= r.dateRange[0] && time <= r.dateRange[1] : true)
     && (r.age ? time <= now - r.age[0] * day && time >= now - (r.age[1] * day || Infinity) : true)
-    && (r.version ? semver.satisfies(version, r.version): true)
+    && (r.version ? semver.satisfies(version, r.version) : true)
+}
 
-  return !!matched && r
+export const getDirective = ({rules, ...e }) => rules.reduce((m, rule) => {
+  if (m) {
+    return m
+  }
+  const filter = rule.filter || defaultFilter
+  const matched = filter({...e, rule})
+
+  return !!matched && rule
 }, false)
 
 export const getPolicy = (directives, version) => directives[version]?.policy

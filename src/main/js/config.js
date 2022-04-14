@@ -53,7 +53,8 @@ const populate = (config) => {
           age,
           version,
           license,
-          username
+          username,
+          filter
         } = _raw
         assert.ok(policy, 'cfg: firewall.rules.policy')
         version && assert.ok(semver.validRange(version), 'cfg: firewall.rules.version semver')
@@ -67,6 +68,7 @@ const populate = (config) => {
           username: splitStr(username),
           dateRange: dateRange ? dateRange.map(d => typeof d === 'string' ? Date.parse(d) : d|0) : null,
           age: age ? asArray(age) : null,
+          filter,
           _raw // For 'warn' output
         }
       })

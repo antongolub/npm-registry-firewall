@@ -14,7 +14,6 @@ import {
 import { getConfig } from './config.js'
 
 export const createApp = (cfg) => {
-  // // const entrypoint = normalizePath(`${secure ? 'https' : 'http'}://${host}:${port}${base}${api}`)
   const config = getConfig(cfg)
   const servers = config.profiles.reduce((m, p) => {
     const firewalls = p.firewall.map(({base, entrypoint, registry, token, rules}) => createRouter([

@@ -127,6 +127,28 @@ const test = testFactory('firewall', import.meta)
     },
     false
   ],
+  [
+    'getDirective by filter (pos)',
+    {
+      rules: [{
+        policy: 'allow',
+        filter: ({foo}) => foo === 'bar'
+      }],
+      foo: 'bar'
+    },
+    'allow'
+  ],
+  [
+    'getDirective by filter (neg)',
+    {
+      rules: [{
+        policy: 'allow',
+        filter: ({foo}) => foo === 'qux'
+      }],
+      foo: 'bar'
+    },
+    false
+  ],
 
 ].forEach(([name, opts, expected]) => {
   test(name, async () => {

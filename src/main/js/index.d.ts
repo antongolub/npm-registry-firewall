@@ -25,7 +25,8 @@ type TRule = {
   age?: number | [number] | [number, number]
   version?: string,
   license?: string | string[]
-  username?: string | string[]
+  username?: string | string[],
+  filter?: (opts: Record<string, any>) => boolean | undefined | null
 }
 
 type TFirewallConfig = {
