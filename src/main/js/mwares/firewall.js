@@ -11,7 +11,6 @@ export const firewall = ({registry, rules, entrypoint: _entrypoint, token}) => a
     url: `${registry}/${name}`,
     authorization: token && `Bearer ${token}`
   })
-  const entrypoint = _entrypoint || normalizePath(`${cfg.server.entrypoint}${base}`)
   const packument = JSON.parse(body)
   const directives = await getDirectives({ packument, rules, org})
 
@@ -25,6 +24,7 @@ export const firewall = ({registry, rules, entrypoint: _entrypoint, token}) => a
   }
 
   // Packument request
+  const entrypoint = _entrypoint || normalizePath(`${cfg.server.entrypoint}${base}`)
   const _packument = patchPackument({ packument, directives, entrypoint, registry })
 
   if (Object.keys(_packument.versions).length === 0) {
@@ -41,26 +41,14 @@ export const firewall = ({registry, rules, entrypoint: _entrypoint, token}) => a
 }
 
 export const getDirectives = ({packument, rules, org}) =>
-  mapValuesAsync(packument.versions, async (entry) => {
-    const time = Date.parse(packument.time[entry.version])
-    return getDirective({...entry, rules, org, time})
-  })
-  // Promise.all(Object.entries(packument.versions).map(async (m, [k, v]) => {
-  //   const time = Date.parse(packument.time[v.version])
-  //   m[k] = await getDirective({...v, rules, org, time})
-  //   return {k}
-  // }, {}))
-
-export const defaultFilter = ({rule: r, name, org, version, time, license, _npmUser, now = Date.now()}) => {
-  const day = 24 * 3600 * 1000
-  return (r.org ? org && r.org.some(e => e.test(org)) : true)
-    && (r.name ? r.name.some(e => e.test(name)) : true)
-    && (r.license ? r.license.includes(license?.toLowerCase()) : true)
-    && (r.username ? r.username.includes(_npmUser?.name?.toLowerCase()) : true)
-    && (r.dateRange ? time >= r.dateRange[0] && time <= r.dateRange[1] : true)
-    && (r.age ? time <= now - r.age[0] * day && time >= now - (r.age[1] * day || Infinity) : true)
-    && (r.version ? semver.satisfies(version, r.version) : true)
-}
+  mapValuesAsync(packument.versions, async (entry) =>
+    getDirective({
+      ...entry,
+      rules,
+      org,
+      time: Date.parse(packument.time[entry.version])
+    })
+  )
 
 export const getDirective = async ({rules, ...e }) => rules.reduce(async (m, rule) => {
   if (await m) {
@@ -71,6 +59,17 @@ export const getDirective = async ({rules, ...e }) => rules.reduce(async (m, rul
 
   return !!matched && rule
 }, false)
+
+export const defaultFilter = ({rule: r, name, org, version, time, license, _npmUser, now = Date.now()}) => {
+  const day = 24 * 3600 * 1000
+  return (r.org ? org && r.org.some(e => e.test(org)) : true)
+    && (r.name ? r.name.some(e => e.test(name)) : true)
+    && (r.license ? r.license.includes(license?.toLowerCase()) : true)
+    && (r.username ? r.username.includes(_npmUser?.name?.toLowerCase()) : true)
+    && (r.age ? time <= now - r.age[0] * day && time >= now - (r.age[1] * day || Infinity) : true)
+    && (r.dateRange ? time >= r.dateRange[0] && time <= r.dateRange[1] : true)
+    && (r.version ? semver.satisfies(version, r.version) : true)
+}
 
 export const getPolicy = (directives, version) => directives[version]?.policy
 

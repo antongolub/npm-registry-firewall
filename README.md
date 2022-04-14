@@ -126,7 +126,7 @@ const app = createApp({
       },
       {
         policy: 'allow',
-        filter: ({name, org}) => org === '@types' || name === 'react'
+        filter: ({name, org}) => org === '@types' || name === 'react'  // may be async
       },
     ]
   }
