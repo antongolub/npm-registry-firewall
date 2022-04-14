@@ -66,7 +66,8 @@ And at least 5 public replicas are always available as alternatives:
 
 If this reliability level is not enough, you can easily run one more registry:
 * [sonatype-nexus](https://help.sonatype.com/repomanager3/nexus-repository-administration/formats/npm-registry)
-* [verdaccio.org](https://verdaccio.org/)
+* [verdaccio](https://verdaccio.org/)
+* [nandu](https://github.com/taskforcesh/nandu)
 
 ### Security risks
 Any code may not work properly. Due to error or malice. Keep in mind that most OSS licenses **exclude any liability for damages**. It's also important to always remember that oss code is **not verified** before being published.
