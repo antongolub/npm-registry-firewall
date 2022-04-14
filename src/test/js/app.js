@@ -33,21 +33,21 @@ test('is runnable', async () => {
 })
 
 ;[
-  // [
-  //   'returns healthcheck',
-  //   { url: 'http://localhost:3001/healthcheck/', method: 'GET'},
-  //   {statusCode: 200, body: '{"status":"OK"}' }
-  // ],
-  // [
-  //   '404 if not found',
-  //   { url: 'http://localhost:3001/registry/not-found/path/on/remote', method: 'GET'},
-  //   { statusCode: 404 }
-  // ],
-  // [
-  //   'gets tarball if allowed',
-  //   { url: 'http://localhost:3001/registry/@antongolub/git-root/-/git-root-1.5.6.tgz', method: 'GET'},
-  //   { hash: 'uMs0P/SZUnoc+oF6E0VVPSnkXphOfg1GXRl+wnx/tElmLNPtNCuh2n7EVbSJU5hv73q96YK04bBVRQmS2p2Cjw==' }
-  // ],
+  [
+    'returns healthcheck',
+    { url: 'http://localhost:3001/healthcheck/', method: 'GET'},
+    {statusCode: 200, body: '{"status":"OK"}' }
+  ],
+  [
+    '404 if not found',
+    { url: 'http://localhost:3001/registry/not-found/path/on/remote', method: 'GET'},
+    { statusCode: 404 }
+  ],
+  [
+    'gets tarball if allowed',
+    { url: 'http://localhost:3001/registry/@antongolub/git-root/-/git-root-1.5.6.tgz', method: 'GET'},
+    { hash: 'uMs0P/SZUnoc+oF6E0VVPSnkXphOfg1GXRl+wnx/tElmLNPtNCuh2n7EVbSJU5hv73q96YK04bBVRQmS2p2Cjw==' }
+  ],
   [
     'reads packument',
     { url: 'http://localhost:3001/registry/colors', method: 'GET'},
