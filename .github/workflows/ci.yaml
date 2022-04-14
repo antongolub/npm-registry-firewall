@@ -50,9 +50,12 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
+      - if: matrix.os == 'windows-2019'
+        run: npm i -g npm
+
       - name: Run tests
         timeout-minutes: 1
-        run: npm run test
+        run: node src/test/js/all.js
 
   release:
     name: Release
