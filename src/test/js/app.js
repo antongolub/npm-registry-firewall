@@ -70,7 +70,7 @@ test('is runnable', async () => {
       }
     } catch ({res}) {
       result = {
-        statusCode: res.statusCode
+        statusCode: res?.statusCode
       }
     }
 

@@ -81,7 +81,7 @@ Uncontrolled use of new versions may have legal and financial consequences. Ther
 </details>
 
 ## Key Features
-* Restricts access to remote packages by predicate: `name`, `org`, `version` ([semver range](https://github.com/npm/node-semver#ranges)), `license`, `dateRange`, `username`, `age`.
+* Restricts access to remote packages by predicate: `name`, `org`, `version` ([semver range](https://github.com/npm/node-semver#ranges)), `license`, `dateRange`, `username`, `age` or custom `filter` function.
 * Multi-configuration: define as many `port/context-path/rules` combinations as you need.
 * [Expressjs](https://expressjs.com/en/guide/using-middleware.html)-inspired server implementation.
 * Has no deps. Literally zero.
@@ -123,6 +123,10 @@ const app = createApp({
       {
         policy: 'deny',
         name: '@babel/*'
+      },
+      {
+        policy: 'allow',
+        filter: ({name, org}) => org === '@types' || name === 'react'
       },
     ]
   }
