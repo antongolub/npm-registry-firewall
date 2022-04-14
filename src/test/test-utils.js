@@ -108,5 +108,5 @@ export const printTestDigest = () => {
     `${skipped ? `${BgYellow} 🚧 skipped: ${skipped} ${Reset}\n` : ''}` +
     `${failed ? `${BgRed} ❌  failed: ${failed} ${Reset}\n` : ''} `
   )
-  failed && process.exit(1)
+  process.exit(failed ? 1 : 0)
 }

@@ -4,7 +4,7 @@ import { join } from 'node:path'
 const require = createRequire(import.meta.url)
 
 export const semver = require(join(
-  execSync('npm list -g --depth=0 --parseable npm', {timeout: 10000, shell: true}).toString().trim(),
+  execSync('npm list -g --depth=0 --parseable npm', {shell: true}).toString().trim(),
   'node_modules',
   'semver'
 ))
