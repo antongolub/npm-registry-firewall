@@ -31,3 +31,14 @@ export const splitStr = v => v
     ? v
     : v.split(',').map(s => s.toLowerCase().trim())
   : null // split(/\s*,\s*/) seems unsafe
+
+export const mapValuesAsync = async (obj, cb) =>
+  (await Promise.all(Object.entries(obj).map(async ([k, v]) => ({
+      k,
+      v: await cb(v)
+    })
+  )))
+    .reduce((m, {v, k}) => {
+      m[k] = v
+      return m
+    }, {})
