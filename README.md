@@ -66,7 +66,8 @@ And at least 5 public replicas are always available as alternatives:
 
 If this reliability level is not enough, you can easily run one more registry:
 * [sonatype-nexus](https://help.sonatype.com/repomanager3/nexus-repository-administration/formats/npm-registry)
-* [verdaccio.org](https://verdaccio.org/)
+* [verdaccio](https://verdaccio.org/)
+* [nandu](https://github.com/taskforcesh/nandu)
 
 ### Security risks
 Any code may not work properly. Due to error or malice. Keep in mind that most OSS licenses **exclude any liability for damages**. It's also important to always remember that oss code is **not verified** before being published.
@@ -81,7 +82,7 @@ Uncontrolled use of new versions may have legal and financial consequences. Ther
 </details>
 
 ## Key Features
-* Restricts access to remote packages by predicate: `name`, `org`, `version` ([semver range](https://github.com/npm/node-semver#ranges)), `license`, `dateRange`, `username`, `age`.
+* Restricts access to remote packages by predicate: `name`, `org`, `version` ([semver range](https://github.com/npm/node-semver#ranges)), `license`, `dateRange`, `username`, `age` or custom `filter` function.
 * Multi-configuration: define as many `port/context-path/rules` combinations as you need.
 * [Expressjs](https://expressjs.com/en/guide/using-middleware.html)-inspired server implementation.
 * Has no deps. Literally zero.
@@ -124,6 +125,10 @@ const app = createApp({
         policy: 'deny',
         name: '@babel/*'
       },
+      {
+        policy: 'allow',
+        filter: ({name, org}) => org === '@types' || name === 'react'  // may be async
+      },
     ]
   }
 })
@@ -162,7 +167,7 @@ await app.start()
         "name": ["@babel/*", "@jest/*", "lodash"] // string[] or "comma,separated,list". * works as .+ in regexp
       },
       {
-        "policy": "warn",       // `warn` directive works like `allow`, but also logs this event
+        "policy": "warn",       // `warn` directive works like `allow`, but also logs if someone has requested a tarball matchin the rule
         "name": "reqresnext"
       },
       {
