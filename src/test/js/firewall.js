@@ -131,6 +131,9 @@ const test = testFactory('firewall', import.meta)
     'getDirective by filter (pos)',
     {
       rules: [{
+        policy: 'deny',
+        filter: () => false
+      }, {
         policy: 'allow',
         filter: ({foo}) => foo === 'bar'
       }],
@@ -143,7 +146,7 @@ const test = testFactory('firewall', import.meta)
     {
       rules: [{
         policy: 'allow',
-        filter: ({foo}) => foo === 'qux'
+        filter: async ({foo}) => foo === 'qux'
       }],
       foo: 'bar'
     },
@@ -152,7 +155,7 @@ const test = testFactory('firewall', import.meta)
 
 ].forEach(([name, opts, expected]) => {
   test(name, async () => {
-    const result = getDirective(opts)?.policy || false
+    const result = (await getDirective(opts))?.policy || false
     assert.equal(result, expected)
   })
 })

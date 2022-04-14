@@ -1,6 +1,6 @@
 import {request, notFoundErr, accessDeniedErr} from '../http/index.js'
 import {semver} from '../semver.js'
-import {normalizePath} from '../util.js'
+import {mapValuesAsync, normalizePath} from '../util.js'
 
 export const firewall = ({registry, rules, entrypoint: _entrypoint, token}) => async (req, res, next) => {
   if (!registry) {
@@ -13,7 +13,7 @@ export const firewall = ({registry, rules, entrypoint: _entrypoint, token}) => a
   })
   const entrypoint = _entrypoint || normalizePath(`${cfg.server.entrypoint}${base}`)
   const packument = JSON.parse(body)
-  const directives = getDirectives({ packument, rules, org})
+  const directives = await getDirectives({ packument, rules, org})
 
   // Tarball request
   if (version) {
@@ -41,11 +41,15 @@ export const firewall = ({registry, rules, entrypoint: _entrypoint, token}) => a
 }
 
 export const getDirectives = ({packument, rules, org}) =>
-  Object.entries(packument.versions).reduce((m, [k, v]) => {
-    const time = Date.parse(packument.time[v.version])
-    m[k] = getDirective({...v, rules, org, time})
-    return m
-  }, {})
+  mapValuesAsync(packument.versions, async (entry) => {
+    const time = Date.parse(packument.time[entry.version])
+    return getDirective({...entry, rules, org, time})
+  })
+  // Promise.all(Object.entries(packument.versions).map(async (m, [k, v]) => {
+  //   const time = Date.parse(packument.time[v.version])
+  //   m[k] = await getDirective({...v, rules, org, time})
+  //   return {k}
+  // }, {}))
 
 export const defaultFilter = ({rule: r, name, org, version, time, license, _npmUser, now = Date.now()}) => {
   const day = 24 * 3600 * 1000
@@ -58,12 +62,12 @@ export const defaultFilter = ({rule: r, name, org, version, time, license, _npmU
     && (r.version ? semver.satisfies(version, r.version) : true)
 }
 
-export const getDirective = ({rules, ...e }) => rules.reduce((m, rule) => {
-  if (m) {
+export const getDirective = async ({rules, ...e }) => rules.reduce(async (m, rule) => {
+  if (await m) {
     return m
   }
   const filter = rule.filter || defaultFilter
-  const matched = filter({...e, rule})
+  const matched = await filter({...e, rule})
 
   return !!matched && rule
 }, false)
@@ -74,7 +78,6 @@ export const filterVersions = ({packument, directives, entrypoint, registry}) =>
   if (getPolicy(directives, v.version) === 'deny') {
     return m
   }
-
   v.dist.tarball = v.dist.tarball.replace(registry, entrypoint)
   m[v.version] = v
   return m
