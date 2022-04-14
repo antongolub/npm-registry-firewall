@@ -1,3 +1,16 @@
+# [1.9.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.8.0...v1.9.0) (2022-04-14)
+
+
+### Bug Fixes
+
+* fix run on windows ([74c29a0](https://github.com/antongolub/npm-registry-firewall/commit/74c29a0b690a3cc8e90c106f293989a265b1de72))
+
+
+### Features
+
+* add custom `filter` ([e6ef827](https://github.com/antongolub/npm-registry-firewall/commit/e6ef82734da4d2725e9e48a8dc6a0e82e38def7b)), closes [#11](https://github.com/antongolub/npm-registry-firewall/issues/11)
+* let `filter` be acync ([6777474](https://github.com/antongolub/npm-registry-firewall/commit/6777474433778158efbb1035def821d0c38dd81a)), closes [#11](https://github.com/antongolub/npm-registry-firewall/issues/11)
+
 # [1.8.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.7.0...v1.8.0) (2022-04-13)
 
 
