@@ -3,6 +3,7 @@ import https from 'node:https'
 import {parse} from 'node:url'
 
 import {makeDeferred, normalizePath} from '../util.js'
+import {httpError, REQUEST_TIMEOUT} from './error.js'
 
 const agentOpts = {
   keepAliveMsecs: 500,
@@ -27,6 +28,7 @@ export const request = async (opts) => {
   } = parse(normalizePath(url))
   const {promise, resolve, reject} = makeDeferred()
   const params = {
+    protocol,
     method,
     host: hostname,
     port,
@@ -54,15 +56,12 @@ export const request = async (opts) => {
     }
 
     if (statusCode < 200 || statusCode >= 300) {
-      const err = new Error(`HTTP ${res.statusCode} ${host}${path} ${res.statusMessage}`)
-      Object.defineProperty(err, 'res', {enumerable: false, value: res})
-
-      return reject(err)
+      return reject(httpError(statusCode, {url, method}))
     }
 
     const data = []
 
-    res.on('error', reject)
+    res.on('error', () => reject(httpError(statusCode, {url, method})))
     res.on('data', chunk => data.push(chunk))
     res.on('end', () => {
       Object.assign(res, {
@@ -73,7 +72,7 @@ export const request = async (opts) => {
     })
   })
   req.on('error', reject)
-  req.on('timeout', () => req.destroy())
+  req.on('timeout', () => req.destroy(httpError(REQUEST_TIMEOUT, {url, method})))
 
   promise.req = req
 
