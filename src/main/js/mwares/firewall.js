@@ -1,4 +1,4 @@
-import {request, notFoundErr, accessDeniedErr} from '../http/index.js'
+import {request, httpError, NOT_FOUND, ACCESS_DENIED} from '../http/index.js'
 import {semver} from '../semver.js'
 import {mapValuesAsync, normalizePath} from '../util.js'
 
@@ -20,7 +20,7 @@ export const firewall = ({registry, rules, entrypoint: _entrypoint, token}) => a
     if (policy === 'warn') {
       req.log.warn(`${name}@${version}`, 'directive=', directives[version]._raw)
     }
-    return policy === 'deny' ? next(accessDeniedErr) : next()
+    return policy === 'deny' ? next(httpError(ACCESS_DENIED)) : next()
   }
 
   // Packument request
@@ -28,7 +28,7 @@ export const firewall = ({registry, rules, entrypoint: _entrypoint, token}) => a
   const _packument = patchPackument({ packument, directives, entrypoint, registry })
 
   if (Object.keys(_packument.versions).length === 0) {
-    return next(notFoundErr)
+    return next(httpError(NOT_FOUND))
   }
 
   const packumentBuffer = Buffer.from(JSON.stringify(_packument))

@@ -1,4 +1,4 @@
-import {requestTimeoutErr} from '../http/index.js'
+import {httpError, REQUEST_TIMEOUT} from '../http/index.js'
 
 export const timeout = async (req, res, next) => {
   if (!req?.cfg?.server?.requestTimeout) {
@@ -6,7 +6,7 @@ export const timeout = async (req, res, next) => {
   }
 
   const timer = setTimeout(() => {
-    next(requestTimeoutErr)
+    next(httpError(REQUEST_TIMEOUT))
   }, req.cfg.server.requestTimeout)
   const drop = () => clearTimeout(timer)
 

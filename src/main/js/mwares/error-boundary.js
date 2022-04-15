@@ -1,8 +1,10 @@
-export const errorBoundary = async (err, req, res, next) => {
-  const message = err.message || err.res?.statusMessage || 'Internal server error'
-  const code = err.status || err.res?.statusCode || 500
+import {INTERNAL_SERVER_ERROR, statusMessageMap} from '../http/index.js'
 
-  req.log.error(err)
+export const errorBoundary = async (err, req, res, next) => {
+  const code = err.statusCode || res.statusCode || INTERNAL_SERVER_ERROR
+  const message = err.statusMessage || res.statusMessage || err.message || statusMessageMap[code] || statusMessageMap[INTERNAL_SERVER_ERROR]
+
+  req.log.error(err.message || message)
 
   res.writeHead(code, {
     'Content-Type': 'text/plain',

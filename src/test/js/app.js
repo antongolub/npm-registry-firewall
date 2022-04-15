@@ -68,9 +68,9 @@ test('is runnable', async () => {
         body: res.body,
         hash,
       }
-    } catch ({res}) {
+    } catch ({statusCode}) {
       result = {
-        statusCode: res?.statusCode
+        statusCode
       }
     }
 
