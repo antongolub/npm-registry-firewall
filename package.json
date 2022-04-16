@@ -6,6 +6,9 @@
   "bin": "src/main/js/cli.js",
   "type": "module",
   "exports": "./src/main/js/index.js",
+  "engines": {
+    "node": ">= 14"
+  },
   "scripts": {
     "docs": "mkdir -p docs && cp ./README.md ./docs/README.md",
     "start": "node src/main/js/cli.js config.json",
