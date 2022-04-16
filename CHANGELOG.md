@@ -1,3 +1,10 @@
+# [1.11.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.10.0...v1.11.0) (2022-04-16)
+
+
+### Features
+
+* provide `extends` for configs ([187fa24](https://github.com/antongolub/npm-registry-firewall/commit/187fa242abc5e35acaf0758375c4f138c428b1cc)), closes [#12](https://github.com/antongolub/npm-registry-firewall/issues/12)
+
 # [1.10.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.9.2...v1.10.0) (2022-04-16)
 
 
