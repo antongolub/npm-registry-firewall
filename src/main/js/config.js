@@ -9,7 +9,9 @@ const require = createRequire(import.meta.url)
 const populateExtra = (raw) => typeof raw === 'string' ? require(raw) : {}
 
 const populate = (config) => {
-  const profiles = asArray(config).map(p => {
+  const profiles = asArray(config).map(_p => {
+    const p = {...populateExtra(p.extends), _p}
+
     assert.ok(p.server, 'cfg: server')
     assert.ok(p.firewall, 'cfg: firewall')
 

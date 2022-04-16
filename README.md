@@ -1,4 +1,4 @@
-# npm-registry-firewall   📦📦🔥🔥🔥
+# npm-registry-firewall   📦📦🔥
 npm registry proxy with on-the-fly filtering 
 
 [![CI](https://github.com/antongolub/npm-registry-firewall/workflows/CI/badge.svg)](https://github.com/antongolub/npm-registry-firewall/actions)
@@ -83,7 +83,7 @@ Uncontrolled use of new versions may have legal and financial consequences. Ther
 
 ## Key Features
 * Restricts access to remote packages by predicate: `name`, `org`, `version` ([semver range](https://github.com/npm/node-semver#ranges)), `license`, `dateRange`, `username`, `age` or custom `filter` function.
-* Multi-configuration: define as many `port/context-path/rules` combinations as you need.
+* Flexible configuration: use define as many `server/context-path/rules` combinations as you need.
 * [Expressjs](https://expressjs.com/en/guide/using-middleware.html)-inspired server implementation.
 * Has no deps. Literally zero.
 
@@ -134,6 +134,55 @@ const app = createApp({
 })
 
 await app.start()
+```
+
+
+### Plugins
+You may introduce your own reusable presets via `extends`. This statement can be applied at any [config](#config) level and should return a valid value for the current section. The specified path will be loaded synchronously through `require`, so it must be a CJS module.
+```js
+const config = {
+  // should return `firewall` and `servers`
+  extends: '@qiwi/nrf-std-config',
+  server: {
+    port: 5000,
+    extends: '@qiwi/nrf-server-config'
+  },
+  firewall: {
+    // `rules`, `registry`, etc,
+    extends: '@qiwi/nrf-firewall-config',
+    // NOTE If you redefine `rules` the result will be contatenation of `[...rules, ...extends.rules]`
+    rules: [{
+      policy: 'deny',
+      // `name`, `org`, `filter`, etc
+      extends: '@qiwi/nrf-deprecated-pkg-list'
+    }, {
+      policy: 'allow',
+      extends: '@qiwi/nrf-whitelisted-orgs'
+    }, {
+      extends: '@qiwi/nrf-all-in-one-filter'
+    }]
+  }
+}
+```
+
+Rule-plugin example:
+```js
+// '@qiwi/nrf-all-in-one-filter'
+module.exports = {
+  filter({org, name, time, ...restPkgData}) {
+    if (name === 'react') {
+      return true
+    }
+
+    if (org === '@babel') {
+      return false
+    }
+
+    if (restPkgData.license === 'dbad') {
+      return false
+    }
+  }
+}
 ```
 
 ### TS libdefs
@@ -209,9 +258,9 @@ export function createApp(config: string | TConfig | TConfig[]): Promise<TApp>
     },
     "base": "/",                // Optional. Defaults to '/'
     "healthcheck": "/health",   // Optional. Defaults to '/healthcheck'. Pass null to disable
-    "keepAliveTimeout": 15000,  // Optional. Defaults 61000
-    "headersTimeout": 20000,    // Optional. Defaults 62000
-    "requestTimeout": 10000     // Optional. Defaults 30000
+    "keepAliveTimeout": 15000,  // Optional. Defaults to 61000
+    "headersTimeout": 20000,    // Optional. Defaults to 62000
+    "requestTimeout": 10000     // Optional. Defaults to 30000
   },
   "firewall": {
     "registry": "https://registry.npmmirror.com",  // Remote registry
