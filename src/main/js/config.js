@@ -48,11 +48,11 @@ const populate = (config) => {
       const cache = f.cache
         ? createCache({
           ttl: f.cache.ttl * 60_000,
-          evictionTimeout: f.cache.evictionTimeout * 60_000
+          evictionTimeout: (f.cache.ttl || f.cache.evictionTimeout) * 60_000
         })
         : null
 
-      const rules = asArray((p.firewall.rules || [])).map((_raw) => {
+      const rules = asArray((f.rules || [])).map((_raw) => {
         const {
           policy,
           name,
