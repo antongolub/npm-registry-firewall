@@ -14,6 +14,9 @@
     "base": "/registry",
     "registry": "https://registry.npmmirror.com",
     "entrypoint": "https://r.qiwi.com/registry/npm",
+    "cache": {
+      "ttl": 1
+    },
     "rules": [
       {
         "policy": "warn",

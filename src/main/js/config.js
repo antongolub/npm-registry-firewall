@@ -2,6 +2,7 @@ import fs from 'node:fs'
 import {strict as assert} from 'node:assert'
 import {asRegExp, asArray, normalizePath, splitStr} from './util.js'
 import { semver } from './semver.js'
+import { createCache } from './cache.js'
 
 const populate = (config) => {
   const profiles = asArray(config).map(p => {
@@ -44,6 +45,13 @@ const populate = (config) => {
     const firewall = asArray(p.firewall).map(f => {
       assert.ok(f.registry, 'cfg: firewall.registry')
 
+      const cache = f.cache
+        ? createCache({
+          ttl: f.cache.ttl * 60_000,
+          evictionTimeout: f.cache.evictionTimeout * 60_000
+        })
+        : null
+
       const rules = asArray((p.firewall.rules || [])).map((_raw) => {
         const {
           policy,
@@ -74,6 +82,7 @@ const populate = (config) => {
       })
 
       return {
+        cache,
         rules,
         registry: f.registry,
         token: f.token,
