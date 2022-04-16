@@ -1,6 +1,6 @@
 {
   "name": "npm-registry-firewall",
-  "version": "1.11.0",
+  "version": "1.12.0",
   "description": "nodejs-based npm registry proxy with on-the-fly filtering",
   "main": "src/main/js/index.js",
   "bin": "src/main/js/cli.js",

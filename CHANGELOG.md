@@ -1,3 +1,15 @@
+# [1.12.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.11.0...v1.12.0) (2022-04-16)
+
+
+### Bug Fixes
+
+* update ts libdefs, support `extends` for config top level ([30a2324](https://github.com/antongolub/npm-registry-firewall/commit/30a23245702060d2f0d3de36b970ec7ccad4f0af))
+
+
+### Features
+
+* expose basic metrics — uptime, cpu, mem usage ([e40bdde](https://github.com/antongolub/npm-registry-firewall/commit/e40bdde7a3b55b12342be231f18c0bcf5fe240d7))
+
 # [1.11.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.10.0...v1.11.0) (2022-04-16)
 
 
