@@ -136,55 +136,6 @@ const app = createApp({
 await app.start()
 ```
 
-
-### Plugins
-You may introduce your own reusable presets via `extends`. This statement can be applied at any [config](#config) level and should return a valid value for the current section. The specified path will be loaded synchronously through `require`, so it must be a CJS module.
-```js
-const config = {
-  // should return `firewall` and `servers`
-  extends: '@qiwi/nrf-std-config',
-  server: {
-    port: 5000,
-    extends: '@qiwi/nrf-server-config'
-  },
-  firewall: {
-    // `rules`, `registry`, etc,
-    extends: '@qiwi/nrf-firewall-config',
-    // NOTE If you redefine `rules` the result will be contatenation of `[...rules, ...extends.rules]`
-    rules: [{
-      policy: 'deny',
-      // `name`, `org`, `filter`, etc
-      extends: '@qiwi/nrf-deprecated-pkg-list'
-    }, {
-      policy: 'allow',
-      extends: '@qiwi/nrf-whitelisted-orgs'
-    }, {
-      extends: '@qiwi/nrf-all-in-one-filter'
-    }]
-  }
-}
-```
-
-Rule-plugin example:
-```js
-// '@qiwi/nrf-all-in-one-filter'
-module.exports = {
-  filter({org, name, time, ...restPkgData}) {
-    if (name === 'react') {
-      return true
-    }
-
-    if (org === '@babel') {
-      return false
-    }
-
-    if (restPkgData.license === 'dbad') {
-      return false
-    }
-  }
-}
-```
-
 ### TS libdefs
 
 <details>
@@ -273,7 +224,7 @@ export function createApp(config: string | TConfig | TConfig[]): Promise<TApp>
       "ttl": 5,                 // Time to live in minutes. Specifies how long resolved pkg directives will live.
       "evictionTimeout": 1      // Cache invalidation period in minutes. Defaults to cache.ttl.
     },
-    "extends": "@qiwi/internal-npm-registry-firewall-rules",  // Optional. Populates the entry with the specified module contents (cjs only)
+    "extends": "@qiwi/internal-npm-registry-firewall-rules",  // Optional. Populates the entry with the specified source contents (json/CJS module only)
     "rules": [
       {
         "policy": "allow",
@@ -348,8 +299,77 @@ export function createApp(config: string | TConfig | TConfig[]): Promise<TApp>
     ]
   }
 ]
-
 ```
+
+### Extras
+#### Presets
+You may introduce your own reusable presets via `extends`. This statement can be applied at any [config](#config) level and should return a valid value for the current section. The specified path will be loaded synchronously through `require`, so it must be a JSON or CJS module.
+```js
+const config = {
+  // should return `firewall` and `servers`
+  extends: '@qiwi/nrf-std-config',
+  server: {
+    port: 5000,
+    extends: '@qiwi/nrf-server-config'
+  },
+  firewall: {
+    // `rules`, `registry`, etc,
+    extends: '@qiwi/nrf-firewall-config',
+    // NOTE If you redefine `rules` the result will be contatenation of `[...rules, ...extends.rules]`
+    rules: [{
+      policy: 'deny',
+      // `name`, `org`, `filter`, etc
+      extends: '@qiwi/nrf-deprecated-pkg-list'
+    }, {
+      policy: 'allow',
+      extends: '@qiwi/nrf-whitelisted-orgs'
+    }, {
+      extends: '@qiwi/nrf-all-in-one-filter'
+    }]
+  }
+}
+```
+
+For example, `extends` as a filter:
+```js
+// '@qiwi/nrf-all-in-one-filter'
+module.exports = {
+  filter({org, name, time, ...restPkgData}) {
+    if (name === 'react') {
+      return true
+    }
+
+    if (org === '@babel') {
+      return false
+    }
+
+    if (restPkgData.license === 'dbad') {
+      return false
+    }
+  }
+}
+```
+#### Plugins
+Plugin is slightly different from preset:
+* Async. It's loaded dynamically as a part of rule processing pipeline, so it may be an ESM.
+* Configurable. Opts may be passed as the 2nd tuple arg.
+* Composable. There may be more than one per `rule`.
+
+```js
+const rule1 = {
+  policy: 'deny',
+  plugins: ['@qiwi/nrf-plugin']
+}
+
+const rule2 = {
+  policy: 'deny',
+  plugins: [
+    ['@qiwi/nrf-plugin', {foo: 'bar'}],
+    '@qiwi/nrf-another-one'
+  ]
+}
+```
+
 **.npmrc**
 ```yaml
 registry=https://localhost:3000
