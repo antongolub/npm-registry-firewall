@@ -18,7 +18,7 @@ type TServerConfig = {
 }
 
 type TRule = {
-  policy: 'allow' | 'deny'
+  policy: 'allow' | 'deny' | 'warn'
   name?: string | string[]
   org?: string | string[]
   dateRange?: [string, string]
