@@ -9,6 +9,7 @@ import {
   ctx,
   timeout,
   firewall,
+  metrics,
 } from './mwares/index.js'
 
 import { getConfig } from './config.js'
@@ -43,6 +44,7 @@ export const createApp = (cfg) => {
         timeout,
         trace,
         ['GET', s.healthcheck, healthcheck],
+        ['GET', s.metrics, metrics],
         ...firewalls,
         notFound,
         errorBoundary,

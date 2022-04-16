@@ -8,6 +8,7 @@ type TServerConfig = {
   port?: string | number
   base?: string
   healthcheck?: string | null
+  metrics?: string | null
   secure?: {
     key: string,
     cert: string

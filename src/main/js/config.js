@@ -10,7 +10,7 @@ const populateExtra = (raw) => typeof raw === 'string' ? require(raw) : {}
 
 const populate = (config) => {
   const profiles = asArray(config).map(_p => {
-    const p = {...populateExtra(p.extends), _p}
+    const p = {...populateExtra(_p.extends), ..._p}
 
     assert.ok(p.server, 'cfg: server')
     assert.ok(p.firewall, 'cfg: firewall')
@@ -20,6 +20,7 @@ const populate = (config) => {
       port = 8080,
       base = '/',
       healthcheck = '/healthcheck',
+      metrics = '/metrics',
       secure: _secure,
       keepAliveTimeout = 61_000,
       headersTimeout = 62_000,
@@ -41,6 +42,7 @@ const populate = (config) => {
         port,
         base,
         entrypoint,
+        metrics,
         healthcheck,
         requestTimeout,
         headersTimeout,
