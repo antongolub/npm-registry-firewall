@@ -2,7 +2,7 @@ import {request, httpError, NOT_FOUND, ACCESS_DENIED} from '../http/index.js'
 import {semver} from '../semver.js'
 import {mapValuesAsync, normalizePath} from '../util.js'
 
-export const firewall = ({registry, rules, entrypoint: _entrypoint, token}) => async (req, res, next) => {
+export const firewall = ({registry, rules, entrypoint: _entrypoint, token, cache}) => async (req, res, next) => {
   if (!registry) {
     throw new Error('firewall: req.cfg.registry is required')
   }
@@ -12,7 +12,7 @@ export const firewall = ({registry, rules, entrypoint: _entrypoint, token}) => a
     authorization: token && `Bearer ${token}`
   })
   const packument = JSON.parse(body)
-  const directives = await getDirectives({ packument, rules, org})
+  const directives = cache?.get(name) || await getDirectives({ packument, rules, org})
 
   // Tarball request
   if (version) {

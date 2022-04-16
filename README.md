@@ -212,6 +212,10 @@ export function createApp(config: string | TConfig | TConfig[]): Promise<TApp>
     "token": "NpmToken.*********-e0b2a8e5****",    // Optional bearer token
     "entrypoint": "https://r.qiwi.com/npm",        // Optional. Defaults to `${server.secure ? 'https' : 'http'}://${server.host}:${server.port}${route.base}`
     "base": "/",                // Optional. Defaults to '/'
+    "cache": {                  // Optional. Defaults to no-cache (null)
+      "ttl": 5,                 // Time to live in minutes. Specifies how long resolved pkg directives will live.
+      "evictionTimeout": 1      // Cache invalidation period in minutes. Defaults to cache.ttl.
+    },
     "rules": [
       {
         "policy": "allow",

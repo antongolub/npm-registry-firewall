@@ -16,14 +16,14 @@ import { getConfig } from './config.js'
 export const createApp = (cfg) => {
   const config = getConfig(cfg)
   const servers = config.profiles.reduce((m, p) => {
-    const firewalls = p.firewall.map(({base, entrypoint, registry, token, rules}) => createRouter([
+    const firewalls = p.firewall.map(({base, entrypoint, registry, token, rules, cache}) => createRouter([
       [
         '*',
         [
           /^\/(((@[a-z0-9\-]+)(%2f|\/))?[a-z0-9\-]+)\/-\/[a-z0-9\-]+-(\d+\.\d+\.\d+(-[+\-.a-z0-9]+)?)\.tgz$/,
           ['name', null, 'org', null, 'version']
         ],
-        firewall({registry, rules, entrypoint, token})
+        firewall({registry, rules, entrypoint, token, cache})
       ],
       [
         '*',

@@ -29,12 +29,18 @@ type TRule = {
   filter?: (opts: Record<string, any>) => boolean | undefined | null
 }
 
+type TCacheConfig = {
+  ttl: number
+  evictionTimeout?: number
+}
+
 type TFirewallConfig = {
   registry: string
   entrypoint?: string
   token?: string
   base?: string
   rules?: TRule | TRule[]
+  cache?: TCacheConfig
 }
 
 type TConfig = {
