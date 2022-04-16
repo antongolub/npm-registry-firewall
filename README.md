@@ -83,7 +83,7 @@ Uncontrolled use of new versions may have legal and financial consequences. Ther
 
 ## Key Features
 * Restricts access to remote packages by predicate: `name`, `org`, `version` ([semver range](https://github.com/npm/node-semver#ranges)), `license`, `dateRange`, `username`, `age` or custom `filter` function.
-* Flexible configuration: use define as many `server/context-path/rules` combinations as you need.
+* Flexible configuration: use [presets](#plugins), define as many [`server/context-path/rules`](#multi-config) combinations as you need.
 * [Expressjs](https://expressjs.com/en/guide/using-middleware.html)-inspired server implementation.
 * Has no deps. Literally zero.
 
