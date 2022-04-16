@@ -162,7 +162,7 @@ type TServerConfig = {
 }
 
 type TRule = {
-  policy: 'allow' | 'deny'
+  policy: 'allow' | 'deny' | 'warn'
   name?: string | string[]
   org?: string | string[]
   dateRange?: [string, string]
@@ -173,12 +173,18 @@ type TRule = {
   filter?: (opts: Record<string, any>) => boolean | undefined | null
 }
 
+type TCacheConfig = {
+  ttl: number
+  evictionTimeout?: number
+}
+
 type TFirewallConfig = {
   registry: string
   entrypoint?: string
   token?: string
   base?: string
   rules?: TRule | TRule[]
+  cache?: TCacheConfig
 }
 
 type TConfig = {
@@ -212,6 +218,10 @@ export function createApp(config: string | TConfig | TConfig[]): Promise<TApp>
     "token": "NpmToken.*********-e0b2a8e5****",    // Optional bearer token
     "entrypoint": "https://r.qiwi.com/npm",        // Optional. Defaults to `${server.secure ? 'https' : 'http'}://${server.host}:${server.port}${route.base}`
     "base": "/",                // Optional. Defaults to '/'
+    "cache": {                  // Optional. Defaults to no-cache (null)
+      "ttl": 5,                 // Time to live in minutes. Specifies how long resolved pkg directives will live.
+      "evictionTimeout": 1      // Cache invalidation period in minutes. Defaults to cache.ttl.
+    },
     "rules": [
       {
         "policy": "allow",
@@ -266,7 +276,7 @@ export function createApp(config: string | TConfig | TConfig[]): Promise<TApp>
   {
     "server": [
       {"port": 3001},
-      {"port": 3002},
+      {"port": 3002, "secure": {"cert": "ssl/cert.pem", "key": "ssl/key.pem" }},
     ],
     "firewall": {
       "registry": "https://registry.yarnpkg.com",
