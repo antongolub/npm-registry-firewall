@@ -15,6 +15,7 @@ type TServerConfig = {
   requestTimeout?: number
   headersTimeout?: number
   keepAliveTimeout?: number
+  extend?: string
 }
 
 type TRule = {
@@ -27,6 +28,7 @@ type TRule = {
   license?: string | string[]
   username?: string | string[],
   filter?: (opts: Record<string, any>) => boolean | undefined | null
+  extend?: string
 }
 
 type TCacheConfig = {
@@ -41,11 +43,13 @@ type TFirewallConfig = {
   base?: string
   rules?: TRule | TRule[]
   cache?: TCacheConfig
+  extend?: string
 }
 
 type TConfig = {
   server: TServerConfig | TServerConfig[]
   firewall: TFirewallConfig
+  extend?: string
 }
 
 export function createApp(config: string | TConfig | TConfig[]): Promise<TApp>
