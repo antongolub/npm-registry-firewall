@@ -48,7 +48,7 @@ const populate = (config) => {
       const cache = f.cache
         ? createCache({
           ttl: f.cache.ttl * 60_000,
-          evictionTimeout: (f.cache.ttl || f.cache.evictionTimeout) * 60_000
+          evictionTimeout: (f.cache.evictionTimeout || f.cache.ttl) * 60_000
         })
         : null
 
