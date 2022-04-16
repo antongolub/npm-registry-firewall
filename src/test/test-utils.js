@@ -3,16 +3,7 @@ import {relative} from 'node:path'
 import {promisify} from 'node:util'
 import assert from 'node:assert'
 
-// https://stackoverflow.com/a/61602592/13894191
-const flatten = (obj, roots = [], sep = '.') => Object
-  .keys(obj)
-  .reduce((memo, prop) => Object.assign(
-    {},
-    memo,
-    obj[prop] instanceof Object
-      ? flatten(obj[prop], roots.concat([prop]), sep)
-      : {[roots.concat([prop]).join(sep)]: obj[prop]}
-  ), {})
+import {flatten} from '../main/js/util.js'
 
 export const objectContaining = (a, b) => {
   const flatA = flatten(a)

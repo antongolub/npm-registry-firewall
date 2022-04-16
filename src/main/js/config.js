@@ -1,8 +1,12 @@
-import fs from 'node:fs'
 import {strict as assert} from 'node:assert'
+import { createRequire } from 'node:module'
+import fs from 'node:fs'
 import {asRegExp, asArray, normalizePath, splitStr} from './util.js'
 import { semver } from './semver.js'
 import { createCache } from './cache.js'
+
+const require = createRequire(import.meta.url)
+const populateExtra = (raw) => typeof raw === 'string' ? require(raw) : {}
 
 const populate = (config) => {
   const profiles = asArray(config).map(p => {
@@ -17,11 +21,10 @@ const populate = (config) => {
       secure: _secure,
       keepAliveTimeout = 61_000,
       headersTimeout = 62_000,
-      requestTimeout = 30_000
+      requestTimeout = 30_000,
+      extends: _extends
     }) => {
-      // assert.ok(host, 'cfg: server.host')
-      // assert.ok(port, 'cfg: server.port')
-
+      const extra = populateExtra(_extends)
       const secure = _secure
         ? {
           key: fs.readFileSync(_secure.key, 'utf8'),
@@ -30,6 +33,7 @@ const populate = (config) => {
       const entrypoint = normalizePath(`${secure ? 'https' : 'http'}://${host}:${port}`)
 
       return {
+        ...extra,
         secure,
         host,
         port,
@@ -52,7 +56,8 @@ const populate = (config) => {
         })
         : null
 
-      const rules = asArray((f.rules || [])).map((_raw) => {
+      const extra = populateExtra(f?.extends)
+      const rules = [...asArray(f.rules || []), ...asArray(extra.rules || [])].map((_raw) => {
         const {
           policy,
           name,
@@ -63,7 +68,7 @@ const populate = (config) => {
           license,
           username,
           filter
-        } = _raw
+        } = {...populateExtra(_raw.extends), ..._raw}
         assert.ok(policy, 'cfg: firewall.rules.policy')
         version && assert.ok(semver.validRange(version), 'cfg: firewall.rules.version semver')
 
@@ -82,6 +87,7 @@ const populate = (config) => {
       })
 
       return {
+        ...extra,
         cache,
         rules,
         registry: f.registry,
