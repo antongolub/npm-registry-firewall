@@ -1,3 +1,17 @@
+# [1.10.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.9.2...v1.10.0) (2022-04-16)
+
+
+### Bug Fixes
+
+* fix cache config init ([e6f95d8](https://github.com/antongolub/npm-registry-firewall/commit/e6f95d8bf73ef1e6bab50442d2d332d2324d812e))
+* fix rules resolver for multi-config ([f800a31](https://github.com/antongolub/npm-registry-firewall/commit/f800a31e6314be8bf9d4efb2ced0f9502b68c7fd))
+* **type:** allow `warn` policy ([254029d](https://github.com/antongolub/npm-registry-firewall/commit/254029d6568cdea2b96aaac8985d89aef04c2a34))
+
+
+### Features
+
+* add cache for resolved directives ([836a4c4](https://github.com/antongolub/npm-registry-firewall/commit/836a4c46f852a3a61f76c1427c5bf4e674f3c54d)), closes [#14](https://github.com/antongolub/npm-registry-firewall/issues/14)
+
 ## [1.9.2](https://github.com/antongolub/npm-registry-firewall/compare/v1.9.1...v1.9.2) (2022-04-15)
 
 ## [1.9.1](https://github.com/antongolub/npm-registry-firewall/compare/v1.9.0...v1.9.1) (2022-04-14)
