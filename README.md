@@ -162,7 +162,7 @@ type TServerConfig = {
 }
 
 type TRule = {
-  policy: 'allow' | 'deny'
+  policy: 'allow' | 'deny' | 'warn'
   name?: string | string[]
   org?: string | string[]
   dateRange?: [string, string]
@@ -173,12 +173,18 @@ type TRule = {
   filter?: (opts: Record<string, any>) => boolean | undefined | null
 }
 
+type TCacheConfig = {
+  ttl: number
+  evictionTimeout?: number
+}
+
 type TFirewallConfig = {
   registry: string
   entrypoint?: string
   token?: string
   base?: string
   rules?: TRule | TRule[]
+  cache?: TCacheConfig
 }
 
 type TConfig = {
@@ -270,7 +276,7 @@ export function createApp(config: string | TConfig | TConfig[]): Promise<TApp>
   {
     "server": [
       {"port": 3001},
-      {"port": 3002},
+      {"port": 3002, "secure": {"cert": "ssl/cert.pem", "key": "ssl/key.pem" }},
     ],
     "firewall": {
       "registry": "https://registry.yarnpkg.com",
