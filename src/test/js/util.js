@@ -1,5 +1,5 @@
 import {testFactory, assert} from '../test-utils.js'
-import {flatten, expand, processExtends} from '../../main/js/util.js'
+import {flatten, expand} from '../../main/js/util.js'
 
 const test = testFactory('config', import.meta)
 
@@ -26,15 +26,4 @@ test('expand', () => {
     foo: 'bar',
     baz: [{a: 'a'}, {b: {c: 'd'}}, 1]
   })
-})
-
-test.only('processExtends', () => {
-  const res = processExtends({
-    a: {
-      extends: 'foo',
-      b: {}
-    }
-  }, v => ({args: v}))
-
-  console.log('res=', res)
 })
