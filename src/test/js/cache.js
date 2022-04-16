@@ -22,6 +22,6 @@ test('remove entry', () => {
 test('invalidate by ttl', async () => {
   cache.add('baz', 'quz', 100)
   assert.equal(cache.get('baz'), 'quz')
-  await sleep(300)
+  await sleep(400)
   assert.equal(cache.get('baz'), null)
 })

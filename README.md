@@ -201,6 +201,7 @@ type TServerConfig = {
   port?: string | number
   base?: string
   healthcheck?: string | null
+  metrics?: string | null
   secure?: {
     key: string,
     cert: string
@@ -258,6 +259,7 @@ export function createApp(config: string | TConfig | TConfig[]): Promise<TApp>
     },
     "base": "/",                // Optional. Defaults to '/'
     "healthcheck": "/health",   // Optional. Defaults to '/healthcheck'. Pass null to disable
+    "metrics": "/metrics",      // Optional. Uptime, CPU and memory usage. Defaults to '/metrics'. null to disable
     "keepAliveTimeout": 15000,  // Optional. Defaults to 61000
     "headersTimeout": 20000,    // Optional. Defaults to 62000
     "requestTimeout": 10000     // Optional. Defaults to 30000
