@@ -222,6 +222,7 @@ export function createApp(config: string | TConfig | TConfig[]): Promise<TApp>
       "ttl": 5,                 // Time to live in minutes. Specifies how long resolved pkg directives will live.
       "evictionTimeout": 1      // Cache invalidation period in minutes. Defaults to cache.ttl.
     },
+    "extends": "@qiwi/internal-npm-registry-firewall-rules",  // Optional. Populates the entry with the specified module contents (cjs only)
     "rules": [
       {
         "policy": "allow",
@@ -232,8 +233,12 @@ export function createApp(config: string | TConfig | TConfig[]): Promise<TApp>
         "name": ["@babel/*", "@jest/*", "lodash"] // string[] or "comma,separated,list". * works as .+ in regexp
       },
       {
-        "policy": "warn",       // `warn` directive works like `allow`, but also logs if someone has requested a tarball matchin the rule
+        "policy": "warn",       // `warn` directive works like `allow`, but also logs if someone has requested a tarball matching the rule
         "name": "reqresnext"
+      },
+      {
+        "policy": "deny",
+        "extends": "@qiwi/nrf-rule",  // `extends` may be applied at any level, and should return a valid value for the current config section
       },
       {
         "policy": "deny",
