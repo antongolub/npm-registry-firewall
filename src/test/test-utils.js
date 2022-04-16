@@ -3,14 +3,27 @@ import {relative} from 'node:path'
 import {promisify} from 'node:util'
 import assert from 'node:assert'
 
+// https://stackoverflow.com/a/61602592/13894191
+const flatten = (obj, roots = [], sep = '.') => Object
+  .keys(obj)
+  .reduce((memo, prop) => Object.assign(
+    {},
+    memo,
+    obj[prop] instanceof Object
+      ? flatten(obj[prop], roots.concat([prop]), sep)
+      : {[roots.concat([prop]).join(sep)]: obj[prop]}
+  ), {})
+
 export const objectContaining = (a, b) => {
-  // TODO add recursion
-  assert.deepEqual(Object.entries(a).reduce((m, [k, v]) => {
-    if (b.hasOwnProperty(k)) {
+  const flatA = flatten(a)
+  const flatB = flatten(b)
+
+  assert.deepEqual(Object.entries(flatA).reduce((m, [k, v]) => {
+    if (flatB.hasOwnProperty(k)) {
       m[k] = v
     }
     return m
-  }, {}), b)
+  }, {}), flatB)
 }
 
 export {assert}

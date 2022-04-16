@@ -1,4 +1,4 @@
-export const createCache = ({ttl, evictionTimeout = ttl}) => {
+export const createCache = ({ttl, _evictionTimeout = ttl}) => {
   const store = new Map()
   const timer = setInterval(() => {
     const now = Date.now()
