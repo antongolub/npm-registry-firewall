@@ -17,26 +17,29 @@ import { getConfig } from './config.js'
 export const createApp = (cfg) => {
   const config = getConfig(cfg)
   const servers = config.profiles.reduce((m, p) => {
-    const firewalls = p.firewall.map(({base, entrypoint, registry, token, rules, cache}) => createRouter([
-      [
-        '*',
+    const firewalls = p.firewall.map(({base, entrypoint, registry, token, rules, cache}) => {
+      const f = firewall({registry, rules, entrypoint, token, cache})
+      return createRouter([
         [
-          /^\/(((@[a-z0-9\-]+)(%2f|\/))?[a-z0-9\-]+)\/-\/[a-z0-9\-]+-(\d+\.\d+\.\d+(-[+\-.a-z0-9]+)?)\.tgz$/,
-          ['name', null, 'org', null, 'version']
+          '*',
+          [
+            /^\/(((@[a-z0-9\-]+)(%2f|\/))?[a-z0-9\-]+)\/-\/[a-z0-9\-]+-(\d+\.\d+\.\d+(-[+\-.a-z0-9]+)?)\.tgz$/,
+            ['name', null, 'org', null, 'version']
+          ],
+          f
         ],
-        firewall({registry, rules, entrypoint, token, cache})
-      ],
-      [
-        '*',
         [
-          /^\/(((@[a-z0-9\-]+)(%2f|\/))?[a-z0-9\-]+)\/?$/,
-          ['name', null, 'org']
+          '*',
+          [
+            /^\/(((@[a-z0-9\-]+)(%2f|\/))?[a-z0-9\-]+)\/?$/,
+            ['name', null, 'org']
+          ],
+          f
         ],
-        firewall({registry, rules, entrypoint, token})
-      ],
-      proxy(registry),
-      errorBoundary,
-    ], base))
+        proxy(registry),
+        errorBoundary,
+      ], base)
+    })
 
     const servers = p.server.map(s => {
       const router = createRouter([
