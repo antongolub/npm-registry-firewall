@@ -7,14 +7,14 @@
         "cert": "ssl/cert.pem",
         "key": "ssl/key.pem"
       },
-      "healthcheck": null
+      "_healthcheck": null
     }
   ],
   "firewall": {
     "base": "/registry",
-    "_registry": "https://registry.npmmirror.com",
     "registry": "https://registry.npmjs.org",
-    "entrypoint": "https://r.qiwi.com/registry/npm",
+    "_registry": "https://registry.npmmirror.com",
+    "_entrypoint": "https://r.qiwi.com/registry/npm",
     "cache": {
       "ttl": 1
     },
