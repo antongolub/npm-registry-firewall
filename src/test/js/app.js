@@ -55,7 +55,7 @@ test('is runnable', async () => {
   ],
   [
     'reads packument',
-    { url: 'http://localhost:3001/registry/colors', method: 'GET'},
+    { url: 'http://localhost:3001/registry/d', method: 'GET'},
     { statusCode: 200 }
   ],
 ].forEach(([name, {url, method}, expected]) => {

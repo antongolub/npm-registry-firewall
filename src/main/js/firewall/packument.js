@@ -1,31 +1,40 @@
 import {getDirectives, getPolicy} from './engine.js'
 import {request} from '../http/index.js'
+import {makeDeferred} from '../util.js'
 
 export const getPackument = async ({boundContext, rules}) => {
   const {cache, registry, authorization, entrypoint, name} = boundContext
-  const key = `packument-${name}`
-  const cached = cache?.get(key)
+  const cached = cache?.get(name)
 
   if (cached) {
     return cached
   }
+  const {promise, resolve, reject} = makeDeferred()
+  cache?.add(name, promise)
 
-  const {body, headers} = await request({
-    url: `${registry}/${name}`,
-    authorization
-  })
-  const packument = JSON.parse(body)
-  const directives = await getDirectives({ packument, rules, boundContext})
-  const _packument = patchPackument({ packument, directives, entrypoint, registry })
-  const result = {
-    directives,
-    headers,
-    packument: _packument
+  try {
+    const {body, headers} = await request({
+      url: `${registry}/${name}`,
+      authorization,
+      'accept-encoding': 'gzip'
+    })
+
+    const packument = JSON.parse(body)
+    const directives = await getDirectives({ packument, rules, boundContext})
+    const _packument = patchPackument({ packument, directives, entrypoint, registry })
+
+    resolve({
+      directives,
+      headers,
+      packument: _packument
+    })
+
+  } catch (e) {
+    reject(e)
+    cache.del(name)
   }
 
-  cache?.add(key, result)
-
-  return result
+  return promise
 }
 
 export const patchVersions = ({packument, directives, entrypoint, registry}) => Object.values(packument.versions).reduce((m, v) => {

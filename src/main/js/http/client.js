@@ -2,10 +2,14 @@ import http from 'node:http'
 import https from 'node:https'
 import {parse} from 'node:url'
 import { Buffer } from 'node:buffer'
-// import zlib from 'zlib'
+import zlib from 'node:zlib'
+import {promisify} from 'node:util'
 
 import {makeDeferred, normalizePath} from '../util.js'
 import {httpError, REQUEST_TIMEOUT} from './error.js'
+
+const gunzip = promisify(zlib.gunzip)
+const gzip = promisify(zlib.gzip)
 
 const agentOpts = {
   keepAliveMsecs: 500,
@@ -17,7 +21,7 @@ const agentHttps = new https.Agent(agentOpts)
 const agentHttp = new http.Agent(agentOpts)
 
 export const request = async (opts) => {
-  const {url, headers: _headers, method = 'GET', postData, pipe, followRedirects, timeout = 30_000, authorization = null} = opts
+  const {url, headers: _headers, method = 'GET', postData, pipe, gzip: _gzip, followRedirects, timeout = 30_000, authorization = null} = opts
   const {
     protocol,
     isSecure = protocol === 'https:',
@@ -29,16 +33,16 @@ export const request = async (opts) => {
     lib = isSecure ? https : http
   } = parse(normalizePath(url))
   const {promise, resolve, reject} = makeDeferred()
+  const data = postData && (_gzip ? await gzip(Buffer.from(postData)) : Buffer.from(postData))
+  const encoding = _gzip ? 'gzip' : 'utf8'
   const headers = {
     ...pipe?.req?.headers,
     ..._headers,
     host,
     authorization,
     connection: 'keep-alive',
-    ...(postData ? {
-      // 'Content-Type': 'application/x-www-form-urlencoded',
-      'content-length': Buffer.byteLength(postData)
-    } : {})
+    'accept-encoding': encoding,
+    'content-encoding': encoding
   }
   const params = {
     protocol,
@@ -76,10 +80,16 @@ export const request = async (opts) => {
 
     res.on('error', () => reject(httpError(statusCode, {url, method})))
     res.on('data', chunk => data.push(chunk))
-    res.on('end', () => {
+    res.on('end', async () => {
+      const _buffer = Buffer.concat(data)
+      const buffer = res.headers['content-encoding'] === 'gzip'
+        ? await gunzip(_buffer)
+        : _buffer
+
       Object.assign(res, {
-        buffer: Buffer.concat(data),
-        get body() { return this.buffer.toString() }
+        _buffer,
+        buffer,
+        get body() { return this.buffer.toString('utf8') }
       })
       resolve(res)
     })
@@ -94,8 +104,8 @@ export const request = async (opts) => {
     pipe.req.pipe(req, { end: true })//.pipe(pipe.res)
 
   } else {
-    if (postData) {
-      req.write(postData)
+    if (data) {
+      req.write(data)
     }
     req.end()
   }
