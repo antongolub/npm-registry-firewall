@@ -1,11 +1,23 @@
 {
   "name": "npm-registry-firewall",
   "version": "1.12.1",
-  "description": "nodejs-based npm registry proxy with on-the-fly filtering",
+  "description": "npm registry proxy with on-the-fly filtering",
   "main": "src/main/js/index.js",
   "bin": "src/main/js/cli.js",
   "type": "module",
-  "exports": "./src/main/js/index.js",
+  "exports": {
+    ".": {
+      "import": "./src/main/js/index.js",
+      "types": "./src/main/js/index.d.ts"
+    },
+    "./audit": {
+      "import": "./src/main/js/firewall/plugins/audit.js"
+    },
+    "./std": {
+      "import": "./src/main/js/firewall/plugins/std.js"
+    }
+  },
+  "types": "./src/main/js/index.d.ts",
   "engines": {
     "node": ">= 14"
   },

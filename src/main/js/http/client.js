@@ -1,6 +1,8 @@
 import http from 'node:http'
 import https from 'node:https'
 import {parse} from 'node:url'
+import { Buffer } from 'node:buffer'
+// import zlib from 'zlib'
 
 import {makeDeferred, normalizePath} from '../util.js'
 import {httpError, REQUEST_TIMEOUT} from './error.js'
@@ -15,7 +17,7 @@ const agentHttps = new https.Agent(agentOpts)
 const agentHttp = new http.Agent(agentOpts)
 
 export const request = async (opts) => {
-  const {url, method = 'GET', postData, pipe, followRedirects, timeout = 30_000, authorization = null} = opts
+  const {url, headers: _headers, method = 'GET', postData, pipe, followRedirects, timeout = 30_000, authorization = null} = opts
   const {
     protocol,
     isSecure = protocol === 'https:',
@@ -27,6 +29,17 @@ export const request = async (opts) => {
     lib = isSecure ? https : http
   } = parse(normalizePath(url))
   const {promise, resolve, reject} = makeDeferred()
+  const headers = {
+    ...pipe?.req?.headers,
+    ..._headers,
+    host,
+    authorization,
+    connection: 'keep-alive',
+    ...(postData ? {
+      // 'Content-Type': 'application/x-www-form-urlencoded',
+      'content-length': Buffer.byteLength(postData)
+    } : {})
+  }
   const params = {
     protocol,
     method,
@@ -35,7 +48,7 @@ export const request = async (opts) => {
     path,
     timeout,
     agent,
-    headers: {...pipe?.req?.headers, host, authorization },
+    headers
   }
 
   const req = lib.request(params, res => {

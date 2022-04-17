@@ -14,6 +14,7 @@ export const firewall = ({registry, rules, entrypoint: _entrypoint, token, cache
 
   // Tarball request
   if (version) {
+    console.log('directives', directives)
     const policy = getPolicy(directives, version)
     if (policy === 'warn') {
       logger.warn(`${name}@${version}`, 'directive=', directives[version]._raw)

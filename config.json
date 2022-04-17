@@ -12,12 +12,18 @@
   ],
   "firewall": {
     "base": "/registry",
-    "registry": "https://registry.npmmirror.com",
+    "_registry": "https://registry.npmmirror.com",
+    "registry": "https://registry.npmjs.org",
     "entrypoint": "https://r.qiwi.com/registry/npm",
     "cache": {
       "ttl": 1
     },
     "rules": [
+      {
+        "plugin": [["npm-registry-firewall/audit", {
+          "*": "deny"
+        }]]
+      },
       {
         "policy": "warn",
         "name": "reqresnext"

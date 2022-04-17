@@ -83,7 +83,7 @@ Uncontrolled use of new versions may have legal and financial consequences. Ther
 
 ## Key Features
 * Restricts access to remote packages by predicate: `name`, `org`, `version` ([semver range](https://github.com/npm/node-semver#ranges)), `license`, `dateRange`, `username`, `age` or custom `filter` function.
-* Flexible configuration: use [presets](#plugins), define as many [`server/context-path/rules`](#multi-config) combinations as you need.
+* Flexible configuration: use [presets](#presets), [plugins](#plugins) and define as many [`server/context-path/rules`](#multi-config) combinations as you need.
 * [Expressjs](https://expressjs.com/en/guide/using-middleware.html)-inspired server implementation.
 * Has no deps. Literally zero.
 
@@ -142,10 +142,14 @@ await app.start()
   <summary>Included</summary>
 
 ```ts
+type LetAsync<T> = T | Promise<T>
+
 type TApp = {
   start: () => Promise<void>
   stop: () => Promise<void>
 }
+
+type TLogger = typeof console
 
 type TServerConfig = {
   host?: string
@@ -160,10 +164,13 @@ type TServerConfig = {
   requestTimeout?: number
   headersTimeout?: number
   keepAliveTimeout?: number
+  extend?: string
 }
 
+type TPolicy = 'allow' | 'deny' | 'warn'
+
 type TRule = {
-  policy: 'allow' | 'deny' | 'warn'
+  policy?: TPolicy
   name?: string | string[]
   org?: string | string[]
   dateRange?: [string, string]
@@ -171,8 +178,12 @@ type TRule = {
   version?: string,
   license?: string | string[]
   username?: string | string[],
-  filter?: (opts: Record<string, any>) => boolean | undefined | null
+  filter?: (entry: Record<string, any>) => LetAsync<boolean | undefined | null>
+  extend?: string
+  plugin?: TPluginConfig
 }
+
+type TPluginConfig = string | [string, any] | TPlugin | [TPlugin, any]
 
 type TCacheConfig = {
   ttl: number
@@ -186,11 +197,32 @@ type TFirewallConfig = {
   base?: string
   rules?: TRule | TRule[]
   cache?: TCacheConfig
+  extend?: string
 }
 
 type TConfig = {
   server: TServerConfig | TServerConfig[]
   firewall: TFirewallConfig
+  extend?: string
+}
+
+type TValidationContext = {
+  options: any,
+  rule: TRule,
+  entry: Record<string, any>
+  boundContext: {
+    logger: TLogger
+    registry: string
+    authorization?: string
+    entrypoint: string
+    name: string
+    org?: string
+    version?: string
+  }
+}
+
+type TPlugin = {
+  (context: TValidationContext): LetAsync<TPolicy>
 }
 
 export function createApp(config: string | TConfig | TConfig[]): Promise<TApp>
@@ -241,6 +273,9 @@ export function createApp(config: string | TConfig | TConfig[]): Promise<TApp>
       {
         "policy": "deny",
         "extends": "@qiwi/nrf-rule",  // `extends` may be applied at any level, and should return a valid value for the current config section
+      },
+      {
+        "plugin": ["npm-registry-firewall/audit", {"moderate": "warn", "critical": "deny"}]
       },
       {
         "policy": "deny",
@@ -357,16 +392,36 @@ Plugin is slightly different from preset:
 
 ```js
 const rule1 = {
-  policy: 'deny',
   plugins: ['@qiwi/nrf-plugin']
 }
 
 const rule2 = {
-  policy: 'deny',
   plugins: [
     ['@qiwi/nrf-plugin', {foo: 'bar'}],
     '@qiwi/nrf-another-one'
   ]
+}
+```
+
+Plugin interface is an (async) function that accepts `TValidationContext` and returns policy type value or `false` as a result:
+```js
+const plugin = ({
+  rule,
+  entry,
+  options,
+  boundContext
+}) => entry.name === options.name ? 'deny' : 'allow'
+```
+
+#### npm-registry-firewall/audit
+Some registries do not provide audit API, that's why the plugin is disabled by default.
+To activate, add a rule:
+```js
+{
+  plugin: [['npm-registry-firewall/audit', {
+    critical: 'deny',
+    moderate: 'warn'
+  }]]
 }
 ```
 

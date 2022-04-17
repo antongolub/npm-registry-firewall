@@ -1,4 +1,3 @@
-import { stdPlugin } from './plugins/std.js'
 import { mapValuesAsync } from '../util.js'
 
 export const getDirectives = ({packument, rules, boundContext}) =>
@@ -18,16 +17,20 @@ export const getDirective = async ({rules, entry, boundContext}) => rules.reduce
   if (await m) {
     return m
   }
-  const policy = await (rule.plugin || [[stdPlugin]]).reduce(async (_m, [plugin, options]) => {
+  const policy = await (rule.plugin || [['npm-registry-firewall/std']]).reduce(async (_m, [_plugin, options]) => {
     if (await _m) {
       return _m
     }
+    const plugin = typeof _plugin === 'function'
+      ? _plugin
+      : (await import(_plugin)).default
+
     return plugin({rule, entry, options, boundContext})
   }, false)
 
   return !!policy && {
+    ...rule,
     policy,
-    ...rule
   }
 }, false)
 

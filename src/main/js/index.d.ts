@@ -69,6 +69,11 @@ type TValidationContext = {
   boundContext: {
     logger: TLogger
     registry: string
+    authorization?: string
+    entrypoint: string
+    name: string
+    org?: string
+    version?: string
   }
 }
 
