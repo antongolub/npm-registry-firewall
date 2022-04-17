@@ -1,3 +1,16 @@
+# [1.13.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.12.1...v1.13.0) (2022-04-17)
+
+
+### Features
+
+* add audit plugin ([f186feb](https://github.com/antongolub/npm-registry-firewall/commit/f186feb0542e413fc3eb71e412b7bd0e84e09caf)), closes [#20](https://github.com/antongolub/npm-registry-firewall/issues/20)
+* provide plugin API ([9cc3f9b](https://github.com/antongolub/npm-registry-firewall/commit/9cc3f9b9cf7e2cb51cd8209d9463bd8a9f06c9d1))
+
+
+### Performance Improvements
+
+* cache improvements, share firewall instances between routes ([6361d6c](https://github.com/antongolub/npm-registry-firewall/commit/6361d6c6b59219fd7a84c117ec490b23473493d8))
+
 ## [1.12.1](https://github.com/antongolub/npm-registry-firewall/compare/v1.12.0...v1.12.1) (2022-04-16)
 
 # [1.12.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.11.0...v1.12.0) (2022-04-16)
