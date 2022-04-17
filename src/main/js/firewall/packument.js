@@ -1,4 +1,32 @@
-import { getPolicy } from './engine.js'
+import {getDirectives, getPolicy} from './engine.js'
+import {request} from '../http/index.js'
+
+export const getPackument = async ({boundContext, rules}) => {
+  const {cache, registry, authorization, entrypoint, name} = boundContext
+  const key = `packument-${name}`
+  const cached = cache?.get(key)
+
+  if (cached) {
+    return cached
+  }
+
+  const {body, headers} = await request({
+    url: `${registry}/${name}`,
+    authorization
+  })
+  const packument = JSON.parse(body)
+  const directives = await getDirectives({ packument, rules, boundContext})
+  const _packument = patchPackument({ packument, directives, entrypoint, registry })
+  const result = {
+    directives,
+    headers,
+    packument: _packument
+  }
+
+  cache?.add(key, result)
+
+  return result
+}
 
 export const patchVersions = ({packument, directives, entrypoint, registry}) => Object.values(packument.versions).reduce((m, v) => {
   if (getPolicy(directives, v.version) === 'deny') {
