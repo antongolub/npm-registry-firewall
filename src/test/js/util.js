@@ -1,7 +1,7 @@
 import {testFactory, assert} from '../test-utils.js'
 import {flatten, expand} from '../../main/js/util.js'
 
-const test = testFactory('config', import.meta)
+const test = testFactory('util', import.meta)
 
 test('flatten', () => {
   const obj = {
