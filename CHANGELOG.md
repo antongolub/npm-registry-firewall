@@ -1,3 +1,10 @@
+## [1.14.1](https://github.com/antongolub/npm-registry-firewall/compare/v1.14.0...v1.14.1) (2022-04-17)
+
+
+### Bug Fixes
+
+* **audit:** fix severity range match ([39a6369](https://github.com/antongolub/npm-registry-firewall/commit/39a636923ee8b852716e95c72bfd452588b65a4f))
+
 # [1.14.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.13.1...v1.14.0) (2022-04-17)
 
 
