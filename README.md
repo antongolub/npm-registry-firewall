@@ -139,6 +139,12 @@ const app = createApp({
         policy: 'allow',
         filter: ({name, org}) => org === '@types' || name === 'react'  // may be async
       },
+      {
+        plugin: [['npm-registry-firewall/audit', {
+          critical: 'deny',
+          moderate: 'warn'
+        }]]
+      },
     ]
   }
 })
