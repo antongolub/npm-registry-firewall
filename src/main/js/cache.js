@@ -16,6 +16,7 @@ export const createCache = ({ttl, evictionTimeout = ttl}) => {
         value,
         validTill: Date.now() + (_ttl || ttl)
       })
+      return value
     },
     get(key) {
       return store.get(key)?.value || null
