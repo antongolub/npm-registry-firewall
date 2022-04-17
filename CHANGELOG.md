@@ -1,3 +1,15 @@
+# [1.15.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.14.2...v1.15.0) (2022-04-17)
+
+
+### Features
+
+* configurable `logger` ([7a2d4fb](https://github.com/antongolub/npm-registry-firewall/commit/7a2d4fbdef6af2ff8f186762318a042059554a96))
+
+
+### Performance Improvements
+
+* print error stacktrace ([dcab6f1](https://github.com/antongolub/npm-registry-firewall/commit/dcab6f15e72eab17d74ef1e7c3fe2d7f0365e6c9))
+
 ## [1.14.2](https://github.com/antongolub/npm-registry-firewall/compare/v1.14.1...v1.14.2) (2022-04-17)
 
 ## [1.14.1](https://github.com/antongolub/npm-registry-firewall/compare/v1.14.0...v1.14.1) (2022-04-17)
