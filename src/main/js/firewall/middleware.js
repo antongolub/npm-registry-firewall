@@ -6,22 +6,21 @@ import { patchPackument } from './packument.js'
 import { normalizePath} from '../util.js'
 
 export const firewall = ({registry, rules, entrypoint: _entrypoint, token, cache}) => async (req, res, next) => {
-  if (!registry) {
-    throw new Error('firewall: req.cfg.registry is required')
-  }
-  const {cfg, routeParams: {name, version, org}, base} = req
+  const {cfg, routeParams: {name, version, org}, base, log: logger} = req
+  const authorization = token && `Bearer ${token}`
+  const boundContext = { registry, authorization, org, version, logger, cache }
   const {body, headers} = await request({
     url: `${registry}/${name}`,
-    authorization: token && `Bearer ${token}`
+    authorization
   })
   const packument = JSON.parse(body)
-  const directives = cache?.get(name) || await getDirectives({ packument, rules, org})
+  const directives = cache?.get(name) || await getDirectives({ packument, rules, boundContext})
 
   // Tarball request
   if (version) {
     const policy = getPolicy(directives, version)
     if (policy === 'warn') {
-      req.log.warn(`${name}@${version}`, 'directive=', directives[version]._raw)
+      logger.warn(`${name}@${version}`, 'directive=', directives[version]._raw)
     }
     return policy === 'deny' ? next(httpError(ACCESS_DENIED)) : next()
   }

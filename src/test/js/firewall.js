@@ -11,7 +11,9 @@ const test = testFactory('firewall', import.meta)
         policy: 'deny',
         name: [/.*/]
       }],
-      name: 'react'
+      entry: {
+        name: 'react'
+      }
     },
     'deny'
   ],
@@ -22,7 +24,9 @@ const test = testFactory('firewall', import.meta)
         policy: 'deny',
         name: [/pijma/]
       }],
-      name: 'react'
+      entry: {
+        name: 'react'
+      }
     },
     false
   ],
@@ -33,7 +37,9 @@ const test = testFactory('firewall', import.meta)
         policy: 'allow',
         org: [/@qiwi/]
       }],
-      org: '@qiwi'
+      entry: {
+        org: '@qiwi'
+      }
     },
     'allow'
   ],
@@ -44,6 +50,7 @@ const test = testFactory('firewall', import.meta)
         policy: 'allow',
         org: [/@qiwi/]
       }],
+      entry: {}
     },
     false
   ],
@@ -54,7 +61,9 @@ const test = testFactory('firewall', import.meta)
         policy: 'allow',
         username: ['qiwibot']
       }],
-      _npmUser: {name: 'qiwibot'}
+      entry: {
+        _npmUser: {name: 'qiwibot'}
+      }
     },
     'allow'
   ],
@@ -65,7 +74,9 @@ const test = testFactory('firewall', import.meta)
         policy: 'allow',
         version: '>= 1.0'
       }],
-      version: '1.2.3'
+      entry: {
+        version: '1.2.3'
+      }
     },
     'allow'
   ],
@@ -76,7 +87,9 @@ const test = testFactory('firewall', import.meta)
         policy: 'allow',
         version: '< 1.0'
       }],
-      version: '1.2.3'
+      entry: {
+        version: '1.2.3'
+      }
     },
     false
   ],
@@ -87,7 +100,9 @@ const test = testFactory('firewall', import.meta)
         policy: 'allow',
         dateRange: [new Date(1999, 0, 0), new Date(2001, 0, 0)]
       }],
-      time: new Date(2000, 0, 0)
+      entry: {
+        time: new Date(2000, 0, 0)
+      }
     },
     'allow'
   ],
@@ -98,8 +113,10 @@ const test = testFactory('firewall', import.meta)
         policy: 'allow',
         age: [5]
       }],
-      now: new Date(2000, 0, 10),
-      time: new Date(2000, 0, 0)
+      entry: {
+        now: new Date(2000, 0, 10),
+        time: new Date(2000, 0, 0)
+      }
     },
     'allow'
   ],
@@ -110,8 +127,10 @@ const test = testFactory('firewall', import.meta)
         policy: 'allow',
         age: [15]
       }],
-      now: new Date(2000, 0, 10),
-      time: new Date(2000, 0, 0)
+      entry: {
+        now: new Date(2000, 0, 10),
+        time: new Date(2000, 0, 0)
+      }
     },
     false
   ],
@@ -122,8 +141,10 @@ const test = testFactory('firewall', import.meta)
         policy: 'allow',
         age: [0, 5]
       }],
-      now: new Date(2000, 0, 10),
-      time: new Date(2000, 0, 0)
+      entry: {
+        now: new Date(2000, 0, 10),
+        time: new Date(2000, 0, 0)
+      }
     },
     false
   ],
@@ -137,7 +158,9 @@ const test = testFactory('firewall', import.meta)
         policy: 'allow',
         filter: ({foo}) => foo === 'bar'
       }],
-      foo: 'bar'
+      entry: {
+        foo: 'bar'
+      }
     },
     'allow'
   ],
@@ -148,7 +171,9 @@ const test = testFactory('firewall', import.meta)
         policy: 'allow',
         filter: async ({foo}) => foo === 'qux'
       }],
-      foo: 'bar'
+      entry: {
+        foo: 'bar'
+      }
     },
     false
   ],
