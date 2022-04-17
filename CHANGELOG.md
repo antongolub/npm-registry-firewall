@@ -1,3 +1,10 @@
+# [1.14.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.13.1...v1.14.0) (2022-04-17)
+
+
+### Features
+
+* turn on `gzip` ([573d867](https://github.com/antongolub/npm-registry-firewall/commit/573d86760d5a7ff68ce31756dab9f8b82b7931d4)), closes [#25](https://github.com/antongolub/npm-registry-firewall/issues/25)
+
 ## [1.13.1](https://github.com/antongolub/npm-registry-firewall/compare/v1.13.0...v1.13.1) (2022-04-17)
 
 # [1.13.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.12.1...v1.13.0) (2022-04-17)
