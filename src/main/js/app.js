@@ -18,7 +18,7 @@ export const createApp = (cfg) => {
   const config = getConfig(cfg)
   const servers = config.profiles.reduce((m, p) => {
     const firewalls = p.firewall.map(({base, entrypoint, registry, token, rules, cache}) => {
-      const f = firewall({registry, rules, entrypoint, token, cache})
+      const f = firewall({registry, rules, entrypoint, token, ...cache})
       return createRouter([
         [
           '*',

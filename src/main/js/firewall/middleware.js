@@ -4,8 +4,9 @@ import { httpError, NOT_FOUND, ACCESS_DENIED } from '../http/index.js'
 import { getPolicy } from './engine.js'
 import { getPackument } from './packument.js'
 import { normalizePath } from '../util.js'
+import { createCache } from '../cache.js'
 
-export const firewall = ({registry, rules, entrypoint: _entrypoint, token, cache}) => async (req, res, next) => {
+export const firewall = ({registry, rules, entrypoint: _entrypoint, token, evictionTimeout, ttl, cache = ttl && createCache({ttl, evictionTimeout})}) => async (req, res, next) => {
   const {cfg, routeParams: {name, version, org}, base, log: logger} = req
   const authorization = token && `Bearer ${token}`
   const entrypoint = _entrypoint || normalizePath(`${cfg.server.entrypoint}${base}`)

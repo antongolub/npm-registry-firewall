@@ -3,7 +3,6 @@ import { createRequire } from 'node:module'
 import fs from 'node:fs'
 import {asRegExp, asArray, normalizePath, splitStr} from './util.js'
 import { semver } from './semver.js'
-import { createCache } from './cache.js'
 
 const require = createRequire(import.meta.url)
 const populateExtra = (raw) => typeof raw === 'string' ? require(raw) : {}
@@ -53,13 +52,6 @@ const populate = (config) => {
     const firewall = asArray(p.firewall).map(f => {
       assert.ok(f.registry, 'cfg: firewall.registry')
 
-      const cache = f.cache
-        ? createCache({
-          ttl: f.cache.ttl * 60_000,
-          evictionTimeout: (f.cache.evictionTimeout || f.cache.ttl) * 60_000
-        })
-        : null
-
       const extra = populateExtra(f?.extends)
       const rules = [...asArray(f.rules || []), ...asArray(extra.rules || [])].map((_raw) => {
         const {
@@ -94,12 +86,17 @@ const populate = (config) => {
 
       return {
         ...extra,
-        cache,
         rules,
         registry: f.registry,
         token: f.token,
         entrypoint: f.entrypoint || null,
-        base: f.base || '/'
+        base: f.base || '/',
+        cache: f.cache
+          ? {
+            ttl: f.cache.ttl * 60_000,
+            evictionTimeout: (f.cache.evictionTimeout || f.cache.ttl) * 60_000
+          }
+          : null
       }
     })
 
