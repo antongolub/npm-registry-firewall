@@ -6,6 +6,23 @@ npm registry proxy with on-the-fly filtering
 [![Test Coverage](https://api.codeclimate.com/v1/badges/ed66fb48706b02e64f8e/test_coverage)](https://codeclimate.com/github/antongolub/npm-registry-firewall/test_coverage)
 [![npm (tag)](https://img.shields.io/npm/v/npm-registry-firewall)](https://www.npmjs.com/package/npm-registry-firewall)
 
+## Key Features
+* Restricts access to remote packages by predicate: 
+  * `name`
+  * `org`
+  * [`version` range](https://github.com/npm/node-semver#ranges)
+  * `license` type
+  * `dateRange`
+  * `age`
+  * `username`
+  * custom `filter` function
+  * vulnerability level via builtin [npm-registry-firewall/audit plugin](#npm-registry-firewallaudit)
+* Flexible configuration: use [presets](#presets), [plugins](#plugins) and define as many [`server/context-path/rules`](#multi-config) combinations as you need.
+* Standalone. No clouds, no subscriptions.
+* [expressjs](https://expressjs.com/en/guide/using-middleware.html)-inspired server implementation.
+* Has no deps. Literally zero.
+
+
 ## Motivation
 To mitigate security and legal risks
 
@@ -80,12 +97,6 @@ License agreement is an attribute of the moment: it can suddenly change and affe
 Uncontrolled use of new versions may have legal and financial consequences. Therefore, automated license checks should be part of CI/CD pipeline or the registry's own feature.
 
 </details>
-
-## Key Features
-* Restricts access to remote packages by predicate: `name`, `org`, `version` ([semver range](https://github.com/npm/node-semver#ranges)), `license`, `dateRange`, `username`, `age` or custom `filter` function.
-* Flexible configuration: use [presets](#presets), [plugins](#plugins) and define as many [`server/context-path/rules`](#multi-config) combinations as you need.
-* [Expressjs](https://expressjs.com/en/guide/using-middleware.html)-inspired server implementation.
-* Has no deps. Literally zero.
 
 ## Requirements
 Node.js >= 14
@@ -338,7 +349,7 @@ export function createApp(config: string | TConfig | TConfig[]): Promise<TApp>
 
 ### Extras
 #### Presets
-You may introduce your own reusable presets via `extends`. This statement can be applied at any [config](#config) level and should return a valid value for the current section. The specified path will be loaded synchronously through `require`, so it must be a JSON or CJS module.
+Introduce your own reusable presets via `extends`. This statement can be applied at any [config](#config) level and should return a valid value for the current section. The specified path will be loaded synchronously through `require`, so it must be a JSON or CJS module.
 ```js
 const config = {
   // should return `firewall` and `servers`
@@ -392,11 +403,11 @@ Plugin is slightly different from preset:
 
 ```js
 const rule1 = {
-  plugins: ['@qiwi/nrf-plugin']
+  plugin: ['@qiwi/nrf-plugin']
 }
 
 const rule2 = {
-  plugins: [
+  plugin: [
     ['@qiwi/nrf-plugin', {foo: 'bar'}],
     '@qiwi/nrf-another-one'
   ]
@@ -413,7 +424,7 @@ const plugin = ({
 }) => entry.name === options.name ? 'deny' : 'allow'
 ```
 
-#### npm-registry-firewall/audit
+### `npm-registry-firewall/audit`
 Some registries do not provide audit API, that's why the plugin is disabled by default.
 To activate, add a rule:
 ```js
@@ -425,23 +436,61 @@ To activate, add a rule:
 }
 ```
 
+### Monitoring
+#### /healthcheck
+```json
+{"status":"OK"}
+```
+#### /metrics
+```json
+{
+  "uptime": "00:00:47",
+  "memory": {
+    "rss": 34320384,
+    "heapTotal": 6979584,
+    "heapUsed": 5632224,
+    "external": 855222,
+    "arrayBuffers": 24758
+  },
+  "cpu": {
+    "user": 206715,
+    "system": 51532
+  }
+}
+```
+
+#### stdout
+```shell
+{"level":"INFO","timestamp":"2022-04-11T20:56:47.031Z","message":"npm-registry-firewall is ready for connections: https://localhost:3000"}
+{"level":"INFO","timestamp":"2022-04-11T20:56:49.568Z","traceId":"44f21c050d8c6","clientIp":"127.0.0.1","message":"GET /d"}
+{"level":"INFO","timestamp":"2022-04-11T20:56:50.015Z","traceId":"44f21c050d8c6","clientIp":"127.0.0.1","message":"HTTP 200 446ms"}
+```
+
+### Manual testing
 **.npmrc**
 ```yaml
 registry=https://localhost:3000
 strict-ssl=false
 ```
+
+**run**
+```shell
+# node src/main/js/cli.js config.json
+yarn start 
+```
+
 **npm view**
 ```shell
 npm-registry-firewall % npm view d versions                          
 [ '0.1.0', '0.1.1' ]
 ```
-**output**
+
+**curl**
 ```shell
-$ node src/main/js/cli.js config.json
-{"level":"INFO","timestamp":"2022-04-11T20:56:47.031Z","message":"npm-registry-firewall is ready for connections: https://localhost:3000"}
-{"level":"INFO","timestamp":"2022-04-11T20:56:49.568Z","traceId":"44f21c050d8c6","clientIp":"127.0.0.1","message":"GET /d"}
-{"level":"INFO","timestamp":"2022-04-11T20:56:50.015Z","traceId":"44f21c050d8c6","clientIp":"127.0.0.1","message":"HTTP 200 446ms"}
+curl -k  https://localhost:3000/registry/minimist/-/minimist-1.2.6.tgz > minimist.tgz
+curl -k  https://localhost:3000/registry/react > react.json
 ```
+
 
 ## Contributing
 Feel free to open any issues: bug reports, feature requests or questions.
