@@ -6,6 +6,23 @@ npm registry proxy with on-the-fly filtering
 [![Test Coverage](https://api.codeclimate.com/v1/badges/ed66fb48706b02e64f8e/test_coverage)](https://codeclimate.com/github/antongolub/npm-registry-firewall/test_coverage)
 [![npm (tag)](https://img.shields.io/npm/v/npm-registry-firewall)](https://www.npmjs.com/package/npm-registry-firewall)
 
+## Key Features
+* Restricts access to remote packages by predicate: 
+  * `name`
+  * `org`
+  * [`version` range](https://github.com/npm/node-semver#ranges)
+  * `license` type
+  * `dateRange`
+  * `age`
+  * `username`
+  * custom `filter` function
+  * vulnerability level via builtin [npm-registry-firewall/audit plugin](#npm-registry-firewallaudit)
+* Flexible configuration: use [presets](#presets), [plugins](#plugins) and define as many [`server/context-path/rules`](#multi-config) combinations as you need.
+* Standalone. No clouds, no subscriptions.
+* [expressjs](https://expressjs.com/en/guide/using-middleware.html)-inspired server implementation.
+* Has no deps. Literally zero.
+
+
 ## Motivation
 To mitigate security and legal risks
 
@@ -81,12 +98,6 @@ Uncontrolled use of new versions may have legal and financial consequences. Ther
 
 </details>
 
-## Key Features
-* Restricts access to remote packages by predicate: `name`, `org`, `version` ([semver range](https://github.com/npm/node-semver#ranges)), `license`, `dateRange`, `username`, `age` or custom `filter` function.
-* Flexible configuration: use [presets](#plugins), define as many [`server/context-path/rules`](#multi-config) combinations as you need.
-* [Expressjs](https://expressjs.com/en/guide/using-middleware.html)-inspired server implementation.
-* Has no deps. Literally zero.
-
 ## Requirements
 Node.js >= 14
 
@@ -136,65 +147,20 @@ const app = createApp({
 await app.start()
 ```
 
-
-### Plugins
-You may introduce your own reusable presets via `extends`. This statement can be applied at any [config](#config) level and should return a valid value for the current section. The specified path will be loaded synchronously through `require`, so it must be a CJS module.
-```js
-const config = {
-  // should return `firewall` and `servers`
-  extends: '@qiwi/nrf-std-config',
-  server: {
-    port: 5000,
-    extends: '@qiwi/nrf-server-config'
-  },
-  firewall: {
-    // `rules`, `registry`, etc,
-    extends: '@qiwi/nrf-firewall-config',
-    // NOTE If you redefine `rules` the result will be contatenation of `[...rules, ...extends.rules]`
-    rules: [{
-      policy: 'deny',
-      // `name`, `org`, `filter`, etc
-      extends: '@qiwi/nrf-deprecated-pkg-list'
-    }, {
-      policy: 'allow',
-      extends: '@qiwi/nrf-whitelisted-orgs'
-    }, {
-      extends: '@qiwi/nrf-all-in-one-filter'
-    }]
-  }
-}
-```
-
-Rule-plugin example:
-```js
-// '@qiwi/nrf-all-in-one-filter'
-module.exports = {
-  filter({org, name, time, ...restPkgData}) {
-    if (name === 'react') {
-      return true
-    }
-
-    if (org === '@babel') {
-      return false
-    }
-
-    if (restPkgData.license === 'dbad') {
-      return false
-    }
-  }
-}
-```
-
 ### TS libdefs
 
 <details>
   <summary>Included</summary>
 
 ```ts
+type LetAsync<T> = T | Promise<T>
+
 type TApp = {
   start: () => Promise<void>
   stop: () => Promise<void>
 }
+
+type TLogger = typeof console
 
 type TServerConfig = {
   host?: string
@@ -209,10 +175,13 @@ type TServerConfig = {
   requestTimeout?: number
   headersTimeout?: number
   keepAliveTimeout?: number
+  extend?: string
 }
 
+type TPolicy = 'allow' | 'deny' | 'warn'
+
 type TRule = {
-  policy: 'allow' | 'deny' | 'warn'
+  policy?: TPolicy
   name?: string | string[]
   org?: string | string[]
   dateRange?: [string, string]
@@ -220,8 +189,12 @@ type TRule = {
   version?: string,
   license?: string | string[]
   username?: string | string[],
-  filter?: (opts: Record<string, any>) => boolean | undefined | null
+  filter?: (entry: Record<string, any>) => LetAsync<boolean | undefined | null>
+  extend?: string
+  plugin?: TPluginConfig
 }
+
+type TPluginConfig = string | [string, any] | TPlugin | [TPlugin, any]
 
 type TCacheConfig = {
   ttl: number
@@ -235,11 +208,32 @@ type TFirewallConfig = {
   base?: string
   rules?: TRule | TRule[]
   cache?: TCacheConfig
+  extend?: string
 }
 
 type TConfig = {
   server: TServerConfig | TServerConfig[]
   firewall: TFirewallConfig
+  extend?: string
+}
+
+type TValidationContext = {
+  options: any,
+  rule: TRule,
+  entry: Record<string, any>
+  boundContext: {
+    logger: TLogger
+    registry: string
+    authorization?: string
+    entrypoint: string
+    name: string
+    org?: string
+    version?: string
+  }
+}
+
+type TPlugin = {
+  (context: TValidationContext): LetAsync<TPolicy>
 }
 
 export function createApp(config: string | TConfig | TConfig[]): Promise<TApp>
@@ -273,7 +267,7 @@ export function createApp(config: string | TConfig | TConfig[]): Promise<TApp>
       "ttl": 5,                 // Time to live in minutes. Specifies how long resolved pkg directives will live.
       "evictionTimeout": 1      // Cache invalidation period in minutes. Defaults to cache.ttl.
     },
-    "extends": "@qiwi/internal-npm-registry-firewall-rules",  // Optional. Populates the entry with the specified module contents (cjs only)
+    "extends": "@qiwi/internal-npm-registry-firewall-rules",  // Optional. Populates the entry with the specified source contents (json/CJS module only)
     "rules": [
       {
         "policy": "allow",
@@ -290,6 +284,9 @@ export function createApp(config: string | TConfig | TConfig[]): Promise<TApp>
       {
         "policy": "deny",
         "extends": "@qiwi/nrf-rule",  // `extends` may be applied at any level, and should return a valid value for the current config section
+      },
+      {
+        "plugin": ["npm-registry-firewall/audit", {"moderate": "warn", "critical": "deny"}]
       },
       {
         "policy": "deny",
@@ -348,25 +345,152 @@ export function createApp(config: string | TConfig | TConfig[]): Promise<TApp>
     ]
   }
 ]
-
 ```
+
+### Extras
+#### Presets
+Introduce your own reusable presets via `extends`. This statement can be applied at any [config](#config) level and should return a valid value for the current section. The specified path will be loaded synchronously through `require`, so it must be a JSON or CJS module.
+```js
+const config = {
+  // should return `firewall` and `servers`
+  extends: '@qiwi/nrf-std-config',
+  server: {
+    port: 5000,
+    extends: '@qiwi/nrf-server-config'
+  },
+  firewall: {
+    // `rules`, `registry`, etc,
+    extends: '@qiwi/nrf-firewall-config',
+    // NOTE If you redefine `rules` the result will be contatenation of `[...rules, ...extends.rules]`
+    rules: [{
+      policy: 'deny',
+      // `name`, `org`, `filter`, etc
+      extends: '@qiwi/nrf-deprecated-pkg-list'
+    }, {
+      policy: 'allow',
+      extends: '@qiwi/nrf-whitelisted-orgs'
+    }, {
+      extends: '@qiwi/nrf-all-in-one-filter'
+    }]
+  }
+}
+```
+
+For example, `extends` as a filter:
+```js
+// '@qiwi/nrf-all-in-one-filter'
+module.exports = {
+  filter({org, name, time, ...restPkgData}) {
+    if (name === 'react') {
+      return true
+    }
+
+    if (org === '@babel') {
+      return false
+    }
+
+    if (restPkgData.license === 'dbad') {
+      return false
+    }
+  }
+}
+```
+#### Plugins
+Plugin is slightly different from preset:
+* Async. It's loaded dynamically as a part of rule processing pipeline, so it may be an ESM.
+* Configurable. Opts may be passed as the 2nd tuple arg.
+* Composable. There may be more than one per `rule`.
+
+```js
+const rule1 = {
+  plugin: ['@qiwi/nrf-plugin']
+}
+
+const rule2 = {
+  plugin: [
+    ['@qiwi/nrf-plugin', {foo: 'bar'}],
+    '@qiwi/nrf-another-one'
+  ]
+}
+```
+
+Plugin interface is an (async) function that accepts `TValidationContext` and returns policy type value or `false` as a result:
+```js
+const plugin = ({
+  rule,
+  entry,
+  options,
+  boundContext
+}) => entry.name === options.name ? 'deny' : 'allow'
+```
+
+### `npm-registry-firewall/audit`
+Some registries do not provide audit API, that's why the plugin is disabled by default.
+To activate, add a rule:
+```js
+{
+  plugin: [['npm-registry-firewall/audit', {
+    critical: 'deny',
+    moderate: 'warn'
+  }]]
+}
+```
+
+### Monitoring
+#### /healthcheck
+```json
+{"status":"OK"}
+```
+#### /metrics
+```json
+{
+  "uptime": "00:00:47",
+  "memory": {
+    "rss": 34320384,
+    "heapTotal": 6979584,
+    "heapUsed": 5632224,
+    "external": 855222,
+    "arrayBuffers": 24758
+  },
+  "cpu": {
+    "user": 206715,
+    "system": 51532
+  }
+}
+```
+
+#### stdout
+```shell
+{"level":"INFO","timestamp":"2022-04-11T20:56:47.031Z","message":"npm-registry-firewall is ready for connections: https://localhost:3000"}
+{"level":"INFO","timestamp":"2022-04-11T20:56:49.568Z","traceId":"44f21c050d8c6","clientIp":"127.0.0.1","message":"GET /d"}
+{"level":"INFO","timestamp":"2022-04-11T20:56:50.015Z","traceId":"44f21c050d8c6","clientIp":"127.0.0.1","message":"HTTP 200 446ms"}
+```
+
+### Manual testing
 **.npmrc**
 ```yaml
 registry=https://localhost:3000
 strict-ssl=false
 ```
+
+**run**
+```shell
+# node src/main/js/cli.js config.json
+yarn start 
+```
+
 **npm view**
 ```shell
 npm-registry-firewall % npm view d versions                          
 [ '0.1.0', '0.1.1' ]
 ```
-**output**
+
+**curl**
 ```shell
-$ node src/main/js/cli.js config.json
-{"level":"INFO","timestamp":"2022-04-11T20:56:47.031Z","message":"npm-registry-firewall is ready for connections: https://localhost:3000"}
-{"level":"INFO","timestamp":"2022-04-11T20:56:49.568Z","traceId":"44f21c050d8c6","clientIp":"127.0.0.1","message":"GET /d"}
-{"level":"INFO","timestamp":"2022-04-11T20:56:50.015Z","traceId":"44f21c050d8c6","clientIp":"127.0.0.1","message":"HTTP 200 446ms"}
+curl -k  https://localhost:3000/registry/minimist/-/minimist-1.2.6.tgz > minimist.tgz
+curl -k  https://localhost:3000/registry/react > react.json
 ```
+
 
 ## Contributing
 Feel free to open any issues: bug reports, feature requests or questions.
