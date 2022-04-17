@@ -1,5 +1,5 @@
 import { testFactory, assert } from '../test-utils.js'
-import { getDirective } from '../../main/js/mwares/firewall.js'
+import { getDirective } from '../../main/js/firewall/index.js'
 
 const test = testFactory('firewall', import.meta)
 
