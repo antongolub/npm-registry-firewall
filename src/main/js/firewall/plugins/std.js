@@ -1,8 +1,8 @@
 import {semver} from '../../semver.js'
 
-export const stdPlugin = async ({rule, entry}) => {
+export const stdPlugin = async ({rule, entry, boundContext}) => {
   const filter = rule.filter || defaultFilter
-  const matched = await filter({...entry, rule})
+  const matched = await filter({...entry, ...boundContext, rule})
 
   return !!matched && rule.policy
 }

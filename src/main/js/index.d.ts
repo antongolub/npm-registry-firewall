@@ -66,6 +66,10 @@ type TValidationContext = {
   options: any,
   rule: TRule,
   entry: Record<string, any>
+  boundContext: {
+    logger: TLogger
+    registry: string
+  }
 }
 
 type TPlugin = {

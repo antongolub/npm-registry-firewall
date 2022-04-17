@@ -1,4 +1,5 @@
 import './app.js'
+import './plugin-audit.js'
 import './cache.js'
 import './config.js'
 import './firewall.js'

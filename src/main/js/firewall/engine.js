@@ -1,18 +1,20 @@
 import { stdPlugin } from './plugins/std.js'
 import { mapValuesAsync } from '../util.js'
 
-export const getDirectives = ({packument, rules, org}) =>
+export const getDirectives = ({packument, rules, boundContext}) =>
   mapValuesAsync(packument.versions, async (entry) =>
     getDirective({
-      ...entry,
+      entry: {
+        ...entry,
+        time: Date.parse(packument.time[entry.version])
+      },
       rules,
-      org,
-      time: Date.parse(packument.time[entry.version])
+      boundContext
     })
   )
 
 // `directive` is a matched `rule`
-export const getDirective = async ({rules, ...entry }) => rules.reduce(async (m, rule) => {
+export const getDirective = async ({rules, entry, boundContext}) => rules.reduce(async (m, rule) => {
   if (await m) {
     return m
   }
@@ -20,7 +22,7 @@ export const getDirective = async ({rules, ...entry }) => rules.reduce(async (m,
     if (await _m) {
       return _m
     }
-    return plugin({rule, entry, options})
+    return plugin({rule, entry, options, boundContext})
   }, false)
 
   return !!policy && {
