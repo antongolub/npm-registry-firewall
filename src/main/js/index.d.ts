@@ -81,4 +81,4 @@ type TPlugin = {
   (context: TValidationContext): LetAsync<TPolicy>
 }
 
-export function createApp(config: string | TConfig | TConfig[]): Promise<TApp>
+export function createApp(config: string | TConfig | TConfig[], opts?: {logger: TLogger}): Promise<TApp>

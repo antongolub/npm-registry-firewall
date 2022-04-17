@@ -1,5 +1,6 @@
 import { createServer } from './http/server.js'
 import { createRouter } from './http/router.js'
+import { logger as defaultLogger } from './logger.js'
 import {
   healthcheck,
   errorBoundary,
@@ -11,11 +12,11 @@ import {
   firewall,
   metrics,
 } from './mwares/index.js'
-
 import { getConfig } from './config.js'
 
-export const createApp = (cfg) => {
+export const createApp = (cfg, opts = {}) => {
   const config = getConfig(cfg)
+  const logger = opts.logger || defaultLogger
   const servers = config.profiles.reduce((m, p) => {
     const firewalls = p.firewall.map(({base, entrypoint, registry, token, rules, cache}) => {
       const f = firewall({registry, rules, entrypoint, token, ...cache})
@@ -43,7 +44,7 @@ export const createApp = (cfg) => {
 
     const servers = p.server.map(s => {
       const router = createRouter([
-        ctx({...config, server: s}),
+        ctx({...config, server: s}, logger),
         timeout,
         trace,
         ['GET', s.healthcheck, healthcheck],
@@ -53,7 +54,7 @@ export const createApp = (cfg) => {
         errorBoundary,
       ], s.base)
 
-      return createServer({...s, router})
+      return createServer({...s, router, logger})
     })
 
     m.push(...servers)

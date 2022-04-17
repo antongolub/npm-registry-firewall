@@ -1,7 +1,6 @@
 import http from 'node:http'
 import https from 'node:https'
 
-import { logger } from '../logger.js'
 import { makeDeferred } from '../util.js'
 
 const createSocketPool = () => {
@@ -19,7 +18,7 @@ const createSocketPool = () => {
   }
 }
 
-export const createServer = ({host, port, secure, router, entrypoint, keepAliveTimeout, headersTimeout, requestTimeout}) => {
+export const createServer = ({host, port, secure, router, entrypoint, keepAliveTimeout, headersTimeout, requestTimeout, logger}) => {
   const lib = secure ? https : http
   const options = {...secure}
   const sockets = createSocketPool()
