@@ -8,11 +8,12 @@ const cache = createCache({
 })
 
 export const auditPlugin = async ({entry: {name, version}, options = {}, boundContext: {registry}}) => {
-  const severityOrder = [ 'low', 'moderate', 'high', 'critical']
+  options.any = options.any || options['*']
+  const severityOrder = ['critical', 'high', 'moderate', 'low', 'any' ]
   const advisories = await getAdvisories(name, registry)
   const vulns = advisories.filter(({vulnerable_versions}) => semver.satisfies(version, vulnerable_versions))
-  const max = severityOrder[Math.max(...vulns.map(({severity}) => severityOrder.indexOf(severity)))]
-  const directive = max && (options[max] || options['any'] || options['*'])
+  const worst = Math.min(...vulns.map(({severity}) => severityOrder.indexOf(severity)))
+  const directive = worst !== -1 && options[severityOrder.slice(worst).find(l => options[l])]
 
   return directive || false
 }
