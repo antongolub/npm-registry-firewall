@@ -26,13 +26,18 @@ export const normalizePath = (url) => url.length > 1
     .slice(0, -1)
   : url
 
-export const splitStr = v => v
-  ? Array.isArray(v)
-    ? v
-    : typeof v === 'string'
-      ? v.split(',').map(s => s.toLowerCase().trim()) // split(/\s*,\s*/) seems unsafe
-      : v
+export const asStrOrRegexpArray = (v) => v
+  ? asArray(v)
+    .map(_v => typeof _v === 'string'
+      ? splitStr(_v)
+      : _v instanceof RegExp ? _v : null
+    )
+    .filter(_ => _)
+    .flat()
   : null
+
+export const splitStr = v =>
+  v.split(',').map(s => s.toLowerCase().trim()) // split(/\s*,\s*/) seems unsafe
 
 export const mapValuesAsync = async (obj, cb) =>
   (await Promise.all(Object.entries(obj).map(async ([k, v]) => ({
