@@ -1,3 +1,10 @@
+# [1.17.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.16.0...v1.17.0) (2022-04-18)
+
+
+### Features
+
+* support custom log formatters ([d9b9f3c](https://github.com/antongolub/npm-registry-firewall/commit/d9b9f3c67aa73f3922273394b71d8478ea9ccc05))
+
 # [1.16.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.15.0...v1.16.0) (2022-04-18)
 
 
