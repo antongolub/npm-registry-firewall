@@ -18,6 +18,20 @@ const test = testFactory('firewall', import.meta)
     'deny'
   ],
   [
+    'getDirective by name (name + version)',
+    {
+      rules: [{
+        policy: 'deny',
+        name: ['react@^17.0.0']
+      }],
+      entry: {
+        name: 'react',
+        version: '17.0.1'
+      }
+    },
+    'deny'
+  ],
+  [
     'getDirective by name (neg)',
     {
       rules: [{

@@ -133,7 +133,7 @@ const app = createApp({
       },
       {
         policy: 'deny',
-        name: '@babel/*'
+        name: '@babel/*,react@^17'  // All @babel-scoped pkgs and react >= 17.0.0
       },
       {
         policy: 'allow',

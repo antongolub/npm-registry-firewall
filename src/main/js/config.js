@@ -1,7 +1,7 @@
 import {strict as assert} from 'node:assert'
 import { createRequire } from 'node:module'
 import fs from 'node:fs'
-import {asRegExp, asArray, normalizePath, splitStr} from './util.js'
+import { asArray, normalizePath, splitStr } from './util.js'
 import { semver } from './semver.js'
 
 const require = createRequire(import.meta.url)
@@ -71,8 +71,8 @@ const populate = (config) => {
 
         return {
           policy,
-          org: org && splitStr(org).map(asRegExp),
-          name: name && splitStr(name).map(asRegExp),
+          org: org && splitStr(org),
+          name: name && splitStr(name),
           version,
           license: splitStr(license),
           username: splitStr(username),

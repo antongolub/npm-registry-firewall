@@ -29,6 +29,18 @@ const matchUrl = (url, [pattern]) => {
   return !!pattern
 }
 
+const getRouteParams = (url, pattern, rmap) => rmap && pattern instanceof RegExp
+  ? pattern.exec(url)
+    .slice(1)
+    .reduce((m, v, k) => {
+      const _k = rmap[k]
+      if (_k) {
+        m[_k] = v?.replace('%2f', '/')
+      }
+      return m
+    }, {})
+  : {}
+
 export const createRouter = (routes, base = '/') => async (req, res, next = () => {}) => {
   if (req.url.startsWith(base)) {
     req.base = (req.base || '' ) + base
@@ -54,17 +66,7 @@ export const createRouter = (routes, base = '/') => async (req, res, next = () =
     const args = err ? [err, req, res, next] : [req, res, next]
     const [, [pattern, rmap], cb] = matched[i++]
 
-    req.routeParams = rmap && pattern instanceof RegExp
-      ? pattern.exec(url)
-        .slice(1)
-        .reduce((m, v, k) => {
-          const _k = rmap[k]
-          if (_k) {
-            m[_k] = v?.replace('%2f', '/')
-          }
-          return m
-        }, {})
-      : {}
+    req.routeParams = getRouteParams(url, pattern, rmap)
 
     try {
       await cb(...args)

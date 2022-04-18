@@ -29,8 +29,10 @@ export const normalizePath = (url) => url.length > 1
 export const splitStr = v => v
   ? Array.isArray(v)
     ? v
-    : v.split(',').map(s => s.toLowerCase().trim())
-  : null // split(/\s*,\s*/) seems unsafe
+    : typeof v === 'string'
+      ? v.split(',').map(s => s.toLowerCase().trim()) // split(/\s*,\s*/) seems unsafe
+      : v
+  : null
 
 export const mapValuesAsync = async (obj, cb) =>
   (await Promise.all(Object.entries(obj).map(async ([k, v]) => ({
