@@ -1,3 +1,11 @@
+# [1.16.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.15.0...v1.16.0) (2022-04-18)
+
+
+### Features
+
+* **config:** let version be part of name ([2e2bb91](https://github.com/antongolub/npm-registry-firewall/commit/2e2bb910020e8db3d9e3172a767b857ede160a14)), closes [#23](https://github.com/antongolub/npm-registry-firewall/issues/23)
+* **config:** support regexp for username, license, name, org ([39188b3](https://github.com/antongolub/npm-registry-firewall/commit/39188b334875bd91f3faf5b5d168c6f760da39f6))
+
 # [1.15.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.14.2...v1.15.0) (2022-04-17)
 
 
