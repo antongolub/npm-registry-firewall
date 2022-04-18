@@ -133,7 +133,7 @@ const app = createApp({
       },
       {
         policy: 'deny',
-        name: '@babel/*'
+        name: '@babel/*,react@^17'  // All @babel-scoped pkgs and react >= 17.0.0
       },
       {
         policy: 'allow',
@@ -187,13 +187,13 @@ type TPolicy = 'allow' | 'deny' | 'warn'
 
 type TRule = {
   policy?: TPolicy
-  name?: string | string[]
-  org?: string | string[]
+  name?: string | RegExp | Array<string | RegExp>
+  org?: string | RegExp | Array<string | RegExp>
   dateRange?: [string, string]
   age?: number | [number] | [number, number]
   version?: string,
-  license?: string | string[]
-  username?: string | string[],
+  license?: string | RegExp | Array<string | RegExp>
+  username?: string | RegExp | Array<string | RegExp>
   filter?: (entry: Record<string, any>) => LetAsync<boolean | undefined | null>
   extend?: string
   plugin?: TPluginConfig
