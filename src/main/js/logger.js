@@ -7,9 +7,9 @@ export const format = ({level = 'INFO', msgChunks = [], extra}) => JSON.stringif
 
 export const levels = ['info', 'warn', 'error']
 
-export const createLogger = (extra = {}) => {
+export const createLogger = (extra = {}, formatter = format) => {
   const logger = levels.reduce((m, l) => {
-    m[l] = (...args) => console.log(format({
+    m[l] = (...args) => console.log(formatter({
       level: l.toUpperCase(),
       msgChunks: args,
       extra

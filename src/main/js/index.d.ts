@@ -82,3 +82,8 @@ type TPlugin = {
 }
 
 export function createApp(config: string | TConfig | TConfig[], opts?: {logger: TLogger}): Promise<TApp>
+
+export function createLogger(
+  extra?: Record<string, any>,
+  formatter?: (logCtx: {level: string, msgChunks: string[], extra: Record<string, any>}) => void
+): string

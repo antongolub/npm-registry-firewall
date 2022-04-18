@@ -471,6 +471,24 @@ To activate, add a rule:
 {"level":"INFO","timestamp":"2022-04-11T20:56:50.015Z","traceId":"44f21c050d8c6","clientIp":"127.0.0.1","message":"HTTP 200 446ms"}
 ```
 
+### logger
+You can override the default implementation if needed: 
+```js
+import { createLogger, createApp } from 'npm-registry-firewall'
+
+const logger = createLogger(
+  {foo: 'bar'}, // extra to mix
+  ({level, msgChunks, extra}) => JSON.stringify({
+    msg: msgChunks.map(m => '' + m),
+    mdc_trace: {spanId: extra.traceId, traceId: extra.traceId, bar: extra.foo},
+    timestamp: new Date().toISOString(),
+    level
+  })
+)
+
+const app = createApp(cfg, {logger})
+```
+
 ### Manual testing
 **.npmrc**
 ```yaml
