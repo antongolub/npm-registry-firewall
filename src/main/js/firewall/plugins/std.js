@@ -8,6 +8,25 @@ export const stdPlugin = async ({rule, entry, boundContext}) => {
   return !!matched && rule.policy
 }
 
+export const matchByOrg = ({rule, org}) =>
+  rule.org
+    ? rule.org.some(n => {
+      if (!org) {
+        return false
+      }
+
+      const _org = org.charAt(0) === '@' ? org.slice(1) : org // replace(/^@/, '')
+      if (n instanceof RegExp) {
+        return n.test(_org) || n.test(org)
+      }
+
+      return _org.includes('*')
+        ? asRegExp(_org).test(n) || asRegExp(org).test(n)
+        : n === _org || n === org
+    })
+    : true
+
+
 export const matchByName = ({name, version, rule}) =>
   rule.name
     ? rule.name.some(n => {
@@ -31,7 +50,7 @@ export const defaultFilter = ({rule, name, org, version, time, license, _npmUser
   const day = 24 * 3600 * 1000
 
   return matchByName({rule, name, version})
-    && (rule.org ? org && rule.org.some(e => e.test(org)) : true)
+    && matchByOrg({rule, org})
     && (rule.license ? rule.license.includes(license?.toLowerCase()) : true)
     && (rule.username ? rule.username.includes(_npmUser?.name?.toLowerCase()) : true)
     && (rule.age ? time <= now - rule.age[0] * day && time >= now - (rule.age[1] * day || Infinity) : true)

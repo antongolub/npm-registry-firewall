@@ -69,6 +69,19 @@ const test = testFactory('firewall', import.meta)
     false
   ],
   [
+    'getDirective by org (trims @)',
+    {
+      rules: [{
+        policy: 'allow',
+        org: ['qiwi']
+      }],
+      entry: {
+        org: '@qiwi'
+      }
+    },
+    'allow'
+  ],
+  [
     'getDirective by username',
     {
       rules: [{

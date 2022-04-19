@@ -31,7 +31,7 @@ export const getPackument = async ({boundContext, rules}) => {
 
   } catch (e) {
     reject(e)
-    cache.del(name)
+    cache?.del(name)
   }
 
   return promise
