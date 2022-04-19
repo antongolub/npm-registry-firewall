@@ -1,3 +1,10 @@
+# [1.18.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.17.0...v1.18.0) (2022-04-19)
+
+
+### Features
+
+* match org w/o @ prefix ([2faba25](https://github.com/antongolub/npm-registry-firewall/commit/2faba2555919c95625c9164aa28e2b8768a42f8d)), closes [#21](https://github.com/antongolub/npm-registry-firewall/issues/21)
+
 # [1.17.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.16.0...v1.17.0) (2022-04-18)
 
 
