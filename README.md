@@ -360,7 +360,7 @@ export function createLogger(
 
 ### Extras
 #### Presets
-Introduce your own reusable presets via `extends`. This statement can be applied at any [config](#config) level and should return a valid value for the current section. The specified path will be loaded synchronously through `require`, so it must be a JSON or CJS module.
+Introduce your own reusable snippets via `extends` or `preset`. This statement can be applied at any [config](#config) level and should return a valid value for the current section. The specified path will be loaded synchronously through `require`, so it must be a JSON or CJS module.
 ```js
 const config = {
   // should return `firewall` and `servers`

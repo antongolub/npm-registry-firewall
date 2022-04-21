@@ -3,7 +3,7 @@ import {getConfig} from '../../main/js/config.js'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
+const __dirname = dirname(fileURLToPath(import.meta.url))
 
 const test = testFactory('config', import.meta)
 
@@ -33,6 +33,27 @@ test('resolves `extends`', () => {
     firewall: {
       registry: 'https://registry.npmjs.org',
       rules: [{policy: 'deny', extends: resolve(__dirname, '../fixtures/custom-plugin.cjs')}]
+    }
+  }])
+  objectContaining(config, {
+    profiles: [{
+      firewall: [{
+        base: '/',
+        rules: [{
+          age: [5],
+          policy: 'deny',
+        }]
+      }]
+    }]
+  })
+})
+
+test('resolves `preset`', () => {
+  const config = getConfig([{
+    server: {port: 3000},
+    firewall: {
+      registry: 'https://registry.npmjs.org',
+      rules: [{policy: 'deny', preset: resolve(__dirname, '../fixtures/custom-plugin.cjs')}]
     }
   }])
   objectContaining(config, {

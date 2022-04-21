@@ -9,7 +9,7 @@ const populateExtra = (raw) => typeof raw === 'string' ? require(raw) : {}
 
 const populate = (config) => {
   const profiles = asArray(config).map(_p => {
-    const p = {...populateExtra(_p.extends), ..._p}
+    const p = {...populateExtra(_p.extends || _p.preset), ..._p}
 
     assert.ok(p.server, 'cfg: server')
     assert.ok(p.firewall, 'cfg: firewall')
@@ -24,9 +24,10 @@ const populate = (config) => {
       keepAliveTimeout = 61_000,
       headersTimeout = 62_000,
       requestTimeout = 30_000,
-      extends: _extends
+      preset,
+      extends: _extends,
     }) => {
-      const extra = populateExtra(_extends)
+      const extra = populateExtra(_extends || preset)
       const secure = _secure
         ? {
           key: fs.readFileSync(_secure.key, 'utf8'),
@@ -52,7 +53,7 @@ const populate = (config) => {
     const firewall = asArray(p.firewall).map(f => {
       assert.ok(f.registry, 'cfg: firewall.registry')
 
-      const extra = populateExtra(f?.extends)
+      const extra = populateExtra(f.extends || f.preset)
       const rules = [...asArray(f.rules || []), ...asArray(extra.rules || [])].map((_raw) => {
         const {
           policy,
@@ -65,7 +66,7 @@ const populate = (config) => {
           username,
           filter,
           plugin
-        } = {...populateExtra(_raw.extends), ..._raw}
+        } = {...populateExtra(_raw.extends || _raw.preset), ..._raw}
         assert.ok(policy || plugin, 'cfg: firewall.rules.policy or firewall.rules.plugin')
         version && assert.ok(semver.validRange(version), 'cfg: firewall.rules.version semver')
 
