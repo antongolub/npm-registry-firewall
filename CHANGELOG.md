@@ -1,3 +1,10 @@
+# [1.19.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.18.0...v1.19.0) (2022-04-21)
+
+
+### Features
+
+* add `preset` alias for `extends` ([41a50ac](https://github.com/antongolub/npm-registry-firewall/commit/41a50acd666fdef01c4700748a41e85deef82381)), closes [#22](https://github.com/antongolub/npm-registry-firewall/issues/22)
+
 # [1.18.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.17.0...v1.18.0) (2022-04-19)
 
 
