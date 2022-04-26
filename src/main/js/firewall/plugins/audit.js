@@ -1,11 +1,7 @@
 import {semver} from '../../semver.js'
 import {request} from '../../http/index.js'
-import {createCache} from '../../cache.js'
+import {getCache} from '../../cache.js'
 import {makeDeferred} from '../../util.js'
-
-const cache = createCache({
-  ttl: 120_000
-})
 
 export const auditPlugin = async ({entry: {name, version}, options = {}, boundContext: {registry}}) => {
   options.any = options.any || options['*']
@@ -19,12 +15,12 @@ export const auditPlugin = async ({entry: {name, version}, options = {}, boundCo
 }
 
 const getAdvisories = async (name, registry) => {
-  const cached = cache?.get(name)
-  if (cached) {
-    return cached
+  const cache = getCache({ name: 'audit', ttl: 120_000 })
+  if (await cache.has(name)) {
+    return cache.get(name)
   }
   const {promise, resolve, reject} = makeDeferred()
-  cache?.add(name, promise)
+  cache.add(name, promise)
 
   try {
     const postData = JSON.stringify({[name]: ['0.0.0']})

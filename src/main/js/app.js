@@ -1,5 +1,6 @@
 import { createServer } from './http/server.js'
 import { createRouter } from './http/router.js'
+import { runInCtx, mixCtx } from './als.js'
 import { logger as defaultLogger } from './logger.js'
 import {
   healthcheck,
@@ -14,9 +15,20 @@ import {
 } from './mwares/index.js'
 import { getConfig } from './config.js'
 
-export const createApp = (cfg, opts = {}) => {
+export const _createApp = (cfg, {
+  cacheFactory,
+  loggerFactory,
+  logger: _logger,
+  log
+} = {}) => {
   const config = getConfig(cfg)
-  const logger = opts.logger || defaultLogger
+  const logger = _logger || loggerFactory ? loggerFactory(log) : defaultLogger
+  mixCtx({
+    logger,
+    config,
+    cacheFactory
+  })
+
   const servers = config.profiles.reduce((m, p) => {
     const firewalls = p.firewall.map(({base, entrypoint, registry, token, rules, cache}) => {
       const f = firewall({registry, rules, entrypoint, token, ...cache})
@@ -54,7 +66,7 @@ export const createApp = (cfg, opts = {}) => {
         errorBoundary,
       ], s.base)
 
-      return createServer({...s, router, logger})
+      return createServer({...s, router})
     })
 
     m.push(...servers)
@@ -67,4 +79,10 @@ export const createApp = (cfg, opts = {}) => {
     start() { return Promise.all(servers.map(s => s.start())) },
     stop() { return Promise.all(servers.map(s => s.stop())) }
   }
+}
+
+export const createApp = (...args) => {
+  let app
+  runInCtx({}, () => app = _createApp(...args))
+  return app
 }
