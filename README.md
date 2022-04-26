@@ -206,6 +206,15 @@ type TCacheConfig = {
   evictionTimeout?: number
 }
 
+type TCacheFactory = {
+  (opts: TCacheConfig): {
+    add(key: string, value: any, ttl?: number): LetAsync<any>
+    has(key: string): LetAsync<boolean>
+    get(key: string): LetAsync<any>
+    del(key: string): LetAsync<void>
+  }
+}
+
 type TFirewallConfig = {
   registry: string
   entrypoint?: string
@@ -213,6 +222,7 @@ type TFirewallConfig = {
   base?: string
   rules?: TRule | TRule[]
   cache?: TCacheConfig
+  cacheFactory?: TCacheFactory
   extend?: string
 }
 
@@ -247,7 +257,6 @@ export function createLogger(
   extra?: Record<string, any>,
   formatter?: (logCtx: {level: string, msgChunks: string[], extra: Record<string, any>}) => void
 ): string
-
 ```
 
 </details>

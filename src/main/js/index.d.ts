@@ -46,6 +46,15 @@ type TCacheConfig = {
   evictionTimeout?: number
 }
 
+type TCacheFactory = {
+  (opts: TCacheConfig): {
+    add(key: string, value: any, ttl?: number): LetAsync<any>
+    has(key: string): LetAsync<boolean>
+    get(key: string): LetAsync<any>
+    del(key: string): LetAsync<void>
+  }
+}
+
 type TFirewallConfig = {
   registry: string
   entrypoint?: string
@@ -53,6 +62,7 @@ type TFirewallConfig = {
   base?: string
   rules?: TRule | TRule[]
   cache?: TCacheConfig
+  cacheFactory?: TCacheFactory
   extend?: string
 }
 

@@ -4,13 +4,11 @@ import {makeDeferred} from '../util.js'
 
 export const getPackument = async ({boundContext, rules}) => {
   const {cache, registry, authorization, entrypoint, name} = boundContext
-  const cached = cache?.get(name)
-
-  if (cached) {
-    return cached
+  if (await cache.has(name)) {
+    return cache.get(name)
   }
   const {promise, resolve, reject} = makeDeferred()
-  cache?.add(name, promise)
+  cache.add(name, promise)
 
   try {
     const {body, headers} = await request({
@@ -31,7 +29,7 @@ export const getPackument = async ({boundContext, rules}) => {
 
   } catch (e) {
     reject(e)
-    cache?.del(name)
+    cache.del(name)
   }
 
   return promise
