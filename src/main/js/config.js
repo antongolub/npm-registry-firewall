@@ -1,7 +1,7 @@
 import {strict as assert} from 'node:assert'
 import { createRequire } from 'node:module'
 import fs from 'node:fs'
-import { asArray, asStrOrRegexpArray, normalizePath } from './util.js'
+import {asArray, asStrOrRegexpArray, genId, normalizePath} from './util.js'
 import { semver } from './semver.js'
 
 const require = createRequire(import.meta.url)
@@ -94,6 +94,7 @@ const populate = (config) => {
         base: f.base || '/',
         cache: f.cache
           ? {
+            name: f.cache.name || genId(),
             ttl: f.cache.ttl * 60_000,
             evictionTimeout: (f.cache.evictionTimeout || f.cache.ttl) * 60_000
           }

@@ -10,15 +10,28 @@ const voidCache = {
   del() {}
 }
 
+const getCacheFactory = (opts) => typeof opts === 'function'
+  ? opts
+  : getCtx().cache || createCache
+
 export const getCache = (opts = {}) => {
-  const { cacheFactory = createCache } = getCtx()
+  // Custom cache impl
+  if (typeof opts?.get === 'function') {
+    return opts
+  }
+
+  if (opts === null || !opts.ttl) {
+    return voidCache
+  }
+
+  const cacheFactory = getCacheFactory(opts)
   const name = opts.name || genId()
 
   if (caches.has(name)) {
     return caches.get(name)
   }
 
-  const cache = opts.ttl ? cacheFactory(opts) : voidCache
+  const cache = cacheFactory(opts)
   caches.set(name, cache)
 
   return cache

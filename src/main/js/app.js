@@ -16,22 +16,19 @@ import {
 import { getConfig } from './config.js'
 
 export const _createApp = (cfg, {
-  cacheFactory,
-  loggerFactory,
-  logger: _logger,
-  log
+  cache,
+  logger = defaultLogger
 } = {}) => {
   const config = getConfig(cfg)
-  const logger = _logger || loggerFactory ? loggerFactory(log) : defaultLogger
   mixCtx({
     logger,
     config,
-    cacheFactory
+    cache
   })
 
   const servers = config.profiles.reduce((m, p) => {
     const firewalls = p.firewall.map(({base, entrypoint, registry, token, rules, cache}) => {
-      const f = firewall({registry, rules, entrypoint, token, ...cache})
+      const f = firewall({registry, rules, entrypoint, token, cache})
       return createRouter([
         [
           '*',
