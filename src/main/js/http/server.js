@@ -1,7 +1,6 @@
 import http from 'node:http'
 import https from 'node:https'
 
-import {getCtx, runInCtx} from '../als.js'
 import {makeDeferred} from '../util.js'
 import {INTERNAL_SERVER_ERROR, statusMessageMap} from './error.js'
 
@@ -20,29 +19,25 @@ const createSocketPool = () => {
   }
 }
 
-export const createServer = ({host, port, secure, router, entrypoint, keepAliveTimeout, headersTimeout, requestTimeout, logger: _logger }) => {
-  const ctx = getCtx()
-  const { logger = _logger } = ctx
+export const createServer = ({host, port, secure, router, entrypoint, keepAliveTimeout, headersTimeout, requestTimeout, logger }) => {
   const lib = secure ? https : http
   const options = {...secure}
   const sockets = createSocketPool()
-  const server = lib.createServer(options, async (req, res) =>
-    runInCtx(ctx,async () => {
-      try {
-        await router(req, res)
+  const server = lib.createServer(options, async (req, res) => {
+    try {
+      await router(req, res)
 
-      } catch (e) {
-        const message = e?.res?.statusMessage || statusMessageMap[INTERNAL_SERVER_ERROR]
-        const code = e?.res?.statusCode || INTERNAL_SERVER_ERROR
+    } catch (e) {
+      const message = e?.res?.statusMessage || statusMessageMap[INTERNAL_SERVER_ERROR]
+      const code = e?.res?.statusCode || INTERNAL_SERVER_ERROR
 
-        res
-          .writeHead(code)
-          .end(message)
+      res
+        .writeHead(code)
+        .end(message)
 
-        logger.error(e)
-      }
-    })
-  )
+      logger.error(e)
+    }
+  })
   server.keepAliveTimeout = keepAliveTimeout
   server.headersTimeout = headersTimeout
   server.timeout = requestTimeout * 2 // Final bastion
