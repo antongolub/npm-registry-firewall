@@ -80,4 +80,3 @@ export const expand = (obj, sep = '.') => Object
 
     return m || root
   }, null)
-

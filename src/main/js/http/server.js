@@ -2,7 +2,7 @@ import http from 'node:http'
 import https from 'node:https'
 
 import { makeDeferred } from '../util.js'
-import {getCtx, attachCtx, runInCtx} from '../als.js'
+import {getCtx, runInCtx} from '../als.js'
 
 const createSocketPool = () => {
   const sockets = new Set()

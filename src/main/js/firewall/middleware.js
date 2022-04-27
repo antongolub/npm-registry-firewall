@@ -6,9 +6,9 @@ import {getPackument} from './packument.js'
 import {genId, normalizePath} from '../util.js'
 import {getCache} from '../cache.js'
 
-export const firewall = ({registry, rules, entrypoint: _entrypoint, token, evictionTimeout, ttl, cache: _cache}) => async (req, res, next) => {
+export const firewall = ({registry, rules, entrypoint: _entrypoint, token, evictionTimeout, ttl, cache: _cache, id = genId()}) => async (req, res, next) => {
   const {cfg, routeParams: {name, version, org}, base, log: logger} = req
-  const cache = _cache || getCache({name: 'packument' + genId(), ttl, evictionTimeout})
+  const cache = _cache || getCache({name: 'packument' + id, ttl, evictionTimeout})
   const authorization = token && `Bearer ${token}`
   const entrypoint = _entrypoint || normalizePath(`${cfg.server.entrypoint}${base}`)
   const boundContext = { registry, entrypoint, authorization, name, org, version, logger, cache }
