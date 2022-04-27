@@ -204,6 +204,18 @@ type TPluginConfig = string | [string, any] | TPlugin | [TPlugin, any]
 type TCacheConfig = {
   ttl: number
   evictionTimeout?: number
+  name?: string
+}
+
+type TCacheImpl = {
+  add(key: string, value: any, ttl?: number): LetAsync<any>
+  has(key: string): LetAsync<boolean>
+  get(key: string): LetAsync<any>
+  del(key: string): LetAsync<void>
+}
+
+type TCacheFactory = {
+  (opts: TCacheConfig): TCacheImpl
 }
 
 type TFirewallConfig = {
@@ -212,7 +224,7 @@ type TFirewallConfig = {
   token?: string
   base?: string
   rules?: TRule | TRule[]
-  cache?: TCacheConfig
+  cache?: TCacheConfig | TCacheImpl | TCacheFactory
   extend?: string
 }
 
@@ -241,13 +253,17 @@ type TPlugin = {
   (context: TValidationContext): LetAsync<TPolicy>
 }
 
-export function createApp(config: string | TConfig | TConfig[], opts?: {logger: TLogger}): Promise<TApp>
+type TAppOpts = {
+  logger?: TLogger
+  cache?: TCacheFactory
+}
+
+export function createApp(config: string | TConfig | TConfig[], opts?: TAppOpts): Promise<TApp>
 
 export function createLogger(
-  extra?: Record<string, any>,
-  formatter?: (logCtx: {level: string, msgChunks: string[], extra: Record<string, any>}) => void
+        extra?: Record<string, any>,
+        formatter?: (logCtx: {level: string, msgChunks: string[], extra: Record<string, any>}) => void
 ): string
-
 ```
 
 </details>
@@ -357,6 +373,42 @@ export function createLogger(
   }
 ]
 ```
+
+### Cache
+By default, _nfr_ uses a simple in-memory cache  to store patched packuments.
+You may provide your own implementation instead, for example, to create [cassandra](https://cassandra.apache.org/_/index.html)-based distributed cache:
+
+```js
+import {createApp} from 'npm-registry-firewall'
+
+const cache = {
+  add() {}, // each method may be async
+  has() {return false},
+  get() {},
+  del() {}
+}
+
+const app = createApp({
+  server: {port: 5000},
+  firewall: {
+    registry: 'https://registry.npmjs.org',
+    cache,
+    rules: []
+  }
+})
+```
+Or even a cache factory:
+```js
+const cache = () => {
+  // ... init
+  return {
+    get() {},
+    ...
+  }
+}
+```
+
+Pass `null` as `config.firewall.cache` to disable.
 
 ### Extras
 #### Presets
