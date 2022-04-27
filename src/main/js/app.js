@@ -66,7 +66,7 @@ export const _createApp = (cfg, {
         errorBoundary,
       ], s.base)
 
-      return createServer({...s, router})
+      return createServer({...s, router, logger})
     })
 
     m.push(...servers)
