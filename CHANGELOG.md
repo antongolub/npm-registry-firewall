@@ -1,3 +1,10 @@
+# [1.20.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.19.0...v1.20.0) (2022-04-27)
+
+
+### Features
+
+* provide configurable cacheFactory ([afb23c0](https://github.com/antongolub/npm-registry-firewall/commit/afb23c039795716f2d7e8564abc2bac05cda4fb7)), closes [#30](https://github.com/antongolub/npm-registry-firewall/issues/30) [#33](https://github.com/antongolub/npm-registry-firewall/issues/33)
+
 # [1.19.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.18.0...v1.19.0) (2022-04-21)
 
 
