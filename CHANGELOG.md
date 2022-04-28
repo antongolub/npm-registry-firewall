@@ -1,3 +1,10 @@
+## [1.20.1](https://github.com/antongolub/npm-registry-firewall/compare/v1.20.0...v1.20.1) (2022-04-28)
+
+
+### Bug Fixes
+
+* handle packument CL and TE headers clash ([e11eebb](https://github.com/antongolub/npm-registry-firewall/commit/e11eebbc96a1b5ab61ceef758062f87682eea924))
+
 # [1.20.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.19.0...v1.20.0) (2022-04-27)
 
 
