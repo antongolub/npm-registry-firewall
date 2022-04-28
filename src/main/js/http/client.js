@@ -2,14 +2,9 @@ import http from 'node:http'
 import https from 'node:https'
 import {parse} from 'node:url'
 import { Buffer } from 'node:buffer'
-import zlib from 'node:zlib'
-import {promisify} from 'node:util'
 
-import {makeDeferred, normalizePath} from '../util.js'
+import {makeDeferred, normalizePath, gunzip, gzip} from '../util.js'
 import {httpError, REQUEST_TIMEOUT} from './error.js'
-
-const gunzip = promisify(zlib.gunzip)
-const gzip = promisify(zlib.gzip)
 
 const agentOpts = {
   keepAliveMsecs: 500,

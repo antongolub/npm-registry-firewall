@@ -1,3 +1,6 @@
+import zlib from 'node:zlib'
+import {promisify} from 'node:util'
+
 export const makeDeferred = () => {
   let resolve
   let reject
@@ -80,3 +83,6 @@ export const expand = (obj, sep = '.') => Object
 
     return m || root
   }, null)
+
+export const gunzip = promisify(zlib.gunzip)
+export const gzip = promisify(zlib.gzip)
