@@ -1,3 +1,10 @@
+# [1.21.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.20.3...v1.21.0) (2022-04-29)
+
+
+### Features
+
+* support `.c?js` for configs ([3cfad7d](https://github.com/antongolub/npm-registry-firewall/commit/3cfad7d40c7692ad5887bc7c2200b58cb8b6e581)), closes [#38](https://github.com/antongolub/npm-registry-firewall/issues/38)
+
 ## [1.20.3](https://github.com/antongolub/npm-registry-firewall/compare/v1.20.2...v1.20.3) (2022-04-29)
 
 ## [1.20.2](https://github.com/antongolub/npm-registry-firewall/compare/v1.20.1...v1.20.2) (2022-04-29)
