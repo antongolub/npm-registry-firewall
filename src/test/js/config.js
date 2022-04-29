@@ -68,3 +68,30 @@ test('resolves `preset`', () => {
     }]
   })
 })
+
+test('resolves `preset` as string[]', () => {
+  const config = getConfig([{
+    server: {port: 3000},
+    firewall: {
+      registry: 'https://registry.npmjs.org',
+      preset: [
+        resolve(__dirname, '../fixtures/deny-orgs.json'),
+        resolve(__dirname, '../fixtures/deny-users.json')
+      ]
+    }
+  }])
+  objectContaining(config, {
+    profiles: [{
+      firewall: [{
+        base: '/',
+        rules: [{
+          policy: 'deny',
+          org: ["foo", "bar"],
+        }, {
+          policy: 'deny',
+          username: ["baz", "qux"],
+        }]
+      }]
+    }]
+  })
+})

@@ -1,0 +1,6 @@
+{
+  "rules": [{
+    "policy": "deny",
+    "org": ["foo", "bar"]
+  }]
+}
