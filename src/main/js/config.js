@@ -11,13 +11,11 @@ const populateExtra = (target) => {
     : target
 
   res._raw = {...target}
-
   return res
 }
 
 const populate = (config) => {
   const profiles = asArray(config).map(populateExtra).map(p => {
-
     assert.ok(p.server, 'cfg: server')
     assert.ok(p.firewall, 'cfg: firewall')
 
@@ -31,15 +29,13 @@ const populate = (config) => {
       keepAliveTimeout = 61_000,
       headersTimeout = 62_000,
       requestTimeout = 30_000,
-      preset,
-      extends: _extends,
     }) => {
+      const entrypoint = normalizePath(`${_secure ? 'https' : 'http'}://${host}:${port}`)
       const secure = _secure
         ? {
           key: fs.readFileSync(_secure.key, 'utf8'),
           cert: fs.readFileSync(_secure.cert, 'utf8'),
         } : null
-      const entrypoint = normalizePath(`${secure ? 'https' : 'http'}://${host}:${port}`)
 
       return {
         secure,

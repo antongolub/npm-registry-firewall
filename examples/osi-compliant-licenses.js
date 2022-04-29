@@ -133,7 +133,7 @@ const licenses = raw
 
 module.exports = {
   rules: [{
-    deny: 'deny',
+    policy: 'deny',
     filter: ({license}) => !licenses.includes(license.toLowerCase())
   }]
 }
