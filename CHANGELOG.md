@@ -1,3 +1,10 @@
+# [1.22.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.21.0...v1.22.0) (2022-04-29)
+
+
+### Features
+
+* support `presets` as string[] ([f8ca3c0](https://github.com/antongolub/npm-registry-firewall/commit/f8ca3c075e45d3930edf1b3692a910e234cc03bd))
+
 # [1.21.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.20.3...v1.21.0) (2022-04-29)
 
 
