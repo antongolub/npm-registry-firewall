@@ -20,7 +20,9 @@ export const once = (fn) => (() => {
   return (...args) => r || (r = fn(...args))
 })()
 
-export const asArray = v => Array.isArray(v) ? v : [v]
+export const isArray = Array.isArray
+
+export const asArray = v => isArray(v) ? v : [v]
 
 export const asRegExp = v => v instanceof RegExp
   ? v
@@ -61,7 +63,7 @@ export const flatten = (obj, roots = [], sep = '.') => Object
   .entries(obj)
   .reduce((memo, [k, v]) => Object.assign(
     memo,
-    Array.isArray(v) || Object.prototype.toString.call(v) === '[object Object]'
+    isArray(v) || Object.prototype.toString.call(v) === '[object Object]'
       ? flatten(v, [...roots, k], sep)
       : {[[...roots, k].join(sep)]: v}
   ), {})
@@ -99,3 +101,26 @@ export const load = (file) => noThrow(require)(path.resolve(file)) || require(fi
 
 export const gunzip = promisify(zlib.gunzip)
 export const gzip = promisify(zlib.gzip)
+
+// Adapted from https://stackoverflow.com/a/34749873
+export const isPlainObject = (item) => item !== null && typeof item === 'object' && !isArray(item)
+
+export const mergeDeep = (target, ...sources) => {
+  if (!sources.length) return target;
+  const source = sources.shift()
+
+  if (isPlainObject(target) && isPlainObject(source)) {
+    for (const key in source) {
+      if (isArray(source[key]) && isArray(target[key])) {
+        target[key].push(...source[key])
+      } else if (isPlainObject(source[key])) {
+        if (!target[key]) Object.assign(target, { [key]: {} })
+        mergeDeep(target[key], source[key])
+      } else {
+        Object.assign(target, { [key]: source[key] })
+      }
+    }
+  }
+
+  return mergeDeep(target, ...sources)
+}

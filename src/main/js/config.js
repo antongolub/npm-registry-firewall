@@ -1,19 +1,27 @@
 import {strict as assert} from 'node:assert'
 import fs from 'node:fs'
 
-import {asArray, asStrOrRegexpArray, genId, load, normalizePath} from './util.js'
+import {asArray, asStrOrRegexpArray, genId, load, normalizePath, mergeDeep} from './util.js'
 import { semver } from './semver.js'
 
-const populateExtra = (raw) => typeof raw === 'string' ? load(raw) : {}
+const populateExtra = (target) => {
+  const preset = target.extends || target.preset
+  const res = preset
+    ? mergeDeep({}, ...asArray(preset).map(load), target)
+    : target
+
+  res._raw = {...target}
+
+  return res
+}
 
 const populate = (config) => {
-  const profiles = asArray(config).map(_p => {
-    const p = {...populateExtra(_p.extends || _p.preset), ..._p}
+  const profiles = asArray(config).map(populateExtra).map(p => {
 
     assert.ok(p.server, 'cfg: server')
     assert.ok(p.firewall, 'cfg: firewall')
 
-    const server = asArray(p.server).map(({
+    const server = asArray(p.server).map(populateExtra).map(({
       host = '127.0.0.1',
       port = 8080,
       base = '/',
@@ -26,7 +34,6 @@ const populate = (config) => {
       preset,
       extends: _extends,
     }) => {
-      const extra = populateExtra(_extends || preset)
       const secure = _secure
         ? {
           key: fs.readFileSync(_secure.key, 'utf8'),
@@ -35,7 +42,6 @@ const populate = (config) => {
       const entrypoint = normalizePath(`${secure ? 'https' : 'http'}://${host}:${port}`)
 
       return {
-        ...extra,
         secure,
         host,
         port,
@@ -49,23 +55,23 @@ const populate = (config) => {
       }
     })
 
-    const firewall = asArray(p.firewall).map(f => {
+    const firewall = asArray(p.firewall).map(populateExtra).map(f => {
       assert.ok(f.registry, 'cfg: firewall.registry')
 
-      const extra = populateExtra(f.extends || f.preset)
-      const rules = [...asArray(f.rules || []), ...asArray(extra.rules || [])].map((_raw) => {
-        const {
-          policy,
-          name,
-          org,
-          dateRange,
-          age,
-          version,
-          license,
-          username,
-          filter,
-          plugin
-        } = {...populateExtra(_raw.extends || _raw.preset), ..._raw}
+      const rules = asArray(f.rules || []).map(populateExtra).map(({
+        policy,
+        name,
+        org,
+        dateRange,
+        age,
+        version,
+        license,
+        username,
+        filter,
+        plugin,
+        _raw
+      }) => {
+
         assert.ok(policy || plugin, 'cfg: firewall.rules.policy or firewall.rules.plugin')
         version && assert.ok(semver.validRange(version), 'cfg: firewall.rules.version semver')
 
@@ -85,7 +91,6 @@ const populate = (config) => {
       })
 
       return {
-        ...extra,
         rules,
         registry: normalizePath(f.registry),
         token: f.token,
