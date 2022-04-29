@@ -18,8 +18,9 @@ npm registry proxy with on-the-fly filtering
   * custom `filter` function
   * vulnerability level via builtin [npm-registry-firewall/audit plugin](#npm-registry-firewallaudit)
 * Flexible configuration: use [presets](#presets), [plugins](#plugins) and define as many [`server/context-path/rules`](#multi-config) combinations as you need.
+* Extendable. [expressjs](https://expressjs.com/en/guide/using-middleware.html)-inspired server implementation is under the hood.
 * Standalone. No clouds, no subscriptions.
-* [expressjs](https://expressjs.com/en/guide/using-middleware.html)-inspired server implementation.
+* Linux / Windows / macOS compatible.
 * Has no deps. Literally zero.
 
 ## Motivation
