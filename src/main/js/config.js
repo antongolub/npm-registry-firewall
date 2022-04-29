@@ -88,9 +88,9 @@ const populate = (config) => {
       return {
         ...extra,
         rules,
-        registry: f.registry,
+        registry: normalizePath(f.registry),
         token: f.token,
-        entrypoint: f.entrypoint || null,
+        entrypoint: f.entrypoint ? normalizePath(f.entrypoint) : null,
         base: f.base || '/',
         cache: f.cache
           ? {
