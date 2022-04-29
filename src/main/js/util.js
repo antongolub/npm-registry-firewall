@@ -1,5 +1,9 @@
 import zlib from 'node:zlib'
+import path from 'node:path'
 import {promisify} from 'node:util'
+import { createRequire } from 'node:module'
+
+const require = createRequire(import.meta.url)
 
 export const makeDeferred = () => {
   let resolve
@@ -82,6 +86,16 @@ export const expand = (obj, sep = '.') => Object
 
     return m || root
   }, null)
+
+export const noThrow = (cb) => (...args) => {
+  try {
+    return cb(...args)
+  } catch (err) {
+    return null
+  }
+}
+
+export const load = (file) => noThrow(require)(path.resolve(file)) || require(file)
 
 export const gunzip = promisify(zlib.gunzip)
 export const gzip = promisify(zlib.gzip)

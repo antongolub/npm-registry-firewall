@@ -23,7 +23,7 @@
   },
   "scripts": {
     "docs": "mkdir -p docs && cp ./README.md ./docs/README.md",
-    "start": "node src/main/js/cli.js config.json",
+    "start": "node src/main/js/cli.js config.cjs",
     "test": "node src/test/js/all.js",
     "test:cov": "npm_config_yes=true npx c8 npm run test && npx c8 report -r lcov"
   },

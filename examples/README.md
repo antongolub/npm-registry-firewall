@@ -5,3 +5,4 @@ https://github.com/antongolub/npm-registry-firewall/blob/8cbb4337c2ff7d4c7a6b441
 <sub>* Just a demo of how it could look like</sub>
 
 ### Multi-port proxy
+https://github.com/antongolub/npm-registry-firewall/blob/a28764e2f7b86b11ea201e6f902f67c2a5284a68/examples/multi-port-proxy.js#L1-L27
