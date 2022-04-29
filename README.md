@@ -269,8 +269,8 @@ type TAppOpts = {
 export function createApp(config: string | TConfig | TConfig[], opts?: TAppOpts): Promise<TApp>
 
 export function createLogger(
-        extra?: Record<string, any>,
-        formatter?: (logCtx: {level: string, msgChunks: string[], extra: Record<string, any>}) => void
+  extra?: Record<string, any>, 
+  formatter?: (logCtx: {level: string, msgChunks: string[], extra: Record<string, any>}) => void
 ): string
 ```
 
