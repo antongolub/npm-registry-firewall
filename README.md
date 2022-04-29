@@ -98,6 +98,13 @@ Uncontrolled use of new versions may have legal and financial consequences. Ther
 
 </details>
 
+## Implementation notes
+The proxy intercepts packuments and tarball requests and applies the specified filters to them:
+* [Removes all](https://github.com/antongolub/npm-registry-firewall/blob/137cf6f1f5a3bd979099c912a3357b2ea6ece402/src/main/js/firewall/packument.js#L57) forbidden entries from packuments.
+* [Returns 404](https://github.com/antongolub/npm-registry-firewall/blob/master/src/main/js/firewall/middleware.js#L27) if the filtered packument `versions` are empty.
+* [Returns 404](https://github.com/antongolub/npm-registry-firewall/blob/master/src/main/js/firewall/middleware.js#L23) if `registy/pkg-tarball@version.tgz` does not satisfy the policies.
+* [Passes any other](https://github.com/antongolub/npm-registry-firewall/blob/master/src/main/js/app.js#L49) requests to the remote registry as is.
+
 ## Requirements
 Node.js >= 14
 
