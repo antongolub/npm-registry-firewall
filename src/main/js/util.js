@@ -22,12 +22,11 @@ export const asRegExp = v => v instanceof RegExp
   ? v
   : new RegExp(`^${v.replace(/\*/g, '.+')}$`, 'i')
 
-export const normalizePath = (url) => url.length > 1
-  ? (url + '/')
+export const normalizePath = (url) =>
+  (url + '/')
     .replace(/\/+/g, '/')
     .replace(':/', '://')
     .slice(0, -1)
-  : url
 
 export const asStrOrRegexpArray = (v) => v
   ? asArray(v)
