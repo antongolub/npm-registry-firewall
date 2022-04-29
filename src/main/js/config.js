@@ -1,11 +1,10 @@
 import {strict as assert} from 'node:assert'
-import { createRequire } from 'node:module'
 import fs from 'node:fs'
-import {asArray, asStrOrRegexpArray, genId, normalizePath} from './util.js'
+
+import {asArray, asStrOrRegexpArray, genId, load, normalizePath} from './util.js'
 import { semver } from './semver.js'
 
-const require = createRequire(import.meta.url)
-const populateExtra = (raw) => typeof raw === 'string' ? require(raw) : {}
+const populateExtra = (raw) => typeof raw === 'string' ? load(raw) : {}
 
 const populate = (config) => {
   const profiles = asArray(config).map(_p => {
@@ -117,7 +116,7 @@ export const getConfig = (file) => {
   assert.ok(file, 'cfg: config must be specified')
 
   return populate(typeof file === 'string'
-    ? JSON.parse(fs.readFileSync(file, 'utf8'))
+    ? load(file)
     : file
   )
 }
