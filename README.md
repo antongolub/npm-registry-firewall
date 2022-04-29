@@ -269,8 +269,8 @@ type TAppOpts = {
 export function createApp(config: string | TConfig | TConfig[], opts?: TAppOpts): Promise<TApp>
 
 export function createLogger(
-        extra?: Record<string, any>,
-        formatter?: (logCtx: {level: string, msgChunks: string[], extra: Record<string, any>}) => void
+  extra?: Record<string, any>, 
+  formatter?: (logCtx: {level: string, msgChunks: string[], extra: Record<string, any>}) => void
 ): string
 ```
 
@@ -382,9 +382,19 @@ export function createLogger(
 ]
 ```
 
+[️More config examples](./examples)
+
 ### Cache
-By default, _nfr_ uses a simple in-memory cache  to store patched packuments.
-You may provide your own implementation instead, for example, to create [cassandra](https://cassandra.apache.org/_/index.html)-based distributed cache:
+By default, _nrf_ uses a simple in-memory cache to store patched packuments.
+```js
+cache: {              // Optional. Defaults to no-cache (null)
+  ttl: 5,             // Time to live in minutes. Specifies how long resolved pkg directives will live.
+  evictionTimeout: 1, // Cache invalidation period in minutes. Defaults to cache.ttl.
+  name: 'unique'      // If and only if you use the same rules for several firewall entrypoints (multi-port proxy)
+                      // you can slighly optimise resource consupmtion by sharing the cache. Defaults to `randId()`
+}
+```
+You can also provide your own implementation instead, for example, to create [cassandra](https://cassandra.apache.org/_/index.html)-based distributed cache:
 
 ```js
 import {createApp} from 'npm-registry-firewall'
