@@ -477,7 +477,7 @@ module.exports = {
 }
 ```
 #### Plugins
-Plugin is slightly different from preset:
+The plugin API is slightly different from presets:
 * Async. It's loaded dynamically as a part of rule processing pipeline, so it may be an ESM.
 * Configurable. Opts may be passed as the 2nd tuple arg.
 * Composable. There may be more than one per `rule`.
@@ -495,7 +495,7 @@ const rule2 = {
 }
 ```
 
-Plugin interface is an (async) function that accepts `TValidationContext` and returns policy type value or `false` as a result:
+The plugin interface is an (async) function that accepts `TValidationContext` and returns policy type value or `false` as a result:
 ```js
 const plugin = ({
   rule,
@@ -513,6 +513,37 @@ To activate, add a rule:
   plugin: [['npm-registry-firewall/audit', {
     critical: 'deny',
     moderate: 'warn'
+  }]]
+}
+```
+
+### `npm-registry-firewall/std`
+Default plugin to filter packages by their fields. May be used directly or via shortcut as shown in examples above.
+```js
+// Allow only mit-licensed versions of the `foo` lib
+{
+  plugin: [['npm-registry-firewall/std', {
+    policy: 'allow',
+    org: 'foo',
+    license: 'mit'
+  }]]
+}
+
+// equals to:
+{
+  policy: 'allow',
+  org: 'foo',
+  license: 'mit'
+}
+
+// Allow any mit-licensed or `foo` lib or any `babel` package
+{
+  plugin: [['npm-registry-firewall/std', {
+    policy: 'allow',
+    name: 'foo',
+    org: 'babel',
+    license: 'mit',
+    cond: 'or' // Optional. Defaults to `and`
   }]]
 }
 ```
