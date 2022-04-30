@@ -28,8 +28,7 @@ export const defaultFilter = ({options: opts, boundContext: {org}, entry: { name
 }
 
 export const matchByOrg = (opts, org) =>
-  opts.org
-    ? opts.org.some(n => {
+  opts.org?.some(n => {
       if (!org) {
         return false
       }
@@ -43,11 +42,10 @@ export const matchByOrg = (opts, org) =>
         ? asRegExp(_org).test(n) || asRegExp(org).test(n)
         : n === _org || n === org
     })
-    : true
 
 
 export const matchByName = (opts, name, version) =>
-  opts.name && opts.name.some(n => {
+  opts.name?.some(n => {
       if (n === name) {
         return true
       }
@@ -71,9 +69,9 @@ export const matchByAge = (opts, time, now) => {
 
 export const matchByDateRange = (opts, time) => opts.dateRange && time >= opts.dateRange[0] && time <= opts.dateRange[1]
 
-export const matchByLicense = (opts, license) => opts.license && opts.license.includes(license?.toLowerCase())
+export const matchByLicense = (opts, license) => opts.license?.includes(license?.toLowerCase())
 
-export const matchByUsername = (opts, _npmUser) => opts.username && opts.username.includes(_npmUser?.name?.toLowerCase())
+export const matchByUsername = (opts, _npmUser) => opts.username?.includes(_npmUser?.name?.toLowerCase())
 
 export const matchByVersion = (opts, version) => opts.version && semver.satisfies(version, opts.version)
 
