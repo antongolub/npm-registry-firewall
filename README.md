@@ -524,7 +524,7 @@ Default plugin to filter packages by their fields. May be used directly or via s
 {
   plugin: [['npm-registry-firewall/std', {
     policy: 'allow',
-    org: 'foo',
+    name: 'foo',
     license: 'mit'
   }]]
 }
@@ -532,7 +532,7 @@ Default plugin to filter packages by their fields. May be used directly or via s
 // equals to:
 {
   policy: 'allow',
-  org: 'foo',
+  name: 'foo',
   license: 'mit'
 }
 
