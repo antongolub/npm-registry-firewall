@@ -477,7 +477,7 @@ module.exports = {
 }
 ```
 #### Plugins
-Plugin is slightly different from preset:
+The plugin API is slightly different from presets:
 * Async. It's loaded dynamically as a part of rule processing pipeline, so it may be an ESM.
 * Configurable. Opts may be passed as the 2nd tuple arg.
 * Composable. There may be more than one per `rule`.
@@ -495,7 +495,7 @@ const rule2 = {
 }
 ```
 
-Plugin interface is an (async) function that accepts `TValidationContext` and returns policy type value or `false` as a result:
+The plugin interface is an (async) function that accepts `TValidationContext` and returns policy type value or `false` as a result:
 ```js
 const plugin = ({
   rule,
