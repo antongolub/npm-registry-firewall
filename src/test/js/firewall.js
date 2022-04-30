@@ -51,9 +51,10 @@ const test = testFactory('firewall', import.meta)
         policy: 'allow',
         org: [/@qiwi/]
       }],
-      entry: {
+      boundContext: {
         org: '@qiwi'
-      }
+      },
+      entry: {}
     },
     'allow'
   ],
@@ -75,9 +76,10 @@ const test = testFactory('firewall', import.meta)
         policy: 'allow',
         org: ['qiwi']
       }],
-      entry: {
+      boundContext: {
         org: '@qiwi'
-      }
+      },
+      entry: {}
     },
     'allow'
   ],

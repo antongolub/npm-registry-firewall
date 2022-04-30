@@ -517,6 +517,37 @@ To activate, add a rule:
 }
 ```
 
+### `npm-registry-firewall/std`
+Default plugin to filter packages by their fields. May be used directly or via shortcut as shown in examples above.
+```js
+// Allow only mit-licensed versions of the `foo` lib
+{
+  plugin: [['npm-registry-firewall/std', {
+    policy: 'allow',
+    org: 'foo',
+    license: 'mit'
+  }]]
+}
+
+// equals to:
+{
+  policy: 'allow',
+  org: 'foo',
+  license: 'mit'
+}
+
+// Allow any mit-licensed or `foo` lib or any `babel` package
+{
+  plugin: [['npm-registry-firewall/std', {
+    policy: 'allow',
+    name: 'foo',
+    org: 'babel',
+    license: 'mit',
+    cond: 'or' // Optional. Defaults to `and`
+  }]]
+}
+```
+
 ### Monitoring
 #### /healthcheck
 ```json

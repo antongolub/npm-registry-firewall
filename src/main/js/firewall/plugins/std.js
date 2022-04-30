@@ -1,16 +1,35 @@
 import {semver} from '../../semver.js'
 import {asRegExp} from '../../util.js'
 
-export const stdPlugin = async ({rule, entry, boundContext}) => {
-  const filter = rule.filter || defaultFilter
-  const matched = await filter({...entry, ...boundContext, rule})
+export const stdPlugin = async ({rule, entry, boundContext = {}, options = rule}) => {
+  const filter = options.filter || defaultFilter
+  const matched = await filter({
+    ...entry, ...boundContext, rule, // legacy filter contract
+    entry, boundContext, options     // new recommended
+  })
 
-  return !!matched && rule.policy
+  return !!matched && options.policy
 }
 
-export const matchByOrg = ({rule, org}) =>
-  rule.org
-    ? rule.org.some(n => {
+export const defaultFilter = ({options: opts, boundContext: {org}, entry: { name, version, time, license, _npmUser }, now = Date.now()}) => {
+  const matches = [
+    matchByName(opts, name, version),
+    matchByOrg(opts, org),
+    matchByLicense(opts, license),
+    matchByUsername(opts, _npmUser),
+    matchByAge(opts, time, now),
+    matchByDateRange(opts, time),
+    matchByVersion(opts, version)
+  ]
+
+  return opts.cond === 'or'
+    ? matches.some(v => v === true)
+    : !matches.some(v => v === false)
+}
+
+export const matchByOrg = (opts, org) =>
+  opts.org
+    ? opts.org.some(n => {
       if (!org) {
         return false
       }
@@ -27,9 +46,8 @@ export const matchByOrg = ({rule, org}) =>
     : true
 
 
-export const matchByName = ({name, version, rule}) =>
-  rule.name
-    ? rule.name.some(n => {
+export const matchByName = (opts, name, version) =>
+  opts.name && opts.name.some(n => {
       if (n === name) {
         return true
       }
@@ -44,18 +62,19 @@ export const matchByName = ({name, version, rule}) =>
 
       return nameMatch && versionMatch
     })
-    : true
 
-export const defaultFilter = ({rule, name, org, version, time, license, _npmUser, now = Date.now()}) => {
+export const matchByAge = (opts, time, now) => {
   const day = 24 * 3600 * 1000
 
-  return matchByName({rule, name, version})
-    && matchByOrg({rule, org})
-    && (rule.license ? rule.license.includes(license?.toLowerCase()) : true)
-    && (rule.username ? rule.username.includes(_npmUser?.name?.toLowerCase()) : true)
-    && (rule.age ? time <= now - rule.age[0] * day && time >= now - (rule.age[1] * day || Infinity) : true)
-    && (rule.dateRange ? time >= rule.dateRange[0] && time <= rule.dateRange[1] : true)
-    && (rule.version ? semver.satisfies(version, rule.version) : true)
+  return opts.age && time <= now - opts.age[0] * day && time >= now - (opts.age[1] * day || Infinity)
 }
+
+export const matchByDateRange = (opts, time) => opts.dateRange && time >= opts.dateRange[0] && time <= opts.dateRange[1]
+
+export const matchByLicense = (opts, license) => opts.license && opts.license.includes(license?.toLowerCase())
+
+export const matchByUsername = (opts, _npmUser) => opts.username && opts.username.includes(_npmUser?.name?.toLowerCase())
+
+export const matchByVersion = (opts, version) => opts.version && semver.satisfies(version, opts.version)
 
 export default stdPlugin
