@@ -505,18 +505,6 @@ const plugin = ({
 }) => entry.name === options.name ? 'deny' : 'allow'
 ```
 
-### `npm-registry-firewall/audit`
-Some registries do not provide audit API, that's why the plugin is disabled by default.
-To activate, add a rule:
-```js
-{
-  plugin: [['npm-registry-firewall/audit', {
-    critical: 'deny',
-    moderate: 'warn'
-  }]]
-}
-```
-
 ### `npm-registry-firewall/std`
 Default plugin to filter packages by their fields. May be used directly or via shortcut as shown in examples above.
 ```js
@@ -545,6 +533,37 @@ Default plugin to filter packages by their fields. May be used directly or via s
     license: 'mit',
     cond: 'or' // Optional. Defaults to `and`
   }]]
+}
+```
+
+### `npm-registry-firewall/audit`
+Some registries do not provide audit API, that's why the plugin is disabled by default.
+To activate, add a rule:
+```js
+{
+  plugin: [['npm-registry-firewall/audit', {
+    critical: 'deny',
+    moderate: 'warn'
+  }]]
+}
+```
+
+### `npm-registry-firewall/vulners`
+Alternative audit API based on [vulners.com](https://vulners.com/) advisories.
+```js
+{
+  plugin: [['npm-registry-firewall/vulners', [{
+      relevance: 95,  // Optional. Lower bound on the search result (lucene score 0...100) for associating the found CVEs with the target package. Defautls to 90
+      cond: 'or',     // Optional. Defaults to `and`
+      policy: 'warn',
+      'cvss.score': 60,
+      'cvss3.cvssV3.availabilityImpact': 'MEDIUM'
+    }, {
+      policy: 'deny',
+      'cvss.score': 95,
+      'cvss3.cvssV3.availabilityImpact': 'CRITICAL'
+    }],
+  ]]
 }
 ```
 
