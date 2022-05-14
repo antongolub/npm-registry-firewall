@@ -5,20 +5,22 @@ export const format = ({level = 'INFO', msgChunks = [], extra}) => JSON.stringif
   message: msgChunks.map(c => typeof c === 'object' ? JSON.stringify(c) : `${c}`).join(' '),
 })
 
-export const levels = ['info', 'warn', 'error']
+export const levels = ['trace', 'debug', 'info', 'warn', 'error']
 
-export const createLogger = (extra = {}, formatter = format) => {
-  const logger = levels.reduce((m, l) => {
-    m[l] = (...args) => console.log(formatter({
-      level: l.toUpperCase(),
-      msgChunks: args,
-      extra
-    }))
-    return m
-  }, {})
+export const createLogger = ({extra = {}, formatter = format, level = 'info'} = {}) => {
+  const logger = levels
+    .filter(l => levels.indexOf(l) >= levels.indexOf(level))
+    .reduce((m, l) => {
+      m[l] = (...args) => console[l](formatter({
+        level: l.toUpperCase(),
+        msgChunks: args,
+        extra
+      }))
+      return m
+    }, {})
 
   logger.log = logger.info
-  logger.nest = (_extra) => createLogger({...extra, ..._extra})
+  logger.nest = (_extra) => createLogger({formatter, level, extra: {...extra, ..._extra}})
 
   return logger
 }
