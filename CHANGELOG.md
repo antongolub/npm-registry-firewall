@@ -1,3 +1,10 @@
+## [1.23.1](https://github.com/antongolub/npm-registry-firewall/compare/v1.23.0...v1.23.1) (2022-05-14)
+
+
+### Bug Fixes
+
+* **types:** fix `createLogger` iface ([9129f76](https://github.com/antongolub/npm-registry-firewall/commit/9129f7611b78e2ec8d7172c7b5d6c7f85dc4eae2))
+
 # [1.23.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.22.1...v1.23.0) (2022-04-30)
 
 
