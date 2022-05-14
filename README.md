@@ -268,10 +268,12 @@ type TAppOpts = {
 
 export function createApp(config: string | TConfig | TConfig[], opts?: TAppOpts): Promise<TApp>
 
-export function createLogger(
-  extra?: Record<string, any>, 
-  formatter?: (logCtx: {level: string, msgChunks: string[], extra: Record<string, any>}) => void
-): string
+type TLoggerOptions = {
+  extra?: Record<string, any>,
+  formatter?: (logCtx: {level: string, msgChunks: string[], extra: Record<string, any>}) => string
+}
+
+export function createLogger(options: TLoggerOptions): TLogger
 ```
 
 </details>
@@ -524,7 +526,7 @@ Default plugin to filter packages by their fields. May be used directly or via s
 {
   plugin: [['npm-registry-firewall/std', {
     policy: 'allow',
-    org: 'foo',
+    name: 'foo',
     license: 'mit'
   }]]
 }
@@ -532,7 +534,7 @@ Default plugin to filter packages by their fields. May be used directly or via s
 // equals to:
 {
   policy: 'allow',
-  org: 'foo',
+  name: 'foo',
   license: 'mit'
 }
 
