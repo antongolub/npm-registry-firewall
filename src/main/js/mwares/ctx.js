@@ -1,10 +1,4 @@
-import { genId } from '../util.js'
-import {getCtx, runInCtx} from "../als.js";
+import { getCtx, runInCtx } from '../als.js'
 
-export const ctx = (cfg, logger) => async (req, res, next) => {
-  req.cfg = res.cfg = cfg
-  req.id = res.id = genId()
-  req.log = res.log = logger
-
-  runInCtx(getCtx(), next)
-}
+export const ctx = (cfg, logger) => async (req, res, next) =>
+  runInCtx({...getCtx(), logger, cfg}, next)

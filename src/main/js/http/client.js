@@ -1,10 +1,10 @@
 import http from 'node:http'
 import https from 'node:https'
-import {parse} from 'node:url'
+import { parse } from 'node:url'
 import { Buffer } from 'node:buffer'
 
-import {makeDeferred, normalizePath, gunzip, gzip} from '../util.js'
-import {httpError, REQUEST_TIMEOUT} from './error.js'
+import { makeDeferred, normalizePath, gunzip, gzip } from '../util.js'
+import { httpError, REQUEST_TIMEOUT } from './error.js'
 
 const agentOpts = {
   keepAliveMsecs: 500,
