@@ -4,7 +4,7 @@ import {getCtx} from '../als.js'
 export const errorBoundary = async (err, req, res, next) => {
   const code = err.statusCode || INTERNAL_SERVER_ERROR
   const message = err.statusMessage || err.message || statusMessageMap[code] || statusMessageMap[INTERNAL_SERVER_ERROR]
-  const {logger} = getCtx()
+  const {logger = console} = getCtx()
 
   logger.error(err.stack)
 

@@ -62,7 +62,9 @@ export const createRouter = (routes, base = '/') => async (req, res, next = () =
       return Promise.resolve()
     }
 
-    const next = once(getNext)
+    const _next = once(getNext)
+    const __next = once(getNext)
+    const next = (err) => err ? __next(err) : _next()
     const args = err ? [err, req, res, next] : [req, res, next]
     const [, [pattern, rmap], cb] = matched[i++]
 
