@@ -17,7 +17,7 @@ export const genId = () => Math.random().toString(16).slice(2)
 
 export const once = (fn) => (() => {
   let r
-  return (...args) => r || (r = fn(...args))
+  return function (...args) { return r || (r = fn.call(this, ...args)) }
 })()
 
 export const isArray = Array.isArray

@@ -5,9 +5,11 @@ import {getPolicy} from './engine.js'
 import {getPackument} from './packument.js'
 import {normalizePath, gzip} from '../util.js'
 import {getCache} from '../cache.js'
+import {getCtx} from '../als.js'
 
 export const firewall = ({registry, rules, entrypoint: _entrypoint, token, cache: _cache}) => async (req, res, next) => {
-  const {cfg, routeParams: {name, version, org}, base, log: logger} = req
+  const {cfg, logger} = getCtx()
+  const {routeParams: {name, version, org}, base} = req
   const cache = getCache(_cache)
   const authorization = token && `Bearer ${token}`
   const entrypoint = _entrypoint || normalizePath(`${cfg.server.entrypoint}${base}`)

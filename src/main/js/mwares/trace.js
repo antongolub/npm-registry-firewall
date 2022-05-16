@@ -1,19 +1,29 @@
+import { getCtx } from '../als.js'
+import { genId } from '../util.js'
+import { once } from '../util.js'
+
 export const trace = async (req, res, next) => {
-  req.log = res.log = req.log.nest({
+  req.id = res.id = genId()
+
+  const ctx = getCtx()
+  const {logger} = ctx
+  ctx.logExtra = Object.assign(ctx.logExtra || {}, {
     traceId: req.id,
     clientIp: req.headers['x-forwarded-for'] || req.socket.remoteAddress
   })
-  req.log.info(req.method, req.url)
+
+  logger.info(req.method, req.url)
 
   const end = res.end
   const now = Date.now()
-  res.end = function (...args) {
+  // see http/client.js res.pipe(pipe.res, { end: true })
+  res.end = once(function (...args) {
     const { statusCode } = res
     const isErr = statusCode < 200 || statusCode >= 300
 
-    req.log[isErr ? 'error' : 'info']('HTTP', statusCode, `${Date.now() - now}ms`)
+    logger[isErr ? 'error' : 'info']('HTTP', statusCode, `${Date.now() - now}ms`)
 
     return end.call(this, ...args)
-  }
+  })
   next()
 }
