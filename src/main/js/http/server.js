@@ -19,12 +19,23 @@ const createSocketPool = () => {
   }
 }
 
+const sendJson = function(data, code = 200) {
+  const buffer = Buffer.from(JSON.stringify(data))
+  this.writeHead(code, {
+    'Content-Type': 'application/json',
+    'Connection': 'keep-alive',
+    'Content-Length': buffer.length,
+  })
+    .end(buffer)
+}
+
 export const createServer = ({host, port, secure, router, entrypoint, keepAliveTimeout, headersTimeout, requestTimeout, logger }) => {
   const lib = secure ? https : http
   const options = {...secure}
   const sockets = createSocketPool()
   const server = lib.createServer(options, async (req, res) => {
     try {
+      res.json = sendJson
       await router(req, res)
 
     } catch (e) {

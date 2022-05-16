@@ -10,11 +10,9 @@ export const metrics = async (req, res) => {
     return pad(hours) + ':' + pad(minutes) + ':' + pad(seconds)
   }
 
-  res
-    .writeHead(200)
-    .end(JSON.stringify({
-      uptime: formatUptime(process.uptime()),
-      memory: process.memoryUsage(),
-      cpu: process.cpuUsage()
-    }))
+  res.json({
+    uptime: formatUptime(process.uptime()),
+    memory: process.memoryUsage(),
+    cpu: process.cpuUsage()
+  })
 }
