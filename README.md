@@ -519,6 +519,16 @@ To activate, add a rule:
 }
 ```
 
+You can also specify a `registry` option to override the inherited value.
+```js
+{
+  plugin: [['npm-registry-firewall/audit', {
+    critical: 'deny',
+    registry: 'https://registry.yarnpkg.com'
+  }]]
+}
+```
+
 ### `npm-registry-firewall/std`
 Default plugin to filter packages by their fields. May be used directly or via shortcut as shown in examples above.
 ```js

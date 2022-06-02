@@ -3,10 +3,11 @@ import {request} from '../../http/index.js'
 import {getCache} from '../../cache.js'
 import {makeDeferred} from '../../util.js'
 
+const severityOrder = ['critical', 'high', 'moderate', 'low', 'any' ]
+
 export const auditPlugin = async ({entry: {name, version}, options = {}, boundContext: {registry}}) => {
   options.any = options.any || options['*']
-  const severityOrder = ['critical', 'high', 'moderate', 'low', 'any' ]
-  const advisories = await getAdvisories(name, registry)
+  const advisories = await getAdvisories(name, options.registry || registry)
   const vulns = advisories.filter(({vulnerable_versions}) => semver.satisfies(version, vulnerable_versions))
   const worst = Math.min(...vulns.map(({severity}) => severityOrder.indexOf(severity)))
   const directive = worst !== -1 && options[severityOrder.slice(worst).find(l => options[l])]

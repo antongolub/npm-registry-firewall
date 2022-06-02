@@ -56,6 +56,20 @@ const test = testFactory('audit', import.meta)
     },
     false
   ],
+  [
+    'overrides boundContext.registry with option if passed',
+    {
+      entry: {name: 'eventsource', version: '1.1.0'},
+      boundContext: {
+        registry: 'https://example.com'
+      },
+      options: {
+        critical: 'deny',
+        registry: 'https://registry.npmjs.org'
+      }
+    },
+    'deny'
+  ],
 ].forEach(([name, ctx, result]) => {
   test(name, async () => {
     assert.equal(await auditPlugin(ctx), result)
