@@ -1,3 +1,10 @@
+# [1.25.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.24.0...v1.25.0) (2022-06-02)
+
+
+### Features
+
+* add registry option for audit plugin ([32266b5](https://github.com/antongolub/npm-registry-firewall/commit/32266b59c65c7221cc69ac1b880981426770f524))
+
 # [1.24.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.23.2...v1.24.0) (2022-06-02)
 
 
