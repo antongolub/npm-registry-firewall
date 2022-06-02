@@ -1,3 +1,10 @@
+# [1.24.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.23.2...v1.24.0) (2022-06-02)
+
+
+### Features
+
+* pass req auth header as config token fallback ([3f8d053](https://github.com/antongolub/npm-registry-firewall/commit/3f8d0530af7ea8556ae3af0059dde7ae16a75eef))
+
 ## [1.23.2](https://github.com/antongolub/npm-registry-firewall/compare/v1.23.1...v1.23.2) (2022-05-28)
 
 ## [1.23.1](https://github.com/antongolub/npm-registry-firewall/compare/v1.23.0...v1.23.1) (2022-05-14)
