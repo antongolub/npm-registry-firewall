@@ -7,11 +7,17 @@ import {normalizePath, gzip} from '../util.js'
 import {getCache} from '../cache.js'
 import {getCtx} from '../als.js'
 
+const getAuth = (token, auth) => token
+  ? token?.startsWith('Bearer')
+    ? token
+    :`Bearer ${token}`
+  : auth
+
 export const firewall = ({registry, rules, entrypoint: _entrypoint, token, cache: _cache}) => async (req, res, next) => {
   const {cfg, logger} = getCtx()
   const {routeParams: {name, version, org}, base} = req
   const cache = getCache(_cache)
-  const authorization = token && `Bearer ${token}`
+  const authorization = getAuth(token, req.headers['authorization'])
   const entrypoint = _entrypoint || normalizePath(`${cfg.server.entrypoint}${base}`)
   const boundContext = { registry, entrypoint, authorization, name, org, version, logger, cache }
   const { packument, headers, directives } = await getPackument({ boundContext, rules })

@@ -297,7 +297,7 @@ export function createLogger(options: TLoggerOptions): TLogger
   },
   "firewall": {
     "registry": "https://registry.npmmirror.com",  // Remote registry
-    "token": "NpmToken.*********-e0b2a8e5****",    // Optional bearer token
+    "token": "NpmToken.*********-e0b2a8e5****",    // Optional bearer token. If empty req.headers.authorization value will be used instead
     "entrypoint": "https://r.qiwi.com/npm",        // Optional. Defaults to `${server.secure ? 'https' : 'http'}://${server.host}:${server.port}${route.base}`
     "base": "/",                // Optional. Defaults to '/'
     "cache": {                  // Optional. Defaults to no-cache (null)
