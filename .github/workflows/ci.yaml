@@ -28,8 +28,14 @@ jobs:
         with:
           node-version: 18
 
-      - name: Run tests
+      - name: Run Node.js tests
         run: npm run test
+
+      - name: Setup Bun Runtime
+        uses: antongolub/action-setup-bun@v1.0.1
+
+      - name: Run Bun tests
+        run: bun run test
 
   test_pr:
     if: ${{ needs.init.outputs.skip == 'false' && github.event_name == 'pull_request' }}
