@@ -31,8 +31,18 @@ jobs:
       - name: Run Node.js tests
         run: npm run test
 
+  test_bun:
+    name: Test with Bun
+    needs: init
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
       - name: Setup Bun Runtime
-        uses: antongolub/action-setup-bun@v1.0.1
+        uses: antongolub/action-setup-bun@v1.2.1
+        with:
+          version: '>=0.1.1'
 
       - name: Run Bun tests
         run: bun run test
@@ -67,7 +77,7 @@ jobs:
     name: Release
     # https://github.community/t/trigger-job-on-tag-push-only/18076
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-    needs: test_push
+    needs: [test_push, test_bun]
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout
