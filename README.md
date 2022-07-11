@@ -21,7 +21,7 @@ npm registry proxy with on-the-fly filtering
 * Extendable. [expressjs](https://expressjs.com/en/guide/using-middleware.html)-inspired server implementation is under the hood.
 * Standalone. No clouds, no subscriptions.
 * Linux / Windows / macOS compatible.
-* Supports [Bun](https://github.com/Jarred-Sumner/bun) Runtime.
+* ~~Supports [Bun](https://github.com/Jarred-Sumner/bun) Runtime.~~ Not yet.
 * Has no deps. Literally zero.
 
 ## Motivation
