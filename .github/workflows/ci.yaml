@@ -5,7 +5,7 @@ on: [push, pull_request]
 jobs:
   init:
     name: init
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     outputs:
       skip: ${{ steps.ci-skip-step.outputs.ci-skip }}
       skip-not: ${{ steps.ci-skip-step.outputs.ci-skip-not }}
@@ -18,7 +18,7 @@ jobs:
     name: Test on push
     needs: init
     if: ${{ needs.init.outputs.skip == 'false' && github.event_name == 'push' }}
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -34,7 +34,7 @@ jobs:
   test_bun:
     name: Test with Bun
     needs: init
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -53,7 +53,7 @@ jobs:
     name: Test PR (Node v${{ matrix.node-version }}, OS ${{ matrix.os }})
     strategy:
       matrix:
-        os: [ ubuntu-20.04, windows-2019 ]
+        os: [ ubuntu-22.04, windows-2019 ]
         node-version: [ 14, 16, 18 ]
 
     runs-on: ${{ matrix.os }}
@@ -78,7 +78,7 @@ jobs:
     # https://github.community/t/trigger-job-on-tag-push-only/18076
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     needs: [test_push, test_bun]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout
         uses: actions/checkout@v3
