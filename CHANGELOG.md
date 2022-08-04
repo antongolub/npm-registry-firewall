@@ -1,3 +1,10 @@
+## [1.25.3](https://github.com/antongolub/npm-registry-firewall/compare/v1.25.2...v1.25.3) (2022-08-04)
+
+
+### Bug Fixes
+
+* handle url-encoded slashes case-insensitively ([ef9a937](https://github.com/antongolub/npm-registry-firewall/commit/ef9a93762dc7b347e3f3cb9034e1dbb6f8128664))
+
 ## [1.25.2](https://github.com/antongolub/npm-registry-firewall/compare/v1.25.1...v1.25.2) (2022-07-11)
 
 ## [1.25.1](https://github.com/antongolub/npm-registry-firewall/compare/v1.25.0...v1.25.1) (2022-07-09)
