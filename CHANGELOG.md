@@ -1,3 +1,10 @@
+## [1.25.4](https://github.com/antongolub/npm-registry-firewall/compare/v1.25.3...v1.25.4) (2022-08-04)
+
+
+### Performance Improvements
+
+* rm redundant regex chunks memo ([75aebc8](https://github.com/antongolub/npm-registry-firewall/commit/75aebc8d76b0f4f3dbd5ad1943ecc89ae2b3e330))
+
 ## [1.25.3](https://github.com/antongolub/npm-registry-firewall/compare/v1.25.2...v1.25.3) (2022-08-04)
 
 
