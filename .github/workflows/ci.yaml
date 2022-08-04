@@ -53,7 +53,7 @@ jobs:
     name: Test PR (Node v${{ matrix.node-version }}, OS ${{ matrix.os }})
     strategy:
       matrix:
-        os: [ ubuntu-22.04, windows-2019 ]
+        os: [ ubuntu-22.04, windows-2022 ]
         node-version: [ 14, 16, 18 ]
 
     runs-on: ${{ matrix.os }}
@@ -66,7 +66,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - if: matrix.os == 'windows-2019'
+      - if: matrix.os == 'windows-2022'
         run: npm i -g npm
 
       - name: Run tests
