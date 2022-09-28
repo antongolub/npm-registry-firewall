@@ -7,6 +7,13 @@ type TApp = {
 
 type TLogger = typeof console
 
+type TAgentConfig = {
+  keepAliveMsecs?: number
+  keepAlive?: number
+  maxSockets?: number
+  timeout?: number
+}
+
 type TServerConfig = {
   host?: string
   port?: string | number
@@ -71,6 +78,7 @@ type TFirewallConfig = {
 type TConfig = {
   server: TServerConfig | TServerConfig[]
   firewall: TFirewallConfig
+  agent?: TAgentConfig
   extend?: string
 }
 

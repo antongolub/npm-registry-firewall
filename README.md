@@ -176,6 +176,13 @@ type TApp = {
 
 type TLogger = typeof console
 
+type TAgentConfig = {
+  keepAliveMsecs?: number
+  keepAlive?: number
+  maxSockets?: number
+  timeout?: number
+}
+
 type TServerConfig = {
   host?: string
   port?: string | number
@@ -295,6 +302,13 @@ export function createLogger(options: TLoggerOptions): TLogger
     "keepAliveTimeout": 15000,  // Optional. Defaults to 61000
     "headersTimeout": 20000,    // Optional. Defaults to 62000
     "requestTimeout": 10000     // Optional. Defaults to 30000
+  },
+  // Optional. See `http(s).Agent` docs for details
+  "agent": {
+    "keepAliveMsecs": 5000,
+    "keepAlive": true,
+    "maxSockets": 10000,
+    "timeout": 10000
   },
   "firewall": {
     "registry": "https://registry.npmmirror.com",  // Remote registry

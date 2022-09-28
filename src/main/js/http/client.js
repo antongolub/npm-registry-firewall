@@ -5,15 +5,7 @@ import { Buffer } from 'node:buffer'
 
 import { makeDeferred, normalizePath, gunzip, gzip } from '../util.js'
 import { httpError, REQUEST_TIMEOUT } from './error.js'
-
-const agentOpts = {
-  keepAliveMsecs: 500,
-  keepAlive: true,
-  maxSockets: 10000,
-  timeout: 10000
-}
-const agentHttps = new https.Agent(agentOpts)
-const agentHttp = new http.Agent(agentOpts)
+import { getAgent } from './agent.js'
 
 export const request = async (opts) => {
   const {url, headers: _headers, method = 'GET', postData, pipe, gzip: _gzip, followRedirects, timeout = 30_000, authorization = null} = opts
@@ -24,7 +16,7 @@ export const request = async (opts) => {
     host,
     hostname,
     port = isSecure ? 443 : 80,
-    agent = isSecure ? agentHttps : agentHttp,
+    agent = getAgent(isSecure),
     lib = isSecure ? https : http
   } = parse(normalizePath(url))
   const {promise, resolve, reject} = makeDeferred()
