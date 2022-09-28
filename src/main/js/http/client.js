@@ -6,6 +6,8 @@ import { Buffer } from 'node:buffer'
 import { makeDeferred, normalizePath, gunzip, gzip } from '../util.js'
 import { httpError, REQUEST_TIMEOUT } from './error.js'
 import { getAgent } from './agent.js'
+import { getCtx } from '../als.js'
+import { logger as defaultLogger } from '../logger.js'
 
 export const request = async (opts) => {
   const {url, headers: _headers, method = 'GET', postData, pipe, gzip: _gzip, followRedirects, timeout = 30_000, authorization = null} = opts
@@ -41,6 +43,9 @@ export const request = async (opts) => {
     agent,
     headers
   }
+  const { logger = defaultLogger } = getCtx()
+
+  logger.debug('HTTP >', method, url)
 
   const req = lib.request(params, res => {
     res.req = req
@@ -80,9 +85,13 @@ export const request = async (opts) => {
       })
       resolve(res)
     })
+    res.on('error', (err) => logger.debug('HTTP RES ERROR <', statusCode, method, url, err))
+    res.on('end', () => logger.debug('HTTP <', statusCode, method, url))
   })
   req.on('error', reject)
+  req.on('error', (err) => logger.debug('HTTP REQ ERROR <', method, url, err))
   req.on('timeout', () => req.destroy(httpError(REQUEST_TIMEOUT, {url, method})))
+  req.on('timeout', () => logger.debug('HTTP REQ TIMEOUT <', method, url))
 
   promise.req = req
 
