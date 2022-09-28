@@ -21,7 +21,7 @@ export const trace = async (req, res, next) => {
     const { statusCode } = res
     const isErr = statusCode < 200 || statusCode >= 300
 
-    logger[isErr ? 'error' : 'info']('HTTP', statusCode, `${Date.now() - now}ms`)
+    logger[isErr ? 'error' : 'info']('HTTP', statusCode, `${Date.now() - now}ms`, req.method, req.url)
 
     return end.call(this, ...args)
   })
