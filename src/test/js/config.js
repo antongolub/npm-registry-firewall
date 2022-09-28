@@ -95,3 +95,17 @@ test('resolves `preset` as string[]', () => {
     }]
   })
 })
+
+test('handles `agent` opts', () => {
+  const config = getConfig({
+    server: {port: 3000},
+    firewall: { registry: 'https://registry.npmjs.org'},
+    agent: {keepAliveMsecs: 1000 }
+  })
+
+  objectContaining(config, {
+    profiles: [{
+      agent: {keepAliveMsecs: 1000 }
+    }]
+  })
+})
