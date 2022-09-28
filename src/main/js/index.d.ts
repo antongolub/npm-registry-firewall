@@ -79,6 +79,7 @@ type TConfig = {
   server: TServerConfig | TServerConfig[]
   firewall: TFirewallConfig
   agent?: TAgentConfig
+  log?: { level?: 'trace' | 'debug' | 'info' | 'warn' | 'error' }
   extend?: string
 }
 

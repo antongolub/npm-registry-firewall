@@ -20,6 +20,7 @@ const populate = (config) => {
     assert.ok(p.firewall, 'cfg: firewall')
 
     const agent = p.agent
+    const log = p.log
     const server = asArray(p.server).map(populateExtra).map(({
       host = '127.0.0.1',
       port = 8080,
@@ -104,9 +105,10 @@ const populate = (config) => {
     })
 
     return {
-      agent,
       server,
-      firewall
+      firewall,
+      agent,
+      log,
     }
   })
 

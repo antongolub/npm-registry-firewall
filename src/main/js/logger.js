@@ -14,7 +14,7 @@ export const createLogger = ({extra = {}, formatter = format, level = 'info'} = 
     .reduce((m, l) => {
       m[l] = (...args) => {
         const ctx = getCtx()
-        const _level = ctx.logLevel || level
+        const _level = ctx.logLevel || ctx?.cfg?.log?.level || level
 
         if (levels.indexOf(l) < levels.indexOf(_level)) {
           return

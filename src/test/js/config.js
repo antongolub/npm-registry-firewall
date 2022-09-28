@@ -109,3 +109,17 @@ test('handles `agent` opts', () => {
     }]
   })
 })
+
+test('processes `logger` opts', () => {
+  const config = getConfig({
+    server: {port: 3000},
+    firewall: { registry: 'https://registry.npmjs.org'},
+    log: {level: 'trace' }
+  })
+
+  objectContaining(config, {
+    profiles: [{
+      log: {level: 'trace' }
+    }]
+  })
+})
