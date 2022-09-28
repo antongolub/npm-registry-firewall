@@ -1,3 +1,12 @@
+# [1.26.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.25.4...v1.26.0) (2022-09-28)
+
+
+### Features
+
+* log req.method and req.url on end event. ([c9f7a70](https://github.com/antongolub/npm-registry-firewall/commit/c9f7a70e62f82dbb2cc3a350a4377f06e9578d41))
+* make log level configurable, add debug logs for http layer ([9231fb7](https://github.com/antongolub/npm-registry-firewall/commit/9231fb7ca2dfbd719495c559868fe4fd6bde938f))
+* provide custom http(s) agent cfg ([df46e2f](https://github.com/antongolub/npm-registry-firewall/commit/df46e2f35cfbfce604184436bbb40e28d766e97f)), closes [#59](https://github.com/antongolub/npm-registry-firewall/issues/59)
+
 ## [1.25.4](https://github.com/antongolub/npm-registry-firewall/compare/v1.25.3...v1.25.4) (2022-08-04)
 
 
