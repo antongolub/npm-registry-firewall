@@ -1,3 +1,10 @@
+## [1.26.1](https://github.com/antongolub/npm-registry-firewall/compare/v1.26.0...v1.26.1) (2022-09-30)
+
+
+### Bug Fixes
+
+* add dot to tarball/packument regexps ([6ccddc1](https://github.com/antongolub/npm-registry-firewall/commit/6ccddc1830496bc1ca72ff7e822eb27ea8e551aa))
+
 # [1.26.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.25.4...v1.26.0) (2022-09-28)
 
 
