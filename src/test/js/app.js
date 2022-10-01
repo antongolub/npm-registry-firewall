@@ -36,12 +36,12 @@ test('is runnable', async () => {
   [
     'returns healthcheck',
     { url: 'http://localhost:3001/healthcheck/', method: 'GET'},
-    {statusCode: 200, body: '{"status":"OK"}' }
+    { statusCode: 200, body: '{"status":"OK"}' }
   ],
   [
     'returns metrics',
     { url: 'http://localhost:3001/metrics/', method: 'GET'},
-    {statusCode: 200}
+    { statusCode: 200}
   ],
   [
     '404 if not found',
@@ -68,11 +68,27 @@ test('is runnable', async () => {
     { url: 'http://localhost:3001/registry/d', method: 'PUT'},
     { statusCode: 405 }
   ],
-].forEach(([name, {url, method}, expected]) => {
+  [
+    '304 if etag matches if-none-match',
+    {
+      url: 'http://localhost:3001/registry/d',
+      method: 'GET',
+      headers() {
+        return request({url: 'http://localhost:3001/registry/d'})
+          .then(({headers: {etag}}) => ({
+            'if-none-match': etag
+          }))
+      }
+    },
+    { statusCode: 304 }
+  ],
+].forEach(([name, {url, method, headers: _headers = {}}, expected]) => {
   test(name, async () => {
     let result
+    const headers = typeof _headers === 'function' ? await _headers() : _headers
+
     try {
-      const res = await request({url, method})
+      const res = await request({url, method, headers})
       const hash = crypto
         .createHash('sha512')
         .update(res.buffer)

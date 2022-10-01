@@ -1,4 +1,5 @@
 import {Buffer} from 'node:buffer'
+import crypto from 'node:crypto'
 
 import {httpError, NOT_FOUND, ACCESS_DENIED, METHOD_NOT_ALLOWED} from '../http/index.js'
 import {getPolicy} from './engine.js'
@@ -41,14 +42,21 @@ export const firewall = ({registry, rules, entrypoint: _entrypoint, token, cache
     return next(httpError(NOT_FOUND))
   }
 
-  const te = headers['transfer-encoding']
+  const tranferEncoding = headers['transfer-encoding']
   const _packumentBuffer = Buffer.from(JSON.stringify(packument))
-  const packumentBuffer = te === 'gzip' ? await gzip(_packumentBuffer) : _packumentBuffer
-  const cl = te ? {} : {'content-length': '' + _packumentBuffer.length}
+  const packumentBuffer = tranferEncoding === 'gzip' ? await gzip(_packumentBuffer) : _packumentBuffer
+  const contentLength = tranferEncoding ? null : {'content-length': '' + _packumentBuffer.length}
+  const etag = 'W/' + JSON.stringify(crypto.createHash('sha256').update(packumentBuffer).digest('hex'))
+
+  if (req.headers['if-none-match'] === etag) {
+    res.writeHead(304).end()
+    return
+  }
 
   res.writeHead(200, {
     ...headers,
-    ...cl
+    ...contentLength,
+    etag,
   })
 
   if (method === 'GET') {
