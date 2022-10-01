@@ -1,3 +1,11 @@
+# [1.27.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.26.1...v1.27.0) (2022-10-01)
+
+
+### Features
+
+* assert http method in firewall mware ([5fb8c10](https://github.com/antongolub/npm-registry-firewall/commit/5fb8c10287b420cced93058864fc72d161d30b67))
+* return 304 if etag matches if-none-match header ([ba8ea16](https://github.com/antongolub/npm-registry-firewall/commit/ba8ea16b20e70c1bac8d26c0ce56fa72f528885e))
+
 ## [1.26.1](https://github.com/antongolub/npm-registry-firewall/compare/v1.26.0...v1.26.1) (2022-09-30)
 
 
