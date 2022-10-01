@@ -7,6 +7,8 @@ type TApp = {
 
 type TLogger = typeof console
 
+type TLogeLevel = 'trace' | 'debug' | 'info' | 'warn' | 'error'
+
 type TAgentConfig = {
   keepAliveMsecs?: number
   keepAlive?: number
@@ -79,7 +81,7 @@ type TConfig = {
   server: TServerConfig | TServerConfig[]
   firewall: TFirewallConfig
   agent?: TAgentConfig
-  log?: { level?: 'trace' | 'debug' | 'info' | 'warn' | 'error' }
+  log?: { level?: TLogeLevel }
   extend?: string
 }
 
