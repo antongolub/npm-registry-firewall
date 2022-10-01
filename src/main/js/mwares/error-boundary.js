@@ -1,9 +1,9 @@
-import {INTERNAL_SERVER_ERROR, statusMessageMap} from '../http/index.js'
+import {INTERNAL_SERVER_ERROR, statusMessages} from '../http/index.js'
 import {getCtx} from '../als.js'
 
 export const errorBoundary = async (err, req, res, next) => {
   const code = err.statusCode || INTERNAL_SERVER_ERROR
-  const message = err.statusMessage || err.message || statusMessageMap[code] || statusMessageMap[INTERNAL_SERVER_ERROR]
+  const message = err.statusMessage || err.message || statusMessages[code] || statusMessages[INTERNAL_SERVER_ERROR]
   const {logger = console} = getCtx()
 
   logger.error(err.stack)

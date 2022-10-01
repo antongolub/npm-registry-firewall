@@ -1,7 +1,7 @@
 import {Buffer} from 'node:buffer'
 import crypto from 'node:crypto'
 
-import {httpError, NOT_FOUND, ACCESS_DENIED, METHOD_NOT_ALLOWED} from '../http/index.js'
+import {httpError, NOT_FOUND, ACCESS_DENIED, METHOD_NOT_ALLOWED, NOT_MODIFIED, OK} from '../http/index.js'
 import {getPolicy} from './engine.js'
 import {getPackument} from './packument.js'
 import {normalizePath, gzip} from '../util.js'
@@ -49,11 +49,11 @@ export const firewall = ({registry, rules, entrypoint: _entrypoint, token, cache
   const etag = 'W/' + JSON.stringify(crypto.createHash('sha256').update(packumentBuffer).digest('hex'))
 
   if (req.headers['if-none-match'] === etag) {
-    res.writeHead(304).end()
+    res.writeHead(NOT_MODIFIED).end()
     return
   }
 
-  res.writeHead(200, {
+  res.writeHead(OK, {
     ...headers,
     ...contentLength,
     etag,

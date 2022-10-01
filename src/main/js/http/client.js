@@ -4,7 +4,7 @@ import { parse } from 'node:url'
 import { Buffer } from 'node:buffer'
 
 import { makeDeferred, normalizePath, gunzip, gzip } from '../util.js'
-import { httpError, REQUEST_TIMEOUT } from './error.js'
+import { httpError, OK, FOUND, MULTIPLE_CHOICES, PERMANENT_REDIRECT, REQUEST_TIMEOUT, TEMPORARY_REDIRECT } from './error.js'
 import { getAgent } from './agent.js'
 import { getCtx } from '../als.js'
 import { logger as defaultLogger } from '../logger.js'
@@ -52,7 +52,7 @@ export const request = async (opts) => {
     req.res = res
     const statusCode = res.statusCode
 
-    if (statusCode === 302 && followRedirects && res.headers.location) {
+    if ([FOUND, PERMANENT_REDIRECT, TEMPORARY_REDIRECT].includes(statusCode) && followRedirects && res.headers.location) {
       return request({
         ...opts,
         url: res.headers.location
@@ -64,7 +64,7 @@ export const request = async (opts) => {
       res.pipe(pipe.res, { end: true })
     }
 
-    if (statusCode < 200 || statusCode >= 300) {
+    if (statusCode < OK || statusCode >= MULTIPLE_CHOICES) {
       return reject(httpError(statusCode, {url, method}))
     }
 

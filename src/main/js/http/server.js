@@ -2,7 +2,7 @@ import http from 'node:http'
 import https from 'node:https'
 
 import {makeDeferred} from '../util.js'
-import {INTERNAL_SERVER_ERROR, statusMessageMap} from './error.js'
+import {INTERNAL_SERVER_ERROR, statusMessages} from './error.js'
 
 const createSocketPool = () => {
   const sockets = new Set()
@@ -39,7 +39,7 @@ export const createServer = ({host, port, secure, router, entrypoint, keepAliveT
       await router(req, res)
 
     } catch (e) {
-      const message = e?.res?.statusMessage || statusMessageMap[INTERNAL_SERVER_ERROR]
+      const message = e?.res?.statusMessage || statusMessages[INTERNAL_SERVER_ERROR]
       const code = e?.res?.statusCode || INTERNAL_SERVER_ERROR
 
       res
