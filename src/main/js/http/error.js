@@ -1,5 +1,6 @@
 export const ACCESS_DENIED =          403
 export const NOT_FOUND =              404
+export const METHOD_NOT_ALLOWED =     405
 export const REQUEST_TIMEOUT =        408
 export const INTERNAL_SERVER_ERROR =  500
 
@@ -8,6 +9,7 @@ export const statusMessageMap = {
   [NOT_FOUND]: 'Not Found',
   [REQUEST_TIMEOUT]: 'Request Timeout',
   [INTERNAL_SERVER_ERROR]: 'Internal Server Error',
+  [METHOD_NOT_ALLOWED]: 'Method Not Allowed'
 }
 
 export const httpError = (code = INTERNAL_SERVER_ERROR, {

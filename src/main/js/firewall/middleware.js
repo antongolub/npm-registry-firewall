@@ -1,6 +1,6 @@
 import {Buffer} from 'node:buffer'
 
-import {httpError, NOT_FOUND, ACCESS_DENIED } from '../http/index.js'
+import {httpError, NOT_FOUND, ACCESS_DENIED, METHOD_NOT_ALLOWED} from '../http/index.js'
 import {getPolicy} from './engine.js'
 import {getPackument} from './packument.js'
 import {normalizePath, gzip} from '../util.js'
@@ -14,8 +14,13 @@ const getAuth = (token, auth) => token
   : auth
 
 export const firewall = ({registry, rules, entrypoint: _entrypoint, token, cache: _cache}) => async (req, res, next) => {
+  const {routeParams: {name, version, org}, base, method} = req
+
+  if (method !== 'GET' && method !== 'HEAD') {
+    return next(httpError(METHOD_NOT_ALLOWED))
+  }
+
   const {cfg, logger} = getCtx()
-  const {routeParams: {name, version, org}, base} = req
   const cache = getCache(_cache)
   const authorization = getAuth(token, req.headers['authorization'])
   const entrypoint = _entrypoint || normalizePath(`${cfg.server.entrypoint}${base}`)
@@ -36,7 +41,6 @@ export const firewall = ({registry, rules, entrypoint: _entrypoint, token, cache
     return next(httpError(NOT_FOUND))
   }
 
-
   const te = headers['transfer-encoding']
   const _packumentBuffer = Buffer.from(JSON.stringify(packument))
   const packumentBuffer = te === 'gzip' ? await gzip(_packumentBuffer) : _packumentBuffer
@@ -46,6 +50,9 @@ export const firewall = ({registry, rules, entrypoint: _entrypoint, token, cache
     ...headers,
     ...cl
   })
-  res.write(packumentBuffer)
+
+  if (method === 'GET') {
+    res.write(packumentBuffer)
+  }
   res.end()
 }

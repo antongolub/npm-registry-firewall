@@ -54,9 +54,19 @@ test('is runnable', async () => {
     { hash: 'uMs0P/SZUnoc+oF6E0VVPSnkXphOfg1GXRl+wnx/tElmLNPtNCuh2n7EVbSJU5hv73q96YK04bBVRQmS2p2Cjw==' }
   ],
   [
-    'reads packument',
+    'reads packument via GET',
     { url: 'http://localhost:3001/registry/d', method: 'GET'},
     { statusCode: 200 }
+  ],
+  [
+    'reads packument via HEAD',
+    { url: 'http://localhost:3001/registry/d', method: 'HEAD'},
+    { statusCode: 200 }
+  ],
+  [
+    '405 if not allowed',
+    { url: 'http://localhost:3001/registry/d', method: 'PUT'},
+    { statusCode: 405 }
   ],
 ].forEach(([name, {url, method}, expected]) => {
   test(name, async () => {

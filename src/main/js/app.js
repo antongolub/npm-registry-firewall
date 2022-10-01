@@ -31,7 +31,7 @@ export const _createApp = (cfg, {
       const f = firewall({registry, rules, entrypoint, token, cache})
       return createRouter([
         [
-          '*',
+          'GET',
           [
             /^\/((?:(@[a-z0-9\-.]+)(?:%2[fF]|\/))?[a-z0-9\-.]+)\/-\/[a-z0-9\-.]+-(\d+\.\d+\.\d+(?:-[+\-.a-z0-9]+)?)\.tgz$/,
             ['name', 'org', 'version']
