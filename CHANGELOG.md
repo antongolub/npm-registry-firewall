@@ -1,3 +1,10 @@
+# [1.28.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.27.0...v1.28.0) (2022-10-02)
+
+
+### Features
+
+* support custom http agent ([da9c8c7](https://github.com/antongolub/npm-registry-firewall/commit/da9c8c7857a4c2bb27aa970c8a4d5fd1c2db4ebd))
+
 # [1.27.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.26.1...v1.27.0) (2022-10-01)
 
 
