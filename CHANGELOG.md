@@ -1,3 +1,10 @@
+# [1.29.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.28.0...v1.29.0) (2022-10-02)
+
+
+### Features
+
+* export `getCtx` as a part of plugin api ([bde1fec](https://github.com/antongolub/npm-registry-firewall/commit/bde1fec31897039e2a50bee33782495a3959ac07))
+
 # [1.28.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.27.0...v1.28.0) (2022-10-02)
 
 
