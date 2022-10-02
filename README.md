@@ -573,7 +573,7 @@ To activate, add a rule:
 }
 ```
 
-You can also specify a `registry` option to override the inherited value.
+You can also specify the `registry` option to override the inherited value.
 ```js
 {
   plugin: [['npm-registry-firewall/audit', {
