@@ -1,3 +1,4 @@
+import './index.js'
 import './app.js'
 import './plugin-audit.js'
 import './cache.js'
