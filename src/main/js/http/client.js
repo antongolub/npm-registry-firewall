@@ -18,9 +18,9 @@ export const request = async (opts) => {
     host,
     hostname,
     port = isSecure ? 443 : 80,
-    agent = getAgent(isSecure),
-    lib = isSecure ? https : http
   } = parse(normalizePath(url))
+  const lib = isSecure ? https : http
+  const agent = getAgent(isSecure)
   const {promise, resolve, reject} = makeDeferred()
   const data = postData && (_gzip ? await gzip(Buffer.from(postData)) : Buffer.from(postData))
   const encoding = _gzip ? 'gzip' : 'utf8'
@@ -43,7 +43,7 @@ export const request = async (opts) => {
     agent,
     headers
   }
-  const { logger = defaultLogger } = getCtx()
+  const { logger = defaultLogger, cfg } = getCtx()
 
   logger.debug('HTTP >', method, url)
 

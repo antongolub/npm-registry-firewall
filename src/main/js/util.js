@@ -102,8 +102,7 @@ export const load = (file) => noThrow(require)(path.resolve(file)) || require(fi
 export const gunzip = promisify(zlib.gunzip)
 export const gzip = promisify(zlib.gzip)
 
-// Adapted from https://stackoverflow.com/a/34749873
-export const isPlainObject = (item) => item !== null && typeof item === 'object' && !isArray(item)
+export const isPlainObject = (item) => item?.constructor === Object
 
 export const mergeDeep = (target, ...sources) => {
   if (!sources.length) return target;

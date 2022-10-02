@@ -2,6 +2,7 @@ import {testFactory, objectContaining} from '../test-utils.js'
 import {getConfig} from '../../main/js/config.js'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import https from 'node:https'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -97,16 +98,25 @@ test('resolves `preset` as string[]', () => {
 })
 
 test('handles `agent` opts', () => {
-  const config = getConfig({
+  const config1 = getConfig({
     server: {port: 3000},
     firewall: { registry: 'https://registry.npmjs.org'},
     agent: {keepAliveMsecs: 1000 }
   })
 
-  objectContaining(config, {
-    profiles: [{
-      agent: {keepAliveMsecs: 1000 }
-    }]
+  objectContaining(config1, {
+    profiles: [{ agent: {keepAliveMsecs: 1000 }}]
+  })
+
+  const agent = new https.Agent()
+  const config2 = getConfig({
+    server: {port: 3000},
+    firewall: { registry: 'https://registry.npmjs.org'},
+    agent
+  })
+
+  objectContaining(config2, {
+    profiles: [{ agent}]
   })
 })
 

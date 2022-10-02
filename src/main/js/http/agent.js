@@ -1,6 +1,7 @@
 import http from 'node:http'
 import https from 'node:https'
 import {getCtx} from '../als.js'
+import {isPlainObject} from '../util.js'
 
 const agents = {
   http: new Map(),
@@ -18,7 +19,8 @@ export const getAgent = (secure) => {
   const opts = getCtx()?.cfg?.agent || agentOpts
   const map = secure ? agents.https : agents.http
   if (!map.has(opts)) {
-    map.set(opts, new (secure ? https.Agent : http.Agent)(opts))
+    const value = isPlainObject(opts) ? new (secure ? https.Agent : http.Agent)(opts) : opts
+    map.set(opts, value)
   }
 
   return map.get(opts)

@@ -307,7 +307,7 @@ export function createLogger(options: TLoggerOptions): TLogger
     "headersTimeout": 20000,    // Optional. Defaults to 62000
     "requestTimeout": 10000     // Optional. Defaults to 30000
   },
-  // Optional. See `http(s).Agent` docs for details
+  // Optional. See `http(s).Agent` docs for details. Defaults to:
   "agent": {
     "keepAliveMsecs": 5000,
     "keepAlive": true,
@@ -448,6 +448,41 @@ const cache = () => {
 ```
 
 Pass `null` as `config.firewall.cache` to disable.
+
+### Agent
+Pass a custom implementation of `http(s).Agent` to control the number of concurrent requests to the remote registry.
+This feature is useful if your service is working behind a proxy.
+```js
+// https://www.npmjs.com/package/https-proxy-agent
+import HttpsProxyAgent from 'https-proxy-agent'
+
+const agent = new HttpsProxyAgent('http://10.10.0.20:3128')
+const app = createApp({
+  server: {port: 5000},
+  agent,
+  firewall: {
+    registry: 'https://registry.npmjs.org',
+    rules: []
+  }
+})
+```
+
+Or just set the `agent` option to create an agent:
+```js
+const app = createApp({
+  server: {port: 5000},
+  agent: {
+    keepAliveMsecs: 5000,
+    keepAlive: true,
+    maxSockets: 10_000,
+    timeout: 10_000
+  },
+  firewall: {
+    registry: 'https://registry.npmjs.org',
+    rules: []
+  }
+})
+```
 
 ### Extras
 #### Presets
