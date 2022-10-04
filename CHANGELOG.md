@@ -1,3 +1,10 @@
+# [1.30.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.29.1...v1.30.0) (2022-10-04)
+
+
+### Features
+
+* support several target registries ([aa06883](https://github.com/antongolub/npm-registry-firewall/commit/aa0688309f541f409b544344ed5dc2c5d3d2d0a4)), closes [#62](https://github.com/antongolub/npm-registry-firewall/issues/62)
+
 ## [1.29.1](https://github.com/antongolub/npm-registry-firewall/compare/v1.29.0...v1.29.1) (2022-10-04)
 
 
