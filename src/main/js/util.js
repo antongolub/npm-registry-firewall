@@ -123,3 +123,15 @@ export const mergeDeep = (target, ...sources) => {
 
   return mergeDeep(target, ...sources)
 }
+
+export const tryQueue = async (fn, ...args) => {
+  const results = await Promise.allSettled(args.map(a => fn(...a)))
+  const success = results.find(r => r.status === 'fulfilled')
+
+  if (success) {
+    return success.value
+  }
+
+  const error = results.find(r => r.status === 'rejected')
+  return Promise.reject(error.reason)
+}

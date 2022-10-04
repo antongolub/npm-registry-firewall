@@ -1,5 +1,5 @@
 import {testFactory, assert} from '../test-utils.js'
-import {flatten, expand} from '../../main/js/util.js'
+import {flatten, expand, tryQueue} from '../../main/js/util.js'
 
 const test = testFactory('util', import.meta)
 
@@ -26,4 +26,19 @@ test('expand', () => {
     foo: 'bar',
     baz: [{a: 'a'}, {b: {c: 'd'}}, 1]
   })
+})
+
+test('tryQueue', async() => {
+  const fn = async (i) => {
+    if (i === 0) { throw new Error('broken') }
+    return i
+  }
+
+  assert.equal(await tryQueue(fn, [0], [0], [3]), 3)
+
+  try {
+    await tryQueue(fn, [0])
+  } catch (err) {
+    assert.equal(err.message, 'broken')
+  }
 })

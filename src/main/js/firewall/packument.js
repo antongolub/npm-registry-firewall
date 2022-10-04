@@ -1,6 +1,6 @@
 import {getDirectives, getPolicy} from './engine.js'
 import {request} from '../http/index.js'
-import {makeDeferred} from '../util.js'
+import {asArray, makeDeferred, tryQueue} from '../util.js'
 
 export const getPackument = async ({boundContext, rules}) => {
   const {cache, registry, authorization, entrypoint, name} = boundContext
@@ -11,12 +11,12 @@ export const getPackument = async ({boundContext, rules}) => {
   cache.add(name, promise)
 
   try {
-    const {body, headers} = await request({
-      url: `${registry}/${name}`,
+    const args = asArray(registry).map(r => [{
+      url: `${r}/${name}`,
       authorization,
       'accept-encoding': 'gzip'
-    })
-
+    }])
+    const {body, headers} = await tryQueue(request, ...args)
     const packument = JSON.parse(body)
     const directives = await getDirectives({ packument, rules, boundContext})
     const _packument = patchPackument({ packument, directives, entrypoint, registry })
@@ -39,7 +39,10 @@ export const patchVersions = ({packument, directives, entrypoint, registry}) => 
   if (getPolicy(directives, v.version) === 'deny') {
     return m
   }
-  v.dist.tarball = v.dist.tarball.replace(registry, entrypoint)
+  asArray(registry).forEach(r => {
+    v.dist.tarball = v.dist.tarball.replace(r, entrypoint)
+  })
+
   m[v.version] = v
   return m
 }, {})

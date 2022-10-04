@@ -23,7 +23,7 @@ const app = createApp([{
 }, {
   server: { port: 3003 },
   firewall: {
-    registry: 'https://registry.yarnpkg.com',
+    registry: ['https://registry.yarnpkg.com', 'https://registry.npmjs.org'],
     rules: { policy: 'deny', name: '*' }
   }
 }])

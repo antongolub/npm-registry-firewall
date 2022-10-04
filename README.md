@@ -237,7 +237,7 @@ type TCacheFactory = {
 }
 
 type TFirewallConfig = {
-  registry: string
+  registry: string | string[]
   entrypoint?: string
   token?: string
   base?: string
