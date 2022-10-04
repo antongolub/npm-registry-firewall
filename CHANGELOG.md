@@ -1,3 +1,10 @@
+## [1.30.1](https://github.com/antongolub/npm-registry-firewall/compare/v1.30.0...v1.30.1) (2022-10-04)
+
+
+### Bug Fixes
+
+* do not log stacktrace on 404 ([70af1c0](https://github.com/antongolub/npm-registry-firewall/commit/70af1c06b7d39f709402d5ef1a9204d90b39288a))
+
 # [1.30.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.29.1...v1.30.0) (2022-10-04)
 
 
