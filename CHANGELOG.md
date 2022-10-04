@@ -1,3 +1,10 @@
+## [1.29.1](https://github.com/antongolub/npm-registry-firewall/compare/v1.29.0...v1.29.1) (2022-10-04)
+
+
+### Bug Fixes
+
+* set 3xx, 404 log level to info ([5028c87](https://github.com/antongolub/npm-registry-firewall/commit/5028c87b176724ffd576910fba4b9d71f1a91ffb))
+
 # [1.29.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.28.0...v1.29.0) (2022-10-02)
 
 
