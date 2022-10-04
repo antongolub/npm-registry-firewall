@@ -90,7 +90,7 @@ const populate = (config) => {
 
       return {
         rules,
-        registry: normalizePath(f.registry),
+        registry: f.registry ? asArray(f.registry).map(normalizePath) : null,
         token: f.token,
         entrypoint: f.entrypoint ? normalizePath(f.entrypoint) : null,
         base: f.base || '/',

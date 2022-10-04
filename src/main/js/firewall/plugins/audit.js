@@ -1,7 +1,7 @@
 import {semver} from '../../semver.js'
 import {request} from '../../http/index.js'
 import {getCache} from '../../cache.js'
-import {makeDeferred} from '../../util.js'
+import {asArray, makeDeferred, tryQueue} from '../../util.js'
 
 const severityOrder = ['critical', 'high', 'moderate', 'low', 'any' ]
 
@@ -16,6 +16,13 @@ export const auditPlugin = async ({entry: {name, version}, options = {}, boundCo
 }
 
 const getAdvisories = async (name, registry) => {
+  const registries = asArray(registry || registry)
+  const args = registries.map(r => [name, r])
+
+  return tryQueue(_getAdvisories, ...args)
+}
+
+const _getAdvisories = async (name, registry) => {
   const cache = getCache({ name: 'audit', ttl: 120_000 })
   if (await cache.has(name)) {
     return cache.get(name)
