@@ -19,7 +19,7 @@ export const trace = async (req, res, next) => {
   // see http/client.js res.pipe(pipe.res, { end: true })
   res.end = once(function (...args) {
     const { statusCode } = res
-    const isErr = statusCode < 200 || statusCode >= 300
+    const isErr = statusCode < 200 || (statusCode >= 400 && statusCode !== 404)
 
     logger[isErr ? 'error' : 'info']('HTTP', statusCode, `${Date.now() - now}ms`, req.method, req.url)
 
