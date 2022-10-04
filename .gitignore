@@ -108,3 +108,6 @@ yarn.lock
 _.npmrc
 .npmrc
 temp
+
+# IDE files
+.idea
