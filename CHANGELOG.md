@@ -1,3 +1,11 @@
+## [1.30.2](https://github.com/antongolub/npm-registry-firewall/compare/v1.30.1...v1.30.2) (2022-10-05)
+
+
+### Bug Fixes
+
+* log only stacktraces of 5xx errors ([43412ce](https://github.com/antongolub/npm-registry-firewall/commit/43412ce276a6391b7a3b980f1e2f939b24ddb378))
+* use constant instead of 500 ([3a473a8](https://github.com/antongolub/npm-registry-firewall/commit/3a473a8f643f483e4ca4455d9096a44fb71c361d))
+
 ## [1.30.1](https://github.com/antongolub/npm-registry-firewall/compare/v1.30.0...v1.30.1) (2022-10-04)
 
 
