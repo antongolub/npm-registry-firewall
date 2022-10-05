@@ -1,4 +1,4 @@
-import {INTERNAL_SERVER_ERROR, NOT_FOUND, statusMessages} from '../http/index.js'
+import {INTERNAL_SERVER_ERROR, statusMessages} from '../http/index.js'
 import {getCtx} from '../als.js'
 
 export const errorBoundary = async (err, req, res, next) => {
@@ -6,7 +6,7 @@ export const errorBoundary = async (err, req, res, next) => {
   const message = err.statusMessage || err.message || statusMessages[code] || statusMessages[INTERNAL_SERVER_ERROR]
   const {logger = console} = getCtx()
 
-  if (err.statusCode !== NOT_FOUND) {
+  if (err.statusCode >= 500) {
     logger.error(err.stack)
   }
 
