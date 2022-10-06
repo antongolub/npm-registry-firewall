@@ -6,9 +6,11 @@ export const proxy = (registry) => async (req, res) => {
   const args = registries.map(r => [{
     url: `${r}${req.url}`,
     method: req.method,
-    pipe: {req, res},
     followRedirects: true
   }])
 
-  return tryQueue(request, ...args)
+  const targetRes = await tryQueue(request, ...args)
+
+  res.writeHead(targetRes.statusCode, targetRes.headers)
+  res.end(targetRes.buffer)
 }
