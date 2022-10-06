@@ -9,8 +9,8 @@ export const proxy = (registry) => async (req, res) => {
     followRedirects: true
   }])
 
-  const targetRes = await tryQueue(request, ...args)
+  const { statusCode, headers, buffer } = await tryQueue(request, ...args)
 
-  res.writeHead(targetRes.statusCode, targetRes.headers)
-  res.end(targetRes.buffer)
+  res.writeHead(statusCode, headers)
+  res.end(buffer)
 }
