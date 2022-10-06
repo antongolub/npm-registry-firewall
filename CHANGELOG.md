@@ -1,3 +1,10 @@
+## [1.30.3](https://github.com/antongolub/npm-registry-firewall/compare/v1.30.2...v1.30.3) (2022-10-06)
+
+
+### Bug Fixes
+
+* targets proxying race ([6f60886](https://github.com/antongolub/npm-registry-firewall/commit/6f608867c051f4d7bdecef881740d3dcf28fafa1))
+
 ## [1.30.2](https://github.com/antongolub/npm-registry-firewall/compare/v1.30.1...v1.30.2) (2022-10-05)
 
 
