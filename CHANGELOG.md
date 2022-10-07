@@ -1,3 +1,10 @@
+## [1.30.4](https://github.com/antongolub/npm-registry-firewall/compare/v1.30.3...v1.30.4) (2022-10-07)
+
+
+### Performance Improvements
+
+* performance improvements ([0e48a13](https://github.com/antongolub/npm-registry-firewall/commit/0e48a132351c313b900d70e93be0626d9e597ebc))
+
 ## [1.30.3](https://github.com/antongolub/npm-registry-firewall/compare/v1.30.2...v1.30.3) (2022-10-06)
 
 
