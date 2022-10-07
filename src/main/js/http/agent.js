@@ -9,9 +9,9 @@ const agents = {
 }
 
 const agentOpts = {
-  keepAliveMsecs: 5000,
+  keepAliveMsecs: 10_000,
   keepAlive: true,
-  maxSockets: 10_000,
+  maxSockets: 100,
   timeout: 10_000
 }
 

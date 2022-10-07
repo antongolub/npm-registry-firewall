@@ -2,6 +2,7 @@ import http from 'node:http'
 import https from 'node:https'
 import { parse } from 'node:url'
 import { Buffer } from 'node:buffer'
+import zlib from 'node:zlib'
 
 import { makeDeferred, normalizePath, gunzip, gzip } from '../util.js'
 import { httpError, OK, FOUND, MULTIPLE_CHOICES, PERMANENT_REDIRECT, REQUEST_TIMEOUT, TEMPORARY_REDIRECT } from './error.js'
@@ -22,7 +23,7 @@ export const request = async (opts) => {
   const lib = isSecure ? https : http
   const agent = getAgent(isSecure)
   const {promise, resolve, reject} = makeDeferred()
-  const data = postData && (_gzip ? await gzip(Buffer.from(postData)) : Buffer.from(postData))
+  const data = postData && (_gzip ? await gzip(Buffer.from(postData), {level: zlib.constants.Z_BEST_COMPRESSION}) : Buffer.from(postData))
   const encoding = _gzip ? 'gzip' : 'utf8'
   const headers = {
     ...pipe?.req?.headers,
@@ -47,9 +48,13 @@ export const request = async (opts) => {
 
   logger.debug('HTTP >', method, url)
 
+  const s = Date.now()
   const req = lib.request(params, res => {
     res.req = req
     req.res = res
+    res._latency = Date.now() - s
+    logger.debug('HTTP < latency', `${res._latency}ms`, method, url)
+
     const statusCode = res.statusCode
 
     if ([FOUND, PERMANENT_REDIRECT, TEMPORARY_REDIRECT].includes(statusCode) && followRedirects && res.headers.location) {

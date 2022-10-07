@@ -7,6 +7,7 @@ import {getPackument} from './packument.js'
 import {normalizePath, gzip} from '../util.js'
 import {getCache} from '../cache.js'
 import {getCtx} from '../als.js'
+import {getTarball} from "./tarball.js";
 
 const getAuth = (token, auth) => token
   ? token?.startsWith('Bearer')
@@ -26,15 +27,28 @@ export const firewall = ({registry, rules, entrypoint: _entrypoint, token, cache
   const authorization = getAuth(token, req.headers['authorization'])
   const entrypoint = _entrypoint || normalizePath(`${cfg.server.entrypoint}${base}`)
   const boundContext = { registry, entrypoint, authorization, name, org, version, logger, cache }
-  const { packument, headers, directives } = await getPackument({ boundContext, rules })
+  const [
+    { packument, headers, directives },
+    tarball
+  ] = await Promise.all([
+    getPackument({ boundContext, rules }),
+    version ? getTarball({registry, url: req.url}) : Promise.resolve(false)
+  ])
 
   // Tarball request
-  if (version) {
+  if (tarball) {
     const policy = getPolicy(directives, version)
     if (policy === 'warn') {
       logger.warn(`${name}@${version}`, 'directive=', directives[version]._raw)
     }
-    return policy === 'deny' ? next(httpError(ACCESS_DENIED)) : next()
+
+    if (policy === 'deny') {
+      return next(httpError(ACCESS_DENIED))
+    }
+
+    return res
+      .writeHead(OK, tarball.headers)
+      .end(tarball._buffer)
   }
 
   // Packument request

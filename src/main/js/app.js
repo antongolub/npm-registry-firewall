@@ -53,7 +53,7 @@ export const _createApp = (cfg, {
 
     const servers = p.server.map(s => {
       const router = createRouter([
-        ctx({...config, server: s}, logger),
+        ctx({...p, server: s}, logger),
         timeout,
         trace,
         ['GET', s.healthcheck, healthcheck],
