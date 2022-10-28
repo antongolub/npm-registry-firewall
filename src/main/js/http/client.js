@@ -4,7 +4,7 @@ import { parse } from 'node:url'
 import { Buffer } from 'node:buffer'
 import zlib from 'node:zlib'
 
-import { makeDeferred, normalizePath, gunzip, gzip } from '../util.js'
+import {makeDeferred, normalizePath, gunzip, gzip, dropNullEntries} from '../util.js'
 import { httpError, OK, FOUND, MULTIPLE_CHOICES, PERMANENT_REDIRECT, REQUEST_TIMEOUT, TEMPORARY_REDIRECT } from './error.js'
 import { getAgent } from './agent.js'
 import { getCtx } from '../als.js'
@@ -24,16 +24,16 @@ export const request = async (opts) => {
   const agent = getAgent(isSecure)
   const {promise, resolve, reject} = makeDeferred()
   const data = postData && (_gzip ? await gzip(Buffer.from(postData), {level: zlib.constants.Z_BEST_COMPRESSION}) : Buffer.from(postData))
-  const encoding = _gzip ? 'gzip' : 'utf8'
-  const headers = {
+  const headers = dropNullEntries({
     ...pipe?.req?.headers,
     ..._headers,
     host,
     authorization,
     connection: 'keep-alive',
-    'accept-encoding': encoding,
-    'content-encoding': encoding
-  }
+    'content-encoding': _gzip ? 'gzip' : undefined,
+    'accept-encoding': _gzip ? 'gzip' : '*'
+  })
+
   const params = {
     protocol,
     method,
@@ -83,7 +83,7 @@ export const request = async (opts) => {
       const buffer = res.headers['content-encoding'] === 'gzip'
         ? await gunzip(_buffer)
         : _buffer
-if (res.headers['content-encoding'] === 'gzip') {console.log('GZIP!')}
+
       Object.assign(res, {
         _buffer,
         buffer,
