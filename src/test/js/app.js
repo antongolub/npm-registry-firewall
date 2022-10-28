@@ -4,7 +4,8 @@ import { createApp } from '../../main/js/index.js'
 import { request } from '../../main/js/http/client.js'
 
 const test = testFactory('app', import.meta)
-const app = createApp([{
+const app = createApp([
+    {
   server: [
     { host: 'localhost', port: 3001 },
     { host: 'localhost', port: 3002 },
@@ -26,6 +27,16 @@ const app = createApp([{
     registry: ['https://registry.yarnpkg.com', 'https://registry.npmjs.org'],
     rules: { policy: 'deny', name: '*' }
   }
+},
+{
+  server: { host: 'localhost', port: 3004 },
+  firewall: [{
+    base: '/nexus-npm',
+    registry: 'https://registry.npmjs.org',
+  },{
+    base: '/nexus-npm-no-filter',
+    registry: 'https://registry.yarnpkg.com',
+  }]
 }])
 
 test('is runnable', async () => {
@@ -81,6 +92,11 @@ test('is runnable', async () => {
       }
     },
     { statusCode: 304 }
+  ],
+  [
+    'works properly with two registries with the same base beginning',
+    { url: 'http://localhost:3004/nexus-npm-no-filter/d', method: 'GET'},
+    { statusCode: 200 }
   ],
 ].forEach(([name, {url, method, headers: _headers = {}}, expected]) => {
   test(name, async () => {

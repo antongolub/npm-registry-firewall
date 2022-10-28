@@ -41,8 +41,10 @@ const getRouteParams = (url, pattern, rmap) => rmap && pattern instanceof RegExp
     }, {})
   : {}
 
+const addTrailingSlash = str => str.endsWith('/') ? str : str + '/'
+
 export const createRouter = (routes, base = '/') => async (req, res, next = () => {}) => {
-  if (req.url.startsWith(base)) {
+  if (addTrailingSlash(req.url).startsWith(addTrailingSlash(base))) {
     req.base = (req.base || '' ) + base
     req.url = req.url.replace(base, '/').replace('//', '/')
   } else {
