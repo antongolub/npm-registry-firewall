@@ -46,4 +46,4 @@ const bench = async (url) => {
 test('bench', async () => {
   await bench('https://registry.npmjs.org')
   await bench('http://localhost:8080/registry')
-}, 20_000)
+}, 30_000)
