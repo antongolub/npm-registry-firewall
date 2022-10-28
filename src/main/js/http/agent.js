@@ -11,7 +11,7 @@ const agents = {
 const agentOpts = {
   keepAliveMsecs: 20_000,
   keepAlive: true,
-  maxSockets: 50_000,
+  maxSockets: 10_000,
   timeout: 20_000
 }
 

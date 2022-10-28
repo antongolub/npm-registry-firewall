@@ -7,7 +7,43 @@ import {getPackument} from './packument.js'
 import {normalizePath, gzip} from '../util.js'
 import {getCache} from '../cache.js'
 import {getCtx} from '../als.js'
-import {checkTarball} from "./tarball.js";
+import {checkTarball} from './tarball.js'
+import {semver} from '../semver.js'
+
+const warmup = (packument, boundContext, rules) => {
+  const {cache, registry, authorization, entrypoint} = boundContext
+  const stable = Object.values(packument.versions).filter(p => !p.version.includes('-'))
+  const majors = stable.reduce((m, p) => {
+    const major = p.version.slice(0, p.version.indexOf('.') + 1)
+    if (m.every((_p) => !_p.version.startsWith(major))) {
+      m.push(p)
+    }
+    return m
+  }, [])
+
+  const deps = (majors.length > 1 ? majors : stable)
+    .sort((a, b) => semver.compare(b.version, a.version))
+    .slice(0, 2)
+    .reduce((m, p) => {
+      Object.keys(p.dependencies || {}).forEach(d => {
+        if (!cache.has(d)) {
+          m.add(d)
+        }
+      })
+
+    return m
+  }, new Set())
+
+  deps.forEach(async (name) => {
+    const org = name.charAt(0) === '@' ? name.slice(0, (name.indexOf('/') + 1 || name.indexOf('%') + 1) - 1) : null
+    try {
+      const {packument: _packument} = await getPackument({ boundContext: {cache, registry, authorization, entrypoint, name, org}, rules })
+      warmup(_packument, boundContext, rules)
+    } catch (e) {
+      // ignore
+    }
+  })
+}
 
 const getAuth = (token, auth) => token
   ? token?.startsWith('Bearer')
@@ -34,6 +70,8 @@ export const firewall = ({registry, rules, entrypoint: _entrypoint, token, cache
     getPackument({ boundContext, rules }),
     version ? checkTarball({registry, url: req.url}) : Promise.resolve(false)
   ])
+
+  warmup(packument, boundContext, rules)
 
   // Tarball request
   if (tarball) {

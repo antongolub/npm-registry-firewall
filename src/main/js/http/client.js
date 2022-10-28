@@ -44,7 +44,7 @@ export const request = async (opts) => {
     agent,
     headers
   }
-  const { logger = defaultLogger, cfg } = getCtx()
+  const { logger = defaultLogger } = getCtx()
 
   logger.debug('HTTP >', method, url)
 
@@ -83,7 +83,7 @@ export const request = async (opts) => {
       const buffer = res.headers['content-encoding'] === 'gzip'
         ? await gunzip(_buffer)
         : _buffer
-
+if (res.headers['content-encoding'] === 'gzip') {console.log('GZIP!')}
       Object.assign(res, {
         _buffer,
         buffer,

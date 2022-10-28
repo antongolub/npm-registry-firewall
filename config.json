@@ -16,7 +16,7 @@
     "_registry": "https://registry.npmmirror.com",
     "_entrypoint": "https://r.qiwi.com/registry/npm",
     "cache": {
-      "ttl": 1
+      "ttl": 5
     },
     "rules": [
       {
