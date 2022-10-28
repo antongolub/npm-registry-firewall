@@ -135,3 +135,10 @@ export const tryQueue = async (fn, ...args) => {
   const error = results.find(r => r.status === 'rejected')
   return Promise.reject(error.reason)
 }
+
+export const dropNullEntries = (object) => Object.entries(object).reduce((m, [k, v]) => {
+  if (v !== null && v !== undefined) {
+    m[k] = v
+  }
+  return m
+}, {})

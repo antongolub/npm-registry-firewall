@@ -4,7 +4,7 @@ import crypto from 'node:crypto'
 import {httpError, NOT_FOUND, ACCESS_DENIED, METHOD_NOT_ALLOWED, NOT_MODIFIED, OK, FOUND} from '../http/index.js'
 import {getPolicy} from './engine.js'
 import {getPackument} from './packument.js'
-import {normalizePath, gzip} from '../util.js'
+import {normalizePath, gzip, dropNullEntries} from '../util.js'
 import {getCache} from '../cache.js'
 import {getCtx} from '../als.js'
 import {checkTarball} from './tarball.js'
@@ -94,22 +94,29 @@ export const firewall = ({registry, rules, entrypoint: _entrypoint, token, cache
     return next(httpError(NOT_FOUND))
   }
 
-  const tranferEncoding = headers['transfer-encoding']
+  const isGzip = req.headers['accept-encoding']?.includes('gzip')
   const _packumentBuffer = Buffer.from(JSON.stringify(packument))
-  const packumentBuffer = tranferEncoding === 'gzip' ? await gzip(_packumentBuffer) : _packumentBuffer
-  const contentLength = tranferEncoding ? null : {'content-length': '' + _packumentBuffer.length}
+  const packumentBuffer = isGzip ? await gzip(_packumentBuffer) : _packumentBuffer
+  const cl = '' + packumentBuffer.length
   const etag = 'W/' + JSON.stringify(crypto.createHash('sha256').update(packumentBuffer.slice(0, 65_536)).digest('hex'))
+  const extra = isGzip
+    ? {'content-length': cl, 'transfer-encoding': null, 'content-encoding': 'gzip', etag}
+    : {'content-length': cl, 'transfer-encoding': null, 'content-encoding': null, etag}
 
   if (req.headers['if-none-match'] === etag) {
     res.writeHead(NOT_MODIFIED).end()
     return
   }
 
-  res.writeHead(OK, {
+  // console.log('res.headers', dropNullEntries({
+  //   ...headers,
+  //   ...extra,
+  // }))
+
+  res.writeHead(OK, dropNullEntries({
     ...headers,
-    ...contentLength,
-    etag,
-  })
+    ...extra,
+  }))
 
   if (method === 'GET') {
     res.write(packumentBuffer)

@@ -14,7 +14,7 @@ export const getPackument = async ({boundContext, rules}) => {
     const args = asArray(registry).map(r => [{
       url: `${r}/${name}`,
       authorization,
-      'accept-encoding': 'gzip'
+      gzip: true
     }])
     const {body, headers} = await tryQueue(request, ...args)
     const packument = JSON.parse(body)
