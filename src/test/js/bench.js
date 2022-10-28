@@ -19,8 +19,6 @@ const app = createApp({
   }
 })
 
-await app.start()
-
 const cases = [
   { url: '<url>/d', method: 'GET'},
   { url: '<url>/react', method: 'HEAD'},
@@ -44,6 +42,8 @@ const bench = async (url) => {
 }
 
 test('bench', async () => {
+  await app.start()
   await bench('https://registry.npmjs.org')
   await bench('http://localhost:8080/registry')
+  await app.stop()
 }, 30_000)

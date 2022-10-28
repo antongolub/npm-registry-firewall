@@ -71,7 +71,9 @@ export const firewall = ({registry, rules, entrypoint: _entrypoint, token, cache
     version ? checkTarball({registry, url: req.url}) : Promise.resolve(false)
   ])
 
-  warmup(packument, boundContext, rules)
+  if (cache.ttl) {
+    warmup(packument, boundContext, rules)
+  }
 
   // Tarball request
   if (tarball) {
@@ -107,11 +109,6 @@ export const firewall = ({registry, rules, entrypoint: _entrypoint, token, cache
     res.writeHead(NOT_MODIFIED).end()
     return
   }
-
-  // console.log('res.headers', dropNullEntries({
-  //   ...headers,
-  //   ...extra,
-  // }))
 
   res.writeHead(OK, dropNullEntries({
     ...headers,
