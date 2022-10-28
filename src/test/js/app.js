@@ -51,7 +51,7 @@ test('is runnable', async () => {
   [
     'gets tarball if allowed',
     { url: 'http://localhost:3001/registry/@antongolub/git-root/-/git-root-1.5.6.tgz', method: 'GET'},
-    { hash: 'uMs0P/SZUnoc+oF6E0VVPSnkXphOfg1GXRl+wnx/tElmLNPtNCuh2n7EVbSJU5hv73q96YK04bBVRQmS2p2Cjw==' }
+    { statusCode: 302 }
   ],
   [
     'reads packument via GET',

@@ -56,11 +56,12 @@ export const request = async (opts) => {
     logger.debug('HTTP < latency', `${res._latency}ms`, method, url)
 
     const statusCode = res.statusCode
+    const {location} = res.headers
 
-    if ([FOUND, PERMANENT_REDIRECT, TEMPORARY_REDIRECT].includes(statusCode) && followRedirects && res.headers.location) {
+    if ([FOUND, PERMANENT_REDIRECT, TEMPORARY_REDIRECT].includes(statusCode) && followRedirects && location) {
       return request({
         ...opts,
-        url: res.headers.location
+        url: location
       }).then(resolve, reject)
     }
 

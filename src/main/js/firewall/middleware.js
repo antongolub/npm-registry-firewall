@@ -60,7 +60,7 @@ export const firewall = ({registry, rules, entrypoint: _entrypoint, token, cache
   const _packumentBuffer = Buffer.from(JSON.stringify(packument))
   const packumentBuffer = tranferEncoding === 'gzip' ? await gzip(_packumentBuffer) : _packumentBuffer
   const contentLength = tranferEncoding ? null : {'content-length': '' + _packumentBuffer.length}
-  const etag = 'W/' + JSON.stringify(crypto.createHash('sha256').update(packumentBuffer).digest('hex'))
+  const etag = 'W/' + JSON.stringify(crypto.createHash('sha256').update(packumentBuffer.slice(0, 65_536)).digest('hex'))
 
   if (req.headers['if-none-match'] === etag) {
     res.writeHead(NOT_MODIFIED).end()

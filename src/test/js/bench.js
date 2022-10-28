@@ -35,7 +35,7 @@ const requests = Array.from({length: 50}, () => rand(cases))
 const bench = async (url) => {
   const start = Date.now()
 
-  await Promise.all(requests.map(async (r) =>  request({...r, url: r.url.replace('<url>', url), noThrow: true})))
+  await Promise.all(requests.map(async (r) =>  request({...r, url: r.url.replace('<url>', url), noThrow: true, followRedirects: true})))
 
   const duration = Date.now() - start
   console.log(`host: ${url},  duration: ${duration}ms`)
