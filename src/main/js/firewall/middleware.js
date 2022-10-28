@@ -1,13 +1,13 @@
 import {Buffer} from 'node:buffer'
 import crypto from 'node:crypto'
 
-import {httpError, NOT_FOUND, ACCESS_DENIED, METHOD_NOT_ALLOWED, NOT_MODIFIED, OK} from '../http/index.js'
+import {httpError, NOT_FOUND, ACCESS_DENIED, METHOD_NOT_ALLOWED, NOT_MODIFIED, OK, FOUND} from '../http/index.js'
 import {getPolicy} from './engine.js'
 import {getPackument} from './packument.js'
 import {normalizePath, gzip} from '../util.js'
 import {getCache} from '../cache.js'
 import {getCtx} from '../als.js'
-import {getTarball} from "./tarball.js";
+import {checkTarball} from "./tarball.js";
 
 const getAuth = (token, auth) => token
   ? token?.startsWith('Bearer')
@@ -32,7 +32,7 @@ export const firewall = ({registry, rules, entrypoint: _entrypoint, token, cache
     tarball
   ] = await Promise.all([
     getPackument({ boundContext, rules }),
-    version ? getTarball({registry, url: req.url}) : Promise.resolve(false)
+    version ? checkTarball({registry, url: req.url}) : Promise.resolve(false)
   ])
 
   // Tarball request
@@ -47,8 +47,8 @@ export const firewall = ({registry, rules, entrypoint: _entrypoint, token, cache
     }
 
     return res
-      .writeHead(OK, tarball.headers)
-      .end(tarball._buffer)
+      .writeHead(FOUND, {Location: tarball})
+      .end()
   }
 
   // Packument request

@@ -1,13 +1,13 @@
 import {asArray, tryQueue} from '../util.js'
 import {request} from '../http/index.js'
 
-export const getTarball = async ({registry, url}) => {
+export const checkTarball = async ({registry, url}) => {
   const registries = asArray(registry)
   const args = registries.map(r => [{
     url: `${r}${url}`,
-    method: 'GET',
+    method: 'HEAD',
     followRedirects: true
   }])
 
-  return tryQueue(request, ...args)
+  return tryQueue((opt) => request(opt).then(() => opt.url), ...args)
 }

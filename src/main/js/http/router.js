@@ -44,7 +44,7 @@ const getRouteParams = (url, pattern, rmap) => rmap && pattern instanceof RegExp
 export const createRouter = (routes, base = '/') => async (req, res, next = () => {}) => {
   if (req.url.startsWith(base)) {
     req.base = (req.base || '' ) + base
-    req.url = req.url.replace(base, '/')
+    req.url = req.url.replace(base, '/').replace('//', '/')
   } else {
     return next()
   }

@@ -9,10 +9,10 @@ const agents = {
 }
 
 const agentOpts = {
-  keepAliveMsecs: 10_000,
+  keepAliveMsecs: 20_000,
   keepAlive: true,
-  maxSockets: 100,
-  timeout: 10_000
+  maxSockets: 50_000,
+  timeout: 20_000
 }
 
 export const getAgent = (secure) => {
