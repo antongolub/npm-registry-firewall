@@ -1,3 +1,16 @@
+# [1.31.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.30.6...v1.31.0) (2022-10-28)
+
+
+### Bug Fixes
+
+* gzip fixes ([332cce3](https://github.com/antongolub/npm-registry-firewall/commit/332cce31bb1ed1e707e829ef68a05e67094625e1))
+* use warmup if cache enabled ([ea98328](https://github.com/antongolub/npm-registry-firewall/commit/ea98328e4cb9db4a03085546abeee423b83059bd))
+
+
+### Features
+
+* add cache warmup ([622573c](https://github.com/antongolub/npm-registry-firewall/commit/622573c8e1c6c4307605743a4db1cf8c981d5da1))
+
 ## [1.30.6](https://github.com/antongolub/npm-registry-firewall/compare/v1.30.5...v1.30.6) (2022-10-28)
 
 
