@@ -1,3 +1,10 @@
+## [1.30.6](https://github.com/antongolub/npm-registry-firewall/compare/v1.30.5...v1.30.6) (2022-10-28)
+
+
+### Bug Fixes
+
+* routing ([f334125](https://github.com/antongolub/npm-registry-firewall/commit/f3341250a52c9b63ac62700d0ef9691e902361da))
+
 ## [1.30.5](https://github.com/antongolub/npm-registry-firewall/compare/v1.30.4...v1.30.5) (2022-10-28)
 
 
