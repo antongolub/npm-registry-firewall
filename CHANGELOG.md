@@ -1,3 +1,11 @@
+## [1.30.5](https://github.com/antongolub/npm-registry-firewall/compare/v1.30.4...v1.30.5) (2022-10-28)
+
+
+### Performance Improvements
+
+* optimize etag generator ([181051f](https://github.com/antongolub/npm-registry-firewall/commit/181051fc5ae1b9e591b2cabd3ad15b37783dc643))
+* use redirects for tarballs ([681ed67](https://github.com/antongolub/npm-registry-firewall/commit/681ed67c053754390ed2fcaf646c4ceed6599bad)), closes [#68](https://github.com/antongolub/npm-registry-firewall/issues/68)
+
 ## [1.30.4](https://github.com/antongolub/npm-registry-firewall/compare/v1.30.3...v1.30.4) (2022-10-07)
 
 
