@@ -45,7 +45,6 @@ export const request = async (opts) => {
     headers
   }
   const { logger = defaultLogger } = getCtx()
-
   logger.debug('HTTP >', method, url)
 
   const s = Date.now()
