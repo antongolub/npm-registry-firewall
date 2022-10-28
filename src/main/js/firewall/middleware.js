@@ -30,9 +30,8 @@ const warmup = (packument, boundContext, rules) => {
           m.add(d)
         }
       })
-
-    return m
-  }, new Set())
+      return m
+    }, new Set())
 
   deps.forEach(async (name) => {
     const org = name.charAt(0) === '@' ? name.slice(0, (name.indexOf('/') + 1 || name.indexOf('%') + 1) - 1) : null

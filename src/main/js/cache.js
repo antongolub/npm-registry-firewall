@@ -37,7 +37,7 @@ export const getCache = (opts = {}) => {
   return cache
 }
 
-export const createCache = ({ttl, evictionTimeout = ttl}) => {
+export const createCache = ({ttl, evictionTimeout = ttl, warmup}) => {
   const store = new Map()
   const timer = setInterval(() => {
     const now = Date.now()
@@ -69,6 +69,7 @@ export const createCache = ({ttl, evictionTimeout = ttl}) => {
     store,
     timer,
     ttl,
+    warmup,
     evictionTimeout
   }
 }

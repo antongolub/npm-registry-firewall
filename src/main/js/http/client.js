@@ -30,7 +30,7 @@ export const request = async (opts) => {
     host,
     authorization,
     connection: 'keep-alive',
-    'content-encoding': _gzip ? 'gzip' : undefined,
+    'content-encoding': _gzip && method === 'POST' ? 'gzip' : undefined,
     'accept-encoding': _gzip ? 'gzip' : '*'
   })
 
@@ -45,6 +45,7 @@ export const request = async (opts) => {
     headers
   }
   const { logger = defaultLogger } = getCtx()
+
   logger.debug('HTTP >', method, url)
 
   const s = Date.now()
