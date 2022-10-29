@@ -1,38 +1,39 @@
 import {getDirectives, getPolicy} from './engine.js'
 import {request} from '../http/index.js'
 import {asArray, makeDeferred, tryQueue} from '../util.js'
+import {withCache} from '../cache.js'
 
 export const getPackument = async ({boundContext, rules}) => {
   const {cache, registry, authorization, entrypoint, name} = boundContext
-  if (await cache.has(name)) {
-    return cache.get(name)
-  }
-  const {promise, resolve, reject} = makeDeferred()
-  cache.add(name, promise)
 
-  try {
-    const args = asArray(registry).map(r => [{
-      url: `${r}/${name}`,
-      authorization,
-      gzip: true
-    }])
-    const {body, headers} = await tryQueue(request, ...args)
-    const packument = JSON.parse(body)
-    const directives = await getDirectives({ packument, rules, boundContext})
-    const _packument = patchPackument({ packument, directives, entrypoint, registry })
+  return withCache(cache, name, async () => {
+    const {promise, resolve, reject} = makeDeferred()
+    cache.add(name, promise)
 
-    resolve({
-      directives,
-      headers,
-      packument: _packument
-    })
+    try {
+      const args = asArray(registry).map(r => [{
+        url: `${r}/${name}`,
+        authorization,
+        gzip: true
+      }])
+      const {body, headers} = await tryQueue(request, ...args)
+      const packument = JSON.parse(body)
+      const directives = await getDirectives({ packument, rules, boundContext})
+      const _packument = patchPackument({ packument, directives, entrypoint, registry })
 
-  } catch (e) {
-    reject(e)
-    cache.del(name)
-  }
+      resolve({
+        directives,
+        headers,
+        packument: _packument
+      })
 
-  return promise
+    } catch (e) {
+      reject(e)
+      cache.del(name)
+    }
+
+    return promise
+  })
 }
 
 export const patchVersions = ({packument, directives, entrypoint, registry}) => Object.values(packument.versions).reduce((m, v) => {

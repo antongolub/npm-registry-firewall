@@ -24,17 +24,53 @@ export const getCache = (opts = {}) => {
     return voidCache
   }
 
-  const cacheFactory = getCacheFactory(opts)
   const name = opts.name || genId()
 
   if (caches.has(name)) {
     return caches.get(name)
   }
 
+  const cacheFactory = getCacheFactory(opts)
   const cache = cacheFactory(opts)
   caches.set(name, cache)
 
   return cache
+}
+
+const hitmap = new Map()
+
+export const withCache = (cache, name, cb) => {
+  if (!hitmap.has(cache)) {
+    hitmap.set(cache, new Map())
+  }
+  const hits = hitmap.get(cache)
+  if (!hits.has(name)) {
+    (() => {
+      let p
+
+      hits.set(name, async () => {
+        if (p) {
+          return p
+        }
+
+        p = (async () => {
+          if (await cache.has(name)) {
+            return cache.get(name)
+          }
+
+          const value = await cb()
+          await cache.add(name, value)
+
+          p = null
+          return value
+        })()
+
+        return p
+      })
+    })()
+  }
+
+  return hits.get(name)()
 }
 
 export const createCache = ({ttl, evictionTimeout = ttl, warmup}) => {
