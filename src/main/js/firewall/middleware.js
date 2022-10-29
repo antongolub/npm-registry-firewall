@@ -2,7 +2,7 @@ import {Buffer} from 'node:buffer'
 import crypto from 'node:crypto'
 
 import {httpError, NOT_FOUND, ACCESS_DENIED, METHOD_NOT_ALLOWED, NOT_MODIFIED, OK, FOUND} from '../http/index.js'
-import {getPolicy} from './engine.js'
+import {getPolicy, getPipeline} from './engine.js'
 import {getPackument} from './packument.js'
 import {normalizePath, gzip, dropNullEntries} from '../util.js'
 import {getCache} from '../cache.js'
@@ -51,6 +51,7 @@ const getAuth = (token, auth) => token
     :`Bearer ${token}`
   : auth
 
+
 export const firewall = ({registry, rules, entrypoint: _entrypoint, token, cache: _cache}) => async (req, res, next) => {
   const {routeParams: {name, version, org}, base, method} = req
 
@@ -62,7 +63,8 @@ export const firewall = ({registry, rules, entrypoint: _entrypoint, token, cache
   const cache = getCache(_cache)
   const authorization = getAuth(token, req.headers['authorization'])
   const entrypoint = _entrypoint || normalizePath(`${cfg.server.entrypoint}${base}`)
-  const boundContext = { registry, entrypoint, authorization, name, org, version, cache }
+  const pipeline = await getPipeline(rules)
+  const boundContext = { registry, entrypoint, authorization, name, org, version, cache, pipeline }
   const [
     { packument, headers, directives },
     tarball
