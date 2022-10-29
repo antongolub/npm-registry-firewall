@@ -9,6 +9,7 @@ import {getCache} from '../cache.js'
 import {getCtx} from '../als.js'
 import {checkTarball} from './tarball.js'
 import {semver} from '../semver.js'
+import {logger} from '../logger.js'
 
 const warmup = (packument, boundContext, rules) => {
   const {cache, registry, authorization, entrypoint} = boundContext
@@ -57,11 +58,11 @@ export const firewall = ({registry, rules, entrypoint: _entrypoint, token, cache
     return next(httpError(METHOD_NOT_ALLOWED))
   }
 
-  const {cfg, logger} = getCtx()
+  const {cfg} = getCtx()
   const cache = getCache(_cache)
   const authorization = getAuth(token, req.headers['authorization'])
   const entrypoint = _entrypoint || normalizePath(`${cfg.server.entrypoint}${base}`)
-  const boundContext = { registry, entrypoint, authorization, name, org, version, logger, cache }
+  const boundContext = { registry, entrypoint, authorization, name, org, version, cache }
   const [
     { packument, headers, directives },
     tarball

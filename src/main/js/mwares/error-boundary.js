@@ -1,10 +1,9 @@
 import {INTERNAL_SERVER_ERROR, statusMessages} from '../http/index.js'
-import {getCtx} from '../als.js'
+import {logger} from '../logger.js'
 
 export const errorBoundary = async (err, req, res, next) => {
   const code = err.statusCode || INTERNAL_SERVER_ERROR
   const message = err.statusMessage || err.message || statusMessages[code] || statusMessages[INTERNAL_SERVER_ERROR]
-  const {logger = console} = getCtx()
 
   if (!err.statusCode || err.statusCode >= INTERNAL_SERVER_ERROR) {
     logger.error(err.stack)

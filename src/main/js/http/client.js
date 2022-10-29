@@ -8,7 +8,7 @@ import {makeDeferred, normalizePath, gunzip, gzip, dropNullEntries} from '../uti
 import { httpError, OK, FOUND, MULTIPLE_CHOICES, PERMANENT_REDIRECT, REQUEST_TIMEOUT, TEMPORARY_REDIRECT } from './error.js'
 import { getAgent } from './agent.js'
 import { getCtx } from '../als.js'
-import { logger as defaultLogger } from '../logger.js'
+import { logger } from '../logger.js'
 
 export const request = async (opts) => {
   const {url, headers: _headers, method = 'GET', postData, pipe, gzip: _gzip, followRedirects, timeout = 30_000, authorization = null} = opts
@@ -44,7 +44,6 @@ export const request = async (opts) => {
     agent,
     headers
   }
-  const { logger = defaultLogger } = getCtx()
 
   logger.debug('HTTP >', method, url)
 

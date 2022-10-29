@@ -1,7 +1,6 @@
 import { createServer } from './http/server.js'
 import { createRouter } from './http/router.js'
 import { runInCtx, mixCtx } from './als.js'
-import { logger as defaultLogger } from './logger.js'
 import {
   healthcheck,
   errorBoundary,
@@ -17,7 +16,7 @@ import { getConfig } from './config.js'
 
 export const _createApp = (cfg, {
   cache,
-  logger = defaultLogger
+  logger
 } = {}) => {
   const config = getConfig(cfg)
   mixCtx({
@@ -53,7 +52,7 @@ export const _createApp = (cfg, {
 
     const servers = p.server.map(s => {
       const router = createRouter([
-        ctx({...p, server: s}, logger),
+        ctx({...p, server: s}),
         timeout,
         trace,
         ['GET', s.healthcheck, healthcheck],
@@ -63,7 +62,7 @@ export const _createApp = (cfg, {
         errorBoundary,
       ], s.base)
 
-      return createServer({...s, router, logger})
+      return createServer({...s, router})
     })
 
     m.push(...servers)

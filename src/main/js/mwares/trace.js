@@ -1,12 +1,12 @@
 import { getCtx } from '../als.js'
 import { genId } from '../util.js'
 import { once } from '../util.js'
+import { logger } from '../logger.js'
 
 export const trace = async (req, res, next) => {
   req.id = res.id = genId()
 
   const ctx = getCtx()
-  const {logger} = ctx
   ctx.logExtra = Object.assign(ctx.logExtra || {}, {
     traceId: req.id,
     clientIp: req.headers['x-forwarded-for'] || req.socket.remoteAddress
