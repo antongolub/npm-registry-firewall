@@ -11,6 +11,8 @@ import {checkTarball} from './tarball.js'
 import {semver} from '../semver.js'
 import {logger} from '../logger.js'
 
+const warmupPipeline = (pipeline, opts) => pipeline.forEach((plugin) => plugin.warmup?.(opts))
+
 const warmup = (packument, boundContext, rules) => {
   const {cache, registry, authorization, entrypoint, pipeline} = boundContext
   const stable = Object.values(packument.versions).filter(p => !p.version.includes('-'))
@@ -37,7 +39,7 @@ const warmup = (packument, boundContext, rules) => {
   deps.forEach(async (name) => {
     const org = name.charAt(0) === '@' ? name.slice(0, (name.indexOf('/') + 1 || name.indexOf('%') + 1) - 1) : null
     try {
-      pipeline.forEach(({warmup}) => warmup?.({name, org, registry}))
+      warmupPipeline(pipeline, {name, registry, org})
 
       const {packument: _packument} = await getPackument({ boundContext: {cache, registry, authorization, entrypoint, name, org, pipeline}, rules })
       warmup(_packument, boundContext, rules)
@@ -53,7 +55,6 @@ const getAuth = (token, auth) => token
     :`Bearer ${token}`
   : auth
 
-
 export const firewall = ({registry, rules, entrypoint: _entrypoint, token, cache: _cache}) => async (req, res, next) => {
   const {routeParams: {name, version, org}, base, method} = req
 
@@ -67,6 +68,8 @@ export const firewall = ({registry, rules, entrypoint: _entrypoint, token, cache
   const entrypoint = _entrypoint || normalizePath(`${cfg.server.entrypoint}${base}`)
   const pipeline = await getPipeline(rules)
   const boundContext = { registry, entrypoint, authorization, name, org, version, cache, pipeline }
+
+  warmupPipeline(pipeline, boundContext)
   const [
     { packument, headers, directives },
     tarball
