@@ -1,6 +1,6 @@
 import {semver} from '../../semver.js'
 import {request} from '../../http/index.js'
-import {getCache} from '../../cache.js'
+import {getCache, withCache} from '../../cache.js'
 import {asArray, makeDeferred, tryQueue} from '../../util.js'
 
 const severityOrder = ['critical', 'high', 'moderate', 'low', 'any' ]
@@ -19,41 +19,72 @@ const getAdvisories = async (name, registry) => {
   const registries = asArray(registry || registry)
   const args = registries.map(r => [name, r])
 
-  return tryQueue(_getAdvisories, ...args)
+  return tryQueue(getAdvisoriesDebounced, ...args)
 }
 
-const _getAdvisories = async (name, registry) => {
-  const cache = getCache({ name: 'audit', ttl: 120_000 })
-  if (await cache.has(name)) {
-    return cache.get(name)
-  }
-  const {promise, resolve, reject} = makeDeferred()
-  cache.add(name, promise)
+const queues = {}
+let timer = null
 
-  try {
-    const postData = JSON.stringify({[name]: ['0.0.0']})
-    const headers = {
-      'user-agent': 'npm/8.5.0 node/v16.14.2 darwin x64 workspaces/false',
-      'npm-command': 'audit',
-      'content-type': 'application/json',
-      accept: '*/*'
+const getAdvisoriesDebounced = async (name, registry) => {
+  const cache = getCache({ name: 'audit', ttl: 3600_000 })
+
+  return withCache(cache, name, () => {
+    const {promise, resolve, reject} = makeDeferred()
+    const queue = (queues[registry] = queues[registry] || [])
+
+    cache.add(name, promise)
+    queue.push({name, resolve, reject})
+
+    processQueue(queue, cache, registry)
+
+    return promise
+  })
+}
+
+const processQueue = (queue, cache, registry) => {
+  if (timer) {
+    return
+  }
+
+  timer = setTimeout(async () => {
+    const batch = queue.slice()
+    queue.length = 0
+    try {
+      console.log('audit: fetching advisories for', batch.map(({name}) => name))
+      const advisories = await getAdvisoriesBatch(batch.map(({name}) => name), registry)
+
+      batch.forEach(({name, resolve}) => resolve(advisories[name] || []))
+    } catch (e) {
+      batch.forEach(({reject, name}) => { reject(e); cache.del(name)})
+    } finally {
+      timer = null
+      if (queue.length) {
+        processQueue(queue, cache, registry)
+      }
     }
-    const {body} = await request({
-      method: 'POST',
-      url: `${registry}/-/npm/v1/security/advisories/bulk`,
-      postData,
-      headers,
-      gzip: true
-    })
+  }, 300)
+}
 
-    resolve(JSON.parse(body)[name] || [])
-
-  } catch (e) {
-    reject(e)
-    cache.del(name)
+export const getAdvisoriesBatch = async (batch = [], registry) => {
+  const postData = JSON.stringify(batch.reduce((m, name) => {
+    m[name] = ['0.0.0']
+    return m
+  }, {}))
+  const headers = {
+    'user-agent': 'npm/8.5.0 node/v16.14.2 darwin x64 workspaces/false',
+    'npm-command': 'audit',
+    'content-type': 'application/json',
+    accept: '*/*'
   }
+  const {body} = await request({
+    method: 'POST',
+    url: `${registry}/-/npm/v1/security/advisories/bulk`,
+    postData,
+    headers,
+    // gzip: true
+  })
 
-  return promise
+  return JSON.parse(body)
 }
 
 export default auditPlugin
