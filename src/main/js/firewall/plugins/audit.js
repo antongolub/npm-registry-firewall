@@ -65,7 +65,7 @@ const processQueue = (queue, cache, registry) => {
         processQueue(queue, cache, registry)
       }
     }
-  }, 200)
+  }, 250)
 }
 
 export const getAdvisoriesBatch = async (batch = [], registry) => {
@@ -84,7 +84,7 @@ export const getAdvisoriesBatch = async (batch = [], registry) => {
     url: `${registry}/-/npm/v1/security/advisories/bulk`,
     postData,
     headers,
-    // gzip: true
+    gzip: true
   })
 
   return JSON.parse(body)
