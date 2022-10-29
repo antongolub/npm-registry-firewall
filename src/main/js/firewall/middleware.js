@@ -12,7 +12,7 @@ import {semver} from '../semver.js'
 import {logger} from '../logger.js'
 
 const warmup = (packument, boundContext, rules) => {
-  const {cache, registry, authorization, entrypoint} = boundContext
+  const {cache, registry, authorization, entrypoint, pipeline} = boundContext
   const stable = Object.values(packument.versions).filter(p => !p.version.includes('-'))
   const majors = stable.reduce((m, p) => {
     const major = p.version.slice(0, p.version.indexOf('.') + 1)
@@ -37,7 +37,9 @@ const warmup = (packument, boundContext, rules) => {
   deps.forEach(async (name) => {
     const org = name.charAt(0) === '@' ? name.slice(0, (name.indexOf('/') + 1 || name.indexOf('%') + 1) - 1) : null
     try {
-      const {packument: _packument} = await getPackument({ boundContext: {cache, registry, authorization, entrypoint, name, org}, rules })
+      pipeline.forEach(({warmup}) => warmup?.({name, org, registry}))
+
+      const {packument: _packument} = await getPackument({ boundContext: {cache, registry, authorization, entrypoint, name, org, pipeline}, rules })
       warmup(_packument, boundContext, rules)
     } catch (e) {
       // ignore
