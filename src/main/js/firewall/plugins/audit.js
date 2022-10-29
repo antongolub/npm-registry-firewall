@@ -16,6 +16,8 @@ export const auditPlugin = async ({entry: {name, version}, options = {}, boundCo
   return directive || false
 }
 
+auditPlugin.warmup = ({name, registry}) => getAdvisories(name, registry)
+
 const getAdvisories = async (name, registry) => {
   const registries = asArray(registry || registry)
   const args = registries.map(r => [name, r])
