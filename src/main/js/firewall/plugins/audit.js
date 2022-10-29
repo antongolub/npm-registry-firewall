@@ -2,6 +2,7 @@ import {semver} from '../../semver.js'
 import {request} from '../../http/index.js'
 import {getCache, withCache} from '../../cache.js'
 import {asArray, makeDeferred, tryQueue} from '../../util.js'
+import {logger} from '../../logger.js'
 
 const severityOrder = ['critical', 'high', 'moderate', 'low', 'any' ]
 
@@ -50,12 +51,12 @@ const processQueue = (queue, cache, registry) => {
     const batch = queue.slice()
     queue.length = 0
     try {
-      console.log('audit: fetching advisories for', batch.map(({name}) => name))
+      logger.info('audit: fetching advisories for', batch.map(({name}) => name))
       const advisories = await getAdvisoriesBatch(batch.map(({name}) => name), registry)
 
       batch.forEach(({name, resolve}) => resolve(advisories[name] || []))
     } catch (e) {
-      batch.forEach(({reject, name}) => { reject(e); cache.del(name)})
+      batch.forEach(({reject, name}) => { reject(e); cache.del(name) })
     } finally {
       timer = null
       if (queue.length) {
@@ -81,7 +82,7 @@ export const getAdvisoriesBatch = async (batch = [], registry) => {
     url: `${registry}/-/npm/v1/security/advisories/bulk`,
     postData,
     headers,
-    // gzip: true
+    gzip: true
   })
 
   return JSON.parse(body)

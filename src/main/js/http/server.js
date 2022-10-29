@@ -3,6 +3,7 @@ import https from 'node:https'
 
 import {makeDeferred} from '../util.js'
 import {INTERNAL_SERVER_ERROR, statusMessages} from './error.js'
+import {logger} from '../logger.js'
 
 const createSocketPool = () => {
   const sockets = new Set()
@@ -29,7 +30,7 @@ const sendJson = function(data, code = 200) {
     .end(buffer)
 }
 
-export const createServer = ({host, port, secure, router, entrypoint, keepAliveTimeout, headersTimeout, requestTimeout, logger }) => {
+export const createServer = ({host, port, secure, router, entrypoint, keepAliveTimeout, headersTimeout, requestTimeout }) => {
   const lib = secure ? https : http
   const options = {...secure}
   const sockets = createSocketPool()

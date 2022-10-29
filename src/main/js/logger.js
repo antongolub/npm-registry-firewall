@@ -34,5 +34,11 @@ export const createLogger = ({extra = {}, formatter = format, level = 'info'} = 
   return logger
 }
 
-export const logger = createLogger()
+export const _logger = createLogger()
+
+export const logger = levels
+  .reduce((m, l) => {
+    m[l] = (...args) => (getCtx().logger || _logger)[l](...args)
+    return m
+  }, {})
 
