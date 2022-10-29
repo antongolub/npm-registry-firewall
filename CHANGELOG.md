@@ -1,3 +1,15 @@
+# [1.32.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.31.0...v1.32.0) (2022-10-29)
+
+
+### Features
+
+* add warmup for audit plugin ([c39fb2b](https://github.com/antongolub/npm-registry-firewall/commit/c39fb2b78764aa603cfe32c04aff6a7a1e855827)), closes [#71](https://github.com/antongolub/npm-registry-firewall/issues/71)
+
+
+### Performance Improvements
+
+* optimize audit api batches ([9bdb327](https://github.com/antongolub/npm-registry-firewall/commit/9bdb327b19a54c78b600ab2100824c6d8703a974))
+
 # [1.31.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.30.6...v1.31.0) (2022-10-28)
 
 
