@@ -4,10 +4,10 @@ import {asArray, makeDeferred, tryQueue} from '../util.js'
 import {withCache} from '../cache.js'
 
 export const getPackument = async ({boundContext, rules}) => {
-  const {cache, registry, authorization, entrypoint, name} = boundContext
+  const { cache, registry, authorization, entrypoint, name } = boundContext
 
   return withCache(cache, name, async () => {
-    const {promise, resolve, reject} = makeDeferred()
+    const { promise, resolve, reject } = makeDeferred()
     cache.add(name, promise)
 
     try {

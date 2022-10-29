@@ -1,4 +1,4 @@
-import { mapValuesAsync } from '../util.js'
+import {asArray, mapValuesAsync} from '../util.js'
 
 export const getDirectives = ({packument, rules, boundContext}) =>
   mapValuesAsync(packument.versions, async (entry) =>
@@ -13,25 +13,36 @@ export const getDirectives = ({packument, rules, boundContext}) =>
   )
 
 // `directive` is a matched `rule`
-export const getDirective = async ({rules, entry, boundContext}) => rules.reduce(async (m, rule) => {
-  if (await m) {
-    return m
-  }
-  const policy = await (rule.plugin || [['npm-registry-firewall/std']]).reduce(async (_m, [_plugin, options]) => {
+export const getDirective = async ({rules, entry, boundContext}) => {
+  const pipeline = boundContext?.pipeline || await getPipeline(rules)
+
+  return pipeline.reduce(async (_m, [plugin, options, rule]) => {
     if (await _m) {
       return _m
     }
+
+    const policy = await plugin({rule, entry, options, boundContext})
+    return policy ? {...rule, policy} : false
+  }, false)
+}
+
+export const getPolicy = (directives, version) => directives[version]?.policy
+
+export const getPipeline = async (rules) =>
+  Promise.all(normalizePipeline(rules).map(async ([_plugin, options]) => {
     const plugin = typeof _plugin === 'function'
       ? _plugin
       : (await import(_plugin)).default
 
-    return plugin({rule, entry, options, boundContext})
-  }, false)
+    return [plugin, options]
+  }))
 
-  return !!policy && {
-    ...rule,
-    policy,
-  }
-}, false)
+export const normalizePipeline = (rules) =>
+  rules.reduce((m, rule) => {
+    m.push(...rule.plugin
+      ? asArray(rule.plugin).map((v) => [...asArray(v), rule])
+      : [['npm-registry-firewall/std', rule, rule]]
+    )
 
-export const getPolicy = (directives, version) => directives[version]?.policy
+    return m
+  }, [])
