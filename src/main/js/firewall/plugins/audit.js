@@ -1,7 +1,7 @@
 import {semver} from '../../semver.js'
 import {request} from '../../http/index.js'
 import {getCache, withCache} from '../../cache.js'
-import {asArray, makeDeferred, tryQueue} from '../../util.js'
+import {asArray, asyncFilter, makeDeferred, tryQueue} from '../../util.js'
 import {logger} from '../../logger.js'
 
 const severityOrder = ['critical', 'high', 'moderate', 'low', 'any' ]
@@ -26,7 +26,6 @@ const getAdvisories = async (name, registry) => {
 }
 
 const queues = {}
-let timer = null
 
 const getAdvisoriesDebounced = async (name, registry) => {
   const cache = getCache({ name: 'audit', ttl: 3600_000 })
@@ -39,33 +38,43 @@ const getAdvisoriesDebounced = async (name, registry) => {
     queue.push({name, resolve, reject})
 
     processQueue(queue, cache, registry)
-
     return promise
   })
 }
 
-const processQueue = (queue, cache, registry) => {
-  if (timer) {
+let auditConcurrency = 10
+const processQueue = async (queue, cache, registry) => {
+  if (auditConcurrency === 0) {
     return
   }
 
-  timer = setTimeout(async () => {
-    const batch = queue.slice()
-    queue.length = 0
-    try {
-      logger.info('audit: fetching advisories for', batch.map(({name}) => name))
-      const advisories = await getAdvisoriesBatch(batch.map(({name}) => name), registry)
+  if (queue.length === 0) {
+    return
+  }
 
-      batch.forEach(({name, resolve}) => resolve(advisories[name] || []))
-    } catch (e) {
-      batch.forEach(({reject, name}) => { reject(e); cache.del(name) })
-    } finally {
-      timer = null
-      if (queue.length) {
-        processQueue(queue, cache, registry)
-      }
+  auditConcurrency -= 1
+  await new Promise(r => setTimeout(r, 5))
+
+  const batch = queue.slice()
+  queue.length = 0
+
+  // batch = await asyncFilter(batch, async ({name}) => !(await cache.has(name)))
+
+  logger.info('audit: fetching advisories for', batch.map(({name}) => name))
+
+  try {
+    const advisories = batch.length
+      ? await getAdvisoriesBatch(batch.map(({name}) => name), registry)
+      : {}
+    batch.forEach(({name, resolve}) => resolve(advisories[name] || []))
+  } catch (e) {
+    batch.forEach(({reject, name}) => { reject(e); cache.del(name) })
+  } finally {
+    auditConcurrency += 1
+    if (queue.length) {
+      processQueue(queue, cache, registry)
     }
-  }, 250)
+  }
 }
 
 export const getAdvisoriesBatch = async (batch = [], registry) => {
