@@ -1,3 +1,10 @@
+## [1.32.1](https://github.com/antongolub/npm-registry-firewall/compare/v1.32.0...v1.32.1) (2022-10-30)
+
+
+### Performance Improvements
+
+* use concurrent scheme for audit api ([df2906b](https://github.com/antongolub/npm-registry-firewall/commit/df2906b01081ded61e2db8e2ca419955aaa96e2e))
+
 # [1.32.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.31.0...v1.32.0) (2022-10-29)
 
 
