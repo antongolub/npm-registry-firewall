@@ -55,6 +55,11 @@ const processQueue = async (queue, cache, registry) => {
   auditConcurrency -= 1
   await new Promise(r => setTimeout(r, 5))
 
+  if (queue.length === 0) {
+    auditConcurrency += 1
+    return
+  }
+
   const batch = queue.slice()
   queue.length = 0
 
@@ -71,9 +76,7 @@ const processQueue = async (queue, cache, registry) => {
     batch.forEach(({reject, name}) => { reject(e); cache.del(name) })
   } finally {
     auditConcurrency += 1
-    if (queue.length) {
-      processQueue(queue, cache, registry)
-    }
+    processQueue(queue, cache, registry)
   }
 }
 
