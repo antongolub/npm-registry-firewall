@@ -1,6 +1,6 @@
 import {semver} from '../../semver.js'
 import {request} from '../../http/index.js'
-import {getCache, withCache} from '../../cache.js'
+import {getCache, hasHit, withCache} from '../../cache.js'
 import {asArray, asyncFilter, makeDeferred, tryQueue} from '../../util.js'
 import {logger} from '../../logger.js'
 
@@ -19,7 +19,7 @@ export const auditPlugin = async ({entry: {name, version}, options = {}, boundCo
 auditPlugin.warmup = ({name, registry}) => getAdvisories(name, registry)
 
 const getAdvisories = async (name, registry) => {
-  const registries = asArray(registry || registry)
+  const registries = asArray(registry)
   const args = registries.map(r => [name, r])
 
   return tryQueue(getAdvisoriesDebounced, ...args)

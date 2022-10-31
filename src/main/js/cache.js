@@ -39,6 +39,8 @@ export const getCache = (opts = {}) => {
 
 const hitmap = new Map()
 
+export const hasHit = (cache, name) => hitmap.get(cache)?.has(name)
+
 export const withCache = (cache, name, cb) => {
   if (!hitmap.has(cache)) {
     hitmap.set(cache, new Map())
@@ -63,7 +65,7 @@ export const withCache = (cache, name, cb) => {
 
           p = null
           return value
-        })()
+        })().finally(() => hits.delete(name))
 
         return p
       })
