@@ -1,3 +1,10 @@
+## [1.32.2](https://github.com/antongolub/npm-registry-firewall/compare/v1.32.1...v1.32.2) (2022-10-31)
+
+
+### Performance Improvements
+
+* tweak up cache hit flow ([ae697ef](https://github.com/antongolub/npm-registry-firewall/commit/ae697efbe1f4feafbdcbf4b667d1bc706a125dc2))
+
 ## [1.32.1](https://github.com/antongolub/npm-registry-firewall/compare/v1.32.0...v1.32.1) (2022-10-30)
 
 
