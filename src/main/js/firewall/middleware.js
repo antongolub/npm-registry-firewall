@@ -5,7 +5,7 @@ import {httpError, NOT_FOUND, ACCESS_DENIED, METHOD_NOT_ALLOWED, NOT_MODIFIED, O
 import {getPolicy, getPipeline} from './engine.js'
 import {getPackument} from './packument.js'
 import {normalizePath, gzip, dropNullEntries} from '../util.js'
-import {getCache} from '../cache.js'
+import {getCache, hasHit} from '../cache.js'
 import {getCtx} from '../als.js'
 import {checkTarball} from './tarball.js'
 import {semver} from '../semver.js'
@@ -13,9 +13,11 @@ import {logger} from '../logger.js'
 
 const warmupPipeline = (pipeline, opts) => pipeline.forEach((plugin) => plugin.warmup?.(opts))
 
-const warmup = (packument, boundContext, rules) => {
+const warmupDepPackuments = (packument, boundContext, rules) => {
   const {cache, registry, authorization, entrypoint, pipeline} = boundContext
-  const stable = Object.values(packument.versions).filter(p => !p.version.includes('-'))
+  const stable = Object.values(packument.versions)
+    .filter(p => !p.version.includes('-'))
+    .sort((a, b) => semver.compare(b.version, a.version))
   const majors = stable.reduce((m, p) => {
     const major = p.version.slice(0, p.version.indexOf('.') + 1)
     if (m.every((_p) => !_p.version.startsWith(major))) {
@@ -25,24 +27,22 @@ const warmup = (packument, boundContext, rules) => {
   }, [])
 
   const deps = (majors.length > 1 ? majors : stable)
-    .sort((a, b) => semver.compare(b.version, a.version))
     .slice(0, 2)
     .reduce((m, p) => {
-      Object.keys(p.dependencies || {}).forEach(d => {
-        if (!cache.has(d)) {
-          m.add(d)
-        }
-      })
+      Object.keys(p.dependencies || {}).forEach(d => m.add(d))
       return m
     }, new Set())
 
   deps.forEach(async (name) => {
+    if (hasHit(cache, name) || await cache.has(name)) {
+      return
+    }
     const org = name.charAt(0) === '@' ? name.slice(0, (name.indexOf('/') + 1 || name.indexOf('%') + 1) - 1) : null
     try {
       warmupPipeline(pipeline, {name, registry, org})
 
       const {packument: _packument} = await getPackument({ boundContext: {cache, registry, authorization, entrypoint, name, org, pipeline}, rules })
-      warmup(_packument, boundContext, rules)
+      warmupDepPackuments(_packument, boundContext, rules)
     } catch (e) {
       // ignore
     }
@@ -79,7 +79,7 @@ export const firewall = ({registry, rules, entrypoint: _entrypoint, token, cache
   ])
 
   if (cache.ttl) {
-    warmup(packument, boundContext, rules)
+    warmupDepPackuments(packument, boundContext, rules)
   }
 
   // Tarball request
