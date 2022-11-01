@@ -16,7 +16,10 @@ export const auditPlugin = async ({entry: {name, version}, options = {}, boundCo
   return directive || false
 }
 
-auditPlugin.warmup = ({name, registry}) => getAdvisories(name, registry)
+auditPlugin.warmup = ({name, registry}) => {
+  logger.debug('audit: warming up cache for', name)
+  return getAdvisories(name, registry)
+}
 
 const getAdvisories = async (name, registry) => {
   const registries = asArray(registry)

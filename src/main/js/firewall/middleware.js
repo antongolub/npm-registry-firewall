@@ -7,10 +7,11 @@ import {getCtx} from '../als.js'
 import {checkTarball} from './tarball.js'
 import {logger} from '../logger.js'
 
-const warmupPipeline = (pipeline, opts) => pipeline.forEach((plugin) => plugin.warmup?.(opts))
+const warmupPipeline = (pipeline, opts) => pipeline.forEach(([plugin]) => plugin.warmup?.(opts))
 
-const warmupDepPackuments = (deps, boundContext, rules) => {
+const warmupDepPackuments = (name, deps, boundContext, rules) => {
   const {cache, registry, authorization, entrypoint, pipeline} = boundContext
+  logger.debug(`warmup ${name} deps`, deps)
 
   deps.forEach(async (name) => {
     if (hasHit(cache, name) || await cache.has(name)) {
@@ -21,7 +22,7 @@ const warmupDepPackuments = (deps, boundContext, rules) => {
       warmupPipeline(pipeline, {name, registry, org})
 
       const {deps: _deps} = await getPackument({ boundContext: {cache, registry, authorization, entrypoint, name, org, pipeline}, rules })
-      warmupDepPackuments(_deps, boundContext, rules)
+      warmupDepPackuments(name, _deps, boundContext, rules)
     } catch (e) {
       // ignore
     }
@@ -67,7 +68,7 @@ export const firewall = ({registry, rules, entrypoint: _entrypoint, token, cache
   }
 
   if (cache.ttl) {
-    warmupDepPackuments(deps, boundContext, rules)
+    warmupDepPackuments(name, deps, boundContext, rules)
   }
 
   // Tarball request

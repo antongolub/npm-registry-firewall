@@ -91,6 +91,7 @@ export const getDeps = (packument) => {
   const stable = Object.values(packument.versions)
     .filter(p => !p.version.includes('-'))
     .sort((a, b) => semver.compare(b.version, a.version))
+
   const majors = stable.reduce((m, p) => {
     const major = p.version.slice(0, p.version.indexOf('.') + 1)
     if (m.every((_p) => !_p.version.startsWith(major))) {
@@ -99,10 +100,10 @@ export const getDeps = (packument) => {
     return m
   }, [])
 
-  return (majors.length > 1 ? majors : stable)
+  return [...(majors.length > 1 ? majors : stable)
     .slice(0, 2)
     .reduce((m, p) => {
       Object.keys(p.dependencies || {}).forEach(d => m.add(d))
       return m
-    }, new Set())
+    }, new Set())]
 }
