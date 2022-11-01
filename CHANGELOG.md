@@ -1,3 +1,10 @@
+## [1.32.3](https://github.com/antongolub/npm-registry-firewall/compare/v1.32.2...v1.32.3) (2022-11-01)
+
+
+### Performance Improvements
+
+* store packuments in memory as gzip ([ad602c2](https://github.com/antongolub/npm-registry-firewall/commit/ad602c2485fb95fdb9accb93f6dc2f91aa0cb74f)), closes [#74](https://github.com/antongolub/npm-registry-firewall/issues/74)
+
 ## [1.32.2](https://github.com/antongolub/npm-registry-firewall/compare/v1.32.1...v1.32.2) (2022-10-31)
 
 
