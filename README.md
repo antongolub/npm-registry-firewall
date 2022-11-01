@@ -223,6 +223,7 @@ type TCacheConfig = {
   ttl: number
   evictionTimeout?: number
   name?: string
+  limit?: number // in bytes
 }
 
 type TCacheImpl = {
@@ -321,7 +322,8 @@ export function createLogger(options: TLoggerOptions): TLogger
     "base": "/",                // Optional. Defaults to '/'
     "cache": {                  // Optional. Defaults to no-cache (null)
       "ttl": 5,                 // Time to live in minutes. Specifies how long resolved pkg directives will live.
-      "evictionTimeout": 1      // Cache invalidation period in minutes. Defaults to cache.ttl.
+      "evictionTimeout": 1,     // Cache invalidation period in minutes. Defaults to cache.ttl.
+      "limit": 1000000          // Optional. Max cache size in bytes. Defaults to Infinity
     },
     "extends": "@qiwi/internal-npm-registry-firewall-rules",  // Optional. Populates the entry with the specified source contents (json/CJS module only)
     "rules": [
@@ -411,8 +413,9 @@ By default, _nrf_ uses a simple in-memory cache to store patched packuments.
 cache: {              // Optional. Defaults to no-cache (null)
   ttl: 5,             // Time to live in minutes. Specifies how long resolved pkg directives will live.
   evictionTimeout: 1, // Cache invalidation period in minutes. Defaults to cache.ttl.
-  name: 'unique'      // If and only if you use the same rules for several firewall entrypoints (multi-port proxy)
+  name: 'unique',     // If and only if you use the same rules for several firewall entrypoints (multi-port proxy)
                       // you can slighly optimise resource consupmtion by sharing the cache. Defaults to `randId()`
+  limit: 1000000      // Optional. Max cache size in bytes. Defaults to Infinity
 }
 ```
 You can also provide your own implementation instead, for example, to create [cassandra](https://cassandra.apache.org/_/index.html)-based distributed cache:
