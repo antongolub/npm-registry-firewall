@@ -24,7 +24,7 @@ const warmupDepPackuments = (name, deps, boundContext, rules) => {
       const {deps: _deps} = await getPackument({ boundContext: {cache, registry, authorization, entrypoint, name, org, pipeline}, rules })
       warmupDepPackuments(name, _deps, boundContext, rules)
     } catch (e) {
-      // ignore
+      logger.warn('warmup error', e)
     }
   })
 }
@@ -62,13 +62,13 @@ export const firewall = ({registry, rules, entrypoint: _entrypoint, token, cache
     return next(httpError(NOT_FOUND))
   }
 
+  if (cache.ttl) {
+    warmupDepPackuments(name, deps, boundContext, rules)
+  }
+
   if (req.headers['if-none-match'] === etag) {
     res.writeHead(NOT_MODIFIED).end()
     return
-  }
-
-  if (cache.ttl) {
-    warmupDepPackuments(name, deps, boundContext, rules)
   }
 
   // Tarball request
