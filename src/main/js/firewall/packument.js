@@ -23,11 +23,11 @@ export const getPackument = async ({boundContext, rules}) => {
     const _packument = patchPackument({ packument, directives, entrypoint, registry })
 
     if (Object.keys(_packument.versions).length === 0) {
-      cache.add(name, entry)
+      cache.add(name, {})
       return {}
     }
 
-    const packumentBuffer = _packument.versions === packument.versions
+    const packumentBuffer = Object.keys(_packument.versions).length === Object.keys(packument.versions).length
       ? body
       : Buffer.from(JSON.stringify(_packument))
     const etag = 'W/' + JSON.stringify(crypto.createHash('sha256').update(packumentBuffer.slice(0, 65_536)).digest('hex'))

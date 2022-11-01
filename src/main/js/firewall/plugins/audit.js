@@ -1,7 +1,7 @@
 import {semver} from '../../semver.js'
 import {request} from '../../http/index.js'
-import {getCache, hasHit, withCache} from '../../cache.js'
-import {asArray, asyncFilter, makeDeferred, tryQueue} from '../../util.js'
+import {getCache, withCache} from '../../cache.js'
+import {asArray, makeDeferred, tryQueue} from '../../util.js'
 import {logger} from '../../logger.js'
 
 const severityOrder = ['critical', 'high', 'moderate', 'low', 'any' ]
