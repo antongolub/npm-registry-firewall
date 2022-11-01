@@ -1,3 +1,10 @@
+## [1.33.2](https://github.com/antongolub/npm-registry-firewall/compare/v1.33.1...v1.33.2) (2022-11-01)
+
+
+### Performance Improvements
+
+* log warmup errors as warings ([39b42a8](https://github.com/antongolub/npm-registry-firewall/commit/39b42a80591bf838b61e3e4a37fb3ce8418ff18c))
+
 ## [1.33.1](https://github.com/antongolub/npm-registry-firewall/compare/v1.33.0...v1.33.1) (2022-11-01)
 
 
