@@ -1,3 +1,10 @@
+# [1.33.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.32.3...v1.33.0) (2022-11-01)
+
+
+### Features
+
+* add cache byte limit option ([8e525be](https://github.com/antongolub/npm-registry-firewall/commit/8e525be13c6867c3d104acfa95712225850f4dae))
+
 ## [1.32.3](https://github.com/antongolub/npm-registry-firewall/compare/v1.32.2...v1.32.3) (2022-11-01)
 
 
