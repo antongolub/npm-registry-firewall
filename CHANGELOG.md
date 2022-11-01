@@ -1,3 +1,10 @@
+## [1.33.1](https://github.com/antongolub/npm-registry-firewall/compare/v1.33.0...v1.33.1) (2022-11-01)
+
+
+### Bug Fixes
+
+* fix audit plugins warmup, add debug point ([bd4b62c](https://github.com/antongolub/npm-registry-firewall/commit/bd4b62c39e84cfcff08e52e822e07edf51c76691))
+
 # [1.33.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.32.3...v1.33.0) (2022-11-01)
 
 
