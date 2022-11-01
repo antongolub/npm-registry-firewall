@@ -1,38 +1,48 @@
+import {Buffer} from 'node:buffer'
+import crypto from 'node:crypto'
+
 import {getDirectives, getPolicy} from './engine.js'
 import {request} from '../http/index.js'
-import {asArray, makeDeferred, tryQueue} from '../util.js'
+import {asArray, gzip, tryQueue} from '../util.js'
 import {withCache} from '../cache.js'
+import {semver} from '../semver.js'
 
 export const getPackument = async ({boundContext, rules}) => {
   const { cache, registry, authorization, entrypoint, name } = boundContext
 
   return withCache(cache, name, async () => {
-    const { promise, resolve, reject } = makeDeferred()
-    cache.add(name, promise)
+    const args = asArray(registry).map(r => [{
+      url: `${r}/${name}`,
+      authorization,
+      gzip: true
+    }])
+    const {body, headers} = await tryQueue(request, ...args)
+    const packument = JSON.parse(body)
+    const deps = getDeps(packument)
+    const directives = await getDirectives({ packument, rules, boundContext})
+    const _packument = patchPackument({ packument, directives, entrypoint, registry })
 
-    try {
-      const args = asArray(registry).map(r => [{
-        url: `${r}/${name}`,
-        authorization,
-        gzip: true
-      }])
-      const {body, headers} = await tryQueue(request, ...args)
-      const packument = JSON.parse(body)
-      const directives = await getDirectives({ packument, rules, boundContext})
-      const _packument = patchPackument({ packument, directives, entrypoint, registry })
-
-      resolve({
-        directives,
-        headers,
-        packument: _packument
-      })
-
-    } catch (e) {
-      reject(e)
-      cache.del(name)
+    if (Object.keys(_packument.versions).length === 0) {
+      cache.add(name, entry)
+      return {}
     }
 
-    return promise
+    const packumentBuffer = _packument.versions === packument.versions
+      ? body
+      : Buffer.from(JSON.stringify(_packument))
+    const etag = 'W/' + JSON.stringify(crypto.createHash('sha256').update(packumentBuffer.slice(0, 65_536)).digest('hex'))
+    const packumentZip = await gzip(packumentBuffer)
+    const entry = {
+      etag,
+      deps,
+      directives,
+      headers,
+      packumentZip
+    }
+
+    cache.add(name, entry)
+
+    return entry
   })
 }
 
@@ -75,4 +85,24 @@ export const patchPackument = ({packument, directives, entrypoint, registry}) =>
     time,
     versions
   }
+}
+
+export const getDeps = (packument) => {
+  const stable = Object.values(packument.versions)
+    .filter(p => !p.version.includes('-'))
+    .sort((a, b) => semver.compare(b.version, a.version))
+  const majors = stable.reduce((m, p) => {
+    const major = p.version.slice(0, p.version.indexOf('.') + 1)
+    if (m.every((_p) => !_p.version.startsWith(major))) {
+      m.push(p)
+    }
+    return m
+  }, [])
+
+  return (majors.length > 1 ? majors : stable)
+    .slice(0, 2)
+    .reduce((m, p) => {
+      Object.keys(p.dependencies || {}).forEach(d => m.add(d))
+      return m
+    }, new Set())
 }

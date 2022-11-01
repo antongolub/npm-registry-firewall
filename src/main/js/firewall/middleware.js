@@ -1,37 +1,16 @@
-import {Buffer} from 'node:buffer'
-import crypto from 'node:crypto'
-
 import {httpError, NOT_FOUND, ACCESS_DENIED, METHOD_NOT_ALLOWED, NOT_MODIFIED, OK, FOUND} from '../http/index.js'
 import {getPolicy, getPipeline} from './engine.js'
 import {getPackument} from './packument.js'
-import {normalizePath, gzip, dropNullEntries} from '../util.js'
+import {normalizePath, gzip, dropNullEntries, gunzip} from '../util.js'
 import {getCache, hasHit} from '../cache.js'
 import {getCtx} from '../als.js'
 import {checkTarball} from './tarball.js'
-import {semver} from '../semver.js'
 import {logger} from '../logger.js'
 
 const warmupPipeline = (pipeline, opts) => pipeline.forEach((plugin) => plugin.warmup?.(opts))
 
-const warmupDepPackuments = (packument, boundContext, rules) => {
+const warmupDepPackuments = (deps, boundContext, rules) => {
   const {cache, registry, authorization, entrypoint, pipeline} = boundContext
-  const stable = Object.values(packument.versions)
-    .filter(p => !p.version.includes('-'))
-    .sort((a, b) => semver.compare(b.version, a.version))
-  const majors = stable.reduce((m, p) => {
-    const major = p.version.slice(0, p.version.indexOf('.') + 1)
-    if (m.every((_p) => !_p.version.startsWith(major))) {
-      m.push(p)
-    }
-    return m
-  }, [])
-
-  const deps = (majors.length > 1 ? majors : stable)
-    .slice(0, 2)
-    .reduce((m, p) => {
-      Object.keys(p.dependencies || {}).forEach(d => m.add(d))
-      return m
-    }, new Set())
 
   deps.forEach(async (name) => {
     if (hasHit(cache, name) || await cache.has(name)) {
@@ -41,8 +20,8 @@ const warmupDepPackuments = (packument, boundContext, rules) => {
     try {
       warmupPipeline(pipeline, {name, registry, org})
 
-      const {packument: _packument} = await getPackument({ boundContext: {cache, registry, authorization, entrypoint, name, org, pipeline}, rules })
-      warmupDepPackuments(_packument, boundContext, rules)
+      const {deps: _deps} = await getPackument({ boundContext: {cache, registry, authorization, entrypoint, name, org, pipeline}, rules })
+      warmupDepPackuments(_deps, boundContext, rules)
     } catch (e) {
       // ignore
     }
@@ -71,15 +50,24 @@ export const firewall = ({registry, rules, entrypoint: _entrypoint, token, cache
 
   warmupPipeline(pipeline, boundContext)
   const [
-    { packument, headers, directives },
+    { packumentZip, headers, directives, deps, etag },
     tarball
   ] = await Promise.all([
     getPackument({ boundContext, rules }),
     version ? checkTarball({registry, url: req.url}) : Promise.resolve(false)
   ])
 
+  if (!packumentZip) {
+    return next(httpError(NOT_FOUND))
+  }
+
+  if (req.headers['if-none-match'] === etag) {
+    res.writeHead(NOT_MODIFIED).end()
+    return
+  }
+
   if (cache.ttl) {
-    warmupDepPackuments(packument, boundContext, rules)
+    warmupDepPackuments(deps, boundContext, rules)
   }
 
   // Tarball request
@@ -99,23 +87,12 @@ export const firewall = ({registry, rules, entrypoint: _entrypoint, token, cache
   }
 
   // Packument request
-  if (Object.keys(packument.versions).length === 0) {
-    return next(httpError(NOT_FOUND))
-  }
-
   const isGzip = req.headers['accept-encoding']?.includes('gzip')
-  const _packumentBuffer = Buffer.from(JSON.stringify(packument))
-  const packumentBuffer = isGzip ? await gzip(_packumentBuffer) : _packumentBuffer
-  const cl = '' + packumentBuffer.length
-  const etag = 'W/' + JSON.stringify(crypto.createHash('sha256').update(packumentBuffer.slice(0, 65_536)).digest('hex'))
+  const buffer = isGzip ? packumentZip : await gunzip(packumentZip)
+  const cl = '' + buffer.length
   const extra = isGzip
     ? {'content-length': cl, 'transfer-encoding': null, 'content-encoding': 'gzip', etag}
     : {'content-length': cl, 'transfer-encoding': null, 'content-encoding': null, etag}
-
-  if (req.headers['if-none-match'] === etag) {
-    res.writeHead(NOT_MODIFIED).end()
-    return
-  }
 
   res.writeHead(OK, dropNullEntries({
     ...headers,
@@ -123,7 +100,7 @@ export const firewall = ({registry, rules, entrypoint: _entrypoint, token, cache
   }))
 
   if (method === 'GET') {
-    res.write(packumentBuffer)
+    res.write(buffer)
   }
   res.end()
 }
