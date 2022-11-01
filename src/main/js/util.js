@@ -1,7 +1,8 @@
 import zlib from 'node:zlib'
 import path from 'node:path'
 import {promisify} from 'node:util'
-import { createRequire } from 'node:module'
+import {createRequire} from 'node:module'
+import {Buffer} from 'node:buffer'
 
 const require = createRequire(import.meta.url)
 
@@ -105,7 +106,7 @@ export const gzip = promisify(zlib.gzip)
 export const isPlainObject = (item) => item?.constructor === Object
 
 export const mergeDeep = (target, ...sources) => {
-  if (!sources.length) return target;
+  if (!sources.length) return target
   const source = sources.shift()
 
   if (isPlainObject(target) && isPlainObject(source)) {
@@ -145,3 +146,41 @@ export const dropNullEntries = (object) => Object.entries(object).reduce((m, [k,
 
 export const asyncFilter = async (arr, predicate) => Promise.all(arr.map(predicate))
   .then((results) => arr.filter((_v, index) => results[index]))
+
+// https://stackoverflow.com/questions/1248302/how-to-get-the-size-of-a-javascript-object
+export const getByteLength = (object) => {
+  const objectList = []
+  const stack = [object]
+  let bytes = 0
+
+  while (stack.length) {
+    var value = stack.pop()
+    
+    if (value instanceof Buffer) {
+      bytes += Buffer.byteLength(value)
+    }
+
+    else if ( typeof value === 'boolean' ) {
+      bytes += 4
+    }
+    else if ( typeof value === 'string' ) {
+      bytes += value.length * 2
+    }
+    else if ( typeof value === 'number' ) {
+      bytes += 8
+    }
+    else if
+    (
+      typeof value === 'object'
+      && objectList.indexOf( value ) === -1
+    )
+    {
+      objectList.push( value )
+
+      for( const i in value ) {
+        stack.push( value[ i ] )
+      }
+    }
+  }
+  return bytes
+}

@@ -1,4 +1,4 @@
-import { genId } from './util.js'
+import {genId, getByteLength} from './util.js'
 import { getCtx } from './als.js'
 
 const caches = new Map()
@@ -7,7 +7,9 @@ const voidCache = {
   add() {},
   get() {},
   has() {return false},
-  del() {}
+  del() {},
+  size() {return 0},
+  byteLength() {return 0}
 }
 
 const getCacheFactory = (opts) => typeof opts === 'function'
@@ -75,7 +77,7 @@ export const withCache = (cache, name, cb) => {
   return hits.get(name)()
 }
 
-export const createCache = ({ttl, evictionTimeout = ttl, warmup}) => {
+export const createCache = ({ttl, evictionTimeout = ttl, warmup, limit = Infinity}) => {
   const store = new Map()
   const timer = setInterval(() => {
     const now = Date.now()
@@ -85,14 +87,20 @@ export const createCache = ({ttl, evictionTimeout = ttl, warmup}) => {
       }
     })
   }, evictionTimeout)
+  let totalByteLength = 0
 
   return {
     add(key, value, _ttl) {
-      store.set(key, {
-        key,
-        value,
-        validTill: Date.now() + (_ttl || ttl)
-      })
+      const byteLength = getByteLength(value)
+      if (totalByteLength + byteLength <= limit) {
+        totalByteLength += byteLength
+        store.set(key, {
+          key,
+          value,
+          validTill: Date.now() + (_ttl || ttl),
+          byteLength
+        })
+      }
       return value
     },
     has(key) {
@@ -102,7 +110,14 @@ export const createCache = ({ttl, evictionTimeout = ttl, warmup}) => {
       return store.get(key)?.value || null
     },
     del(key) {
+      totalByteLength -= store.get(key)?.byteLength || 0
       store.delete(key)
+    },
+    size() {
+      return store.size
+    },
+    byteLength () {
+      return totalByteLength
     },
     store,
     timer,

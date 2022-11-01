@@ -6,7 +6,7 @@ const test = testFactory('cache', import.meta)
 const cache = createCache({ttl: 1000, evictionTimeout: 200})
 test('add entry', () => {
   cache.add('foo', 'bar', 1000)
-  objectContaining(cache.store.get('foo'), {key: 'foo', value: 'bar'})
+  objectContaining(cache.store.get('foo'), {key: 'foo', value: 'bar', byteLength: 6})
 })
 
 test('get entry', () => {

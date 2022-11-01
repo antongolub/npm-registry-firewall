@@ -54,6 +54,7 @@ type TCacheConfig = {
   ttl: number
   evictionTimeout?: number
   name?: string
+  limit?: number
 }
 
 type TCacheImpl = {
