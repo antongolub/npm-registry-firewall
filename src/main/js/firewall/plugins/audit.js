@@ -34,7 +34,6 @@ const getAdvisoriesDebounced = async (name, registry) => {
     const {promise, resolve, reject} = makeDeferred()
     const queue = (queues[registry] = queues[registry] || [])
 
-    cache.add(name, promise)
     queue.push({name, resolve, reject})
 
     processQueue(queue, cache, registry)
