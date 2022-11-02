@@ -32,17 +32,14 @@ export const getPackument = async ({boundContext, rules}) => {
       : Buffer.from(JSON.stringify(_packument))
     const etag = 'W/' + JSON.stringify(crypto.createHash('sha256').update(packumentBuffer.slice(0, 65_536)).digest('hex'))
     const packumentZip = await gzip(packumentBuffer)
-    const entry = {
+
+    return {
       etag,
       deps,
       directives,
       headers,
       packumentZip
     }
-
-    cache.add(name, entry)
-
-    return entry
   })
 }
 
