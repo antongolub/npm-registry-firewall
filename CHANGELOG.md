@@ -1,3 +1,10 @@
+## [1.33.4](https://github.com/antongolub/npm-registry-firewall/compare/v1.33.3...v1.33.4) (2022-11-02)
+
+
+### Bug Fixes
+
+* inject plugin opts to warmup ctx ([c935fb4](https://github.com/antongolub/npm-registry-firewall/commit/c935fb40019ec8405073ef8aecd50979740484e3))
+
 ## [1.33.3](https://github.com/antongolub/npm-registry-firewall/compare/v1.33.2...v1.33.3) (2022-11-02)
 
 
