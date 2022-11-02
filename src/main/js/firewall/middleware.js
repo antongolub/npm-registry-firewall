@@ -7,7 +7,7 @@ import {getCtx} from '../als.js'
 import {checkTarball} from './tarball.js'
 import {logger} from '../logger.js'
 
-const warmupPipeline = (pipeline, opts) => pipeline.forEach(([plugin]) => plugin.warmup?.(opts))
+const warmupPipeline = (pipeline, opts) => pipeline.forEach(([plugin, _opts]) => plugin.warmup?.({...opts, ..._opts }))
 
 const warmupDepPackuments = (name, deps, boundContext, rules) => {
   const {cache, registry, authorization, entrypoint, pipeline} = boundContext
