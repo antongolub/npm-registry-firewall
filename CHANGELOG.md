@@ -1,3 +1,10 @@
+## [1.33.3](https://github.com/antongolub/npm-registry-firewall/compare/v1.33.2...v1.33.3) (2022-11-02)
+
+
+### Performance Improvements
+
+* improve packument cache callback ([2e49493](https://github.com/antongolub/npm-registry-firewall/commit/2e4949304c87f89f8401320166d8c587bce916f9))
+
 ## [1.33.2](https://github.com/antongolub/npm-registry-firewall/compare/v1.33.1...v1.33.2) (2022-11-01)
 
 
