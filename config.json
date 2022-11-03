@@ -10,6 +10,9 @@
       "_healthcheck": null
     }
   ],
+  "log": {
+    "level": "debug"
+  },
   "firewall": {
     "base": "/registry",
     "registry": "https://registry.npmjs.org",
@@ -21,34 +24,8 @@
     "rules": [
       {
         "plugin": [["npm-registry-firewall/audit", {
-          "*": "deny"
+          "critical": "deny"
         }]]
-      },
-      {
-        "policy": "warn",
-        "name": "reqresnext"
-      },
-      {
-        "policy": "allow",
-        "org": "@qiwi"
-      },
-      {
-        "policy": "allow",
-        "org": "@antongolub"
-      },
-      {
-        "policy": "deny",
-        "name": "colors",
-        "version": ">= v1.3.0"
-      },
-      {
-        "policy": "allow",
-        "name": "d",
-        "version": "< 1.0.0"
-      },
-      {
-        "policy": "allow",
-        "dateRange": ["2010-01-01T00:00:00.000Z", "2025-01-01T00:00:00.000Z"]
       }
     ]
   }

@@ -1,10 +1,19 @@
-import zlib from 'node:zlib'
 import path from 'node:path'
-import {promisify} from 'node:util'
 import {createRequire} from 'node:module'
 import {Buffer} from 'node:buffer'
+import zlib from 'node:zlib'
+import os from 'node:os'
+import {promisify} from 'node:util'
 
-const require = createRequire(import.meta.url)
+import {logger} from './logger.js'
+import {runWorker} from './worker/index.js'
+
+const cpulen = os.cpus().length
+
+export const gzip = cpulen === 1 ? promisify(zlib.gzip) : async (data) => runWorker('worker-zip.js', { method: 'gzip', args: [data] }).then(Buffer.from)
+export const gunzip = cpulen === 1 ? promisify(zlib.gunzip) : async (data) => runWorker('worker-zip.js', { method: 'gunzip', args: [data] }).then((d) => Buffer.from(d).toString())
+
+export const require = createRequire(import.meta.url)
 
 export const makeDeferred = () => {
   let resolve
@@ -100,9 +109,6 @@ export const noThrow = (cb) => (...args) => {
 
 export const load = (file) => noThrow(require)(path.resolve(file)) || require(file)
 
-export const gunzip = promisify(zlib.gunzip)
-export const gzip = promisify(zlib.gzip)
-
 export const isPlainObject = (item) => item?.constructor === Object
 
 export const mergeDeep = (target, ...sources) => {
@@ -183,4 +189,10 @@ export const getByteLength = (object) => {
     }
   }
   return bytes
+}
+
+export const time = (fn, label = fn.name) => async (...args) => {
+  const b = Date.now()
+
+  return fn(...args).finally(() => logger.debug(`${label} took ${Date.now() - b}ms`))
 }

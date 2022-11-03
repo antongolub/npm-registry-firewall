@@ -3,7 +3,7 @@ import crypto from 'node:crypto'
 
 import {getDirectives, getPolicy} from './engine.js'
 import {request} from '../http/index.js'
-import {asArray, gzip, tryQueue} from '../util.js'
+import {asArray, gzip, tryQueue, time} from '../util.js'
 import {withCache} from '../cache.js'
 import {semver} from '../semver.js'
 
@@ -31,7 +31,7 @@ export const getPackument = async ({boundContext, rules}) => {
       ? body
       : Buffer.from(JSON.stringify(_packument))
     const etag = 'W/' + JSON.stringify(crypto.createHash('sha256').update(packumentBuffer.slice(0, 65_536)).digest('hex'))
-    const packumentZip = await gzip(packumentBuffer)
+    const packumentZip = await time(gzip, `gzip packument ${name}`)(packumentBuffer)
 
     return {
       etag,

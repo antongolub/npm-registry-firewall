@@ -4,7 +4,7 @@ import { parse } from 'node:url'
 import { Buffer } from 'node:buffer'
 import zlib from 'node:zlib'
 
-import {makeDeferred, normalizePath, gunzip, gzip, dropNullEntries} from '../util.js'
+import {makeDeferred, normalizePath, gunzip, gzip, dropNullEntries, time} from '../util.js'
 import { httpError, OK, FOUND, MULTIPLE_CHOICES, PERMANENT_REDIRECT, REQUEST_TIMEOUT, TEMPORARY_REDIRECT } from './error.js'
 import { getAgent } from './agent.js'
 import { getCtx } from '../als.js'
@@ -80,7 +80,7 @@ export const request = async (opts) => {
     res.on('end', async () => {
       const _buffer = Buffer.concat(data)
       const buffer = res.headers['content-encoding'] === 'gzip'
-        ? await gunzip(_buffer)
+        ? await time(gunzip, `unzip ${url}`)(_buffer)
         : _buffer
 
       Object.assign(res, {
