@@ -1,3 +1,10 @@
+## [1.34.1](https://github.com/antongolub/npm-registry-firewall/compare/v1.34.0...v1.34.1) (2022-11-03)
+
+
+### Bug Fixes
+
+* fix gunzip pipe ([276b9ab](https://github.com/antongolub/npm-registry-firewall/commit/276b9ab997113a2c2839d7a42e0893d325da11d2))
+
 # [1.34.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.33.4...v1.34.0) (2022-11-03)
 
 
