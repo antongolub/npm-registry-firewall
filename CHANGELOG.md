@@ -1,3 +1,10 @@
+# [1.34.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.33.4...v1.34.0) (2022-11-03)
+
+
+### Features
+
+* use workers for gzip ([0d85c8a](https://github.com/antongolub/npm-registry-firewall/commit/0d85c8a261a68bb56718132d45afa4f6fff4c465))
+
 ## [1.33.4](https://github.com/antongolub/npm-registry-firewall/compare/v1.33.3...v1.33.4) (2022-11-02)
 
 
