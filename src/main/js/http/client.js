@@ -7,7 +7,6 @@ import zlib from 'node:zlib'
 import {makeDeferred, normalizePath, gunzip, gzip, dropNullEntries, time} from '../util.js'
 import { httpError, OK, FOUND, MULTIPLE_CHOICES, PERMANENT_REDIRECT, REQUEST_TIMEOUT, TEMPORARY_REDIRECT } from './error.js'
 import { getAgent } from './agent.js'
-import { getCtx } from '../als.js'
 import { logger } from '../logger.js'
 
 export const request = async (opts) => {

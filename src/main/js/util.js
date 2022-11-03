@@ -11,7 +11,7 @@ import {runWorker} from './worker/index.js'
 const cpulen = os.cpus().length
 
 export const gzip = cpulen === 1 ? promisify(zlib.gzip) : async (data) => runWorker('worker-zip.js', { method: 'gzip', args: [data] }).then(Buffer.from)
-export const gunzip = cpulen === 1 ? promisify(zlib.gunzip) : async (data) => runWorker('worker-zip.js', { method: 'gunzip', args: [data] }).then((d) => Buffer.from(d).toString())
+export const gunzip = cpulen === 1 ? promisify(zlib.gunzip) : async (data) => runWorker('worker-zip.js', { method: 'gunzip', args: [data] }).then(Buffer.from)
 
 export const require = createRequire(import.meta.url)
 
