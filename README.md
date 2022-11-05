@@ -134,27 +134,29 @@ const app = createApp({
     port: 3001,
   },
   firewall: {
-    registry: 'https://registry.npmmirror.com',
-    rules: [
-      {
-        policy: 'allow',
-        org: '@qiwi'
-      },
-      {
-        policy: 'deny',
-        name: '@babel/*,react@^17'  // All @babel-scoped pkgs and react >= 17.0.0
-      },
-      {
-        policy: 'allow',
-        filter: ({name, org}) => org === '@types' || name === 'react'  // may be async
-      },
-      {
-        plugin: [['npm-registry-firewall/audit', {
-          critical: 'deny',
-          moderate: 'warn'
-        }]]
-      },
-    ]
+    '/registry': {
+      registry: 'https://registry.npmmirror.com',
+      rules: [
+        {
+          policy: 'allow',
+          org: '@qiwi'
+        },
+        {
+          policy: 'deny',
+          name: '@babel/*,react@^17'  // All @babel-scoped pkgs and react >= 17.0.0
+        },
+        {
+          policy: 'allow',
+          filter: ({name, org}) => org === '@types' || name === 'react'  // may be async
+        },
+        {
+          plugin: [['npm-registry-firewall/audit', {
+            critical: 'deny',
+            moderate: 'warn'
+          }]]
+        },
+      ]
+    }
   }
 })
 
@@ -222,7 +224,6 @@ type TPluginConfig = string | [string, any] | TPlugin | [TPlugin, any]
 type TCacheConfig = {
   ttl: number
   evictionTimeout?: number
-  name?: string
   limit?: number // in bytes
 }
 
@@ -233,26 +234,23 @@ type TCacheImpl = {
   del(key: string): LetAsync<void>
 }
 
-type TCacheFactory = {
-  (opts: TCacheConfig): TCacheImpl
-}
-
-type TFirewallConfig = {
+type TFirewallConfigEntry = {
   registry: string | string[]
   entrypoint?: string
   token?: string
-  base?: string
   rules?: TRule | TRule[]
-  cache?: TCacheConfig | TCacheImpl | TCacheFactory
   extend?: string
 }
 
+type TFirewallConfig = Record<string, TFirewallConfigEntry>
+
 type TConfig = {
-  server: TServerConfig | TServerConfig[]
-  firewall: TFirewallConfig
   agent?: TAgentConfig
-  log?: { level?: TLogeLevel }
+  cache?: TCacheConfig | TCacheImpl
   extend?: string
+  firewall: TFirewallConfig
+  log?: { level?: TLogeLevel }
+  server: TServerConfig
 }
 
 type TValidationContext = {
@@ -276,10 +274,10 @@ type TPlugin = {
 
 type TAppOpts = {
   logger?: TLogger
-  cache?: TCacheFactory
+  cache?: TCacheImpl
 }
 
-export function createApp(config: string | TConfig | TConfig[], opts?: TAppOpts): Promise<TApp>
+export function createApp(config: string | TConfig, opts?: TAppOpts): Promise<TApp>
 
 type TLoggerOptions = {
   extra?: Record<string, any>,
@@ -315,66 +313,70 @@ export function createLogger(options: TLoggerOptions): TLogger
     "maxSockets": 10000,
     "timeout": 10000
   },
+  "log": {
+    "level": "info"               // Optional. Defaults to 'info'
+  },
+  "cache": {                  // Optional. Defaults to no-cache (null)
+    "ttl": 5,                 // Time to live in minutes. Specifies how long resolved pkg directives will live.
+    "evictionTimeout": 1,     // Cache invalidation period in minutes. Defaults to cache.ttl.
+    "limit": 1000000          // Optional. Max cache size in bytes. Defaults to Infinity
+  },
   "firewall": {
-    "registry": "https://registry.npmmirror.com",  // Remote registry
-    "token": "NpmToken.*********-e0b2a8e5****",    // Optional bearer token. If empty req.headers.authorization value will be used instead
-    "entrypoint": "https://r.qiwi.com/npm",        // Optional. Defaults to `${server.secure ? 'https' : 'http'}://${server.host}:${server.port}${route.base}`
-    "base": "/",                // Optional. Defaults to '/'
-    "cache": {                  // Optional. Defaults to no-cache (null)
-      "ttl": 5,                 // Time to live in minutes. Specifies how long resolved pkg directives will live.
-      "evictionTimeout": 1,     // Cache invalidation period in minutes. Defaults to cache.ttl.
-      "limit": 1000000          // Optional. Max cache size in bytes. Defaults to Infinity
-    },
-    "extends": "@qiwi/internal-npm-registry-firewall-rules",  // Optional. Populates the entry with the specified source contents (json/CJS module only)
-    "rules": [
-      {
-        "policy": "allow",
-        "org": "@qiwi"
-      },
-      {
-        "policy": "allow",
-        "name": ["@babel/*", "@jest/*", "lodash"] // string[] or "comma,separated,list". * works as .+ in regexp
-      },
-      {
-        "policy": "warn",       // `warn` directive works like `allow`, but also logs if someone has requested a tarball matching the rule
-        "name": "reqresnext"
-      },
-      {
-        "policy": "deny",
-        "extends": "@qiwi/nrf-rule",  // `extends` may be applied at any level, and should return a valid value for the current config section
-      },
-      {
-        "plugin": ["npm-registry-firewall/audit", {"moderate": "warn", "critical": "deny"}]
-      },
-      {
-        "policy": "deny",
-        "name": "colors",
-        "version": ">= v1.4.0"  // Any semver range: https://github.com/npm/node-semver#ranges
-      },
-      {
-        "policy": "deny",
-        "license": "dbad"       // Comma-separated license types or string[]
-      },
-      {
-        "policy": "allow",
-        "username": ["sindresorhus", "isaacs"] // Trusted npm authors.
-      },
-      {
-        "policy": "allow",
-        "name": "d",
-        // `allow` is upper, so it protects `< 1.0.0`-ranged versions that might be omitted on next steps
-        "version": "< 1.0.0"
-      },
-      {
-        "policy": "deny",
-        // Checks pkg version publish date against the range
-        "dateRange": ["2010-01-01T00:00:00.000Z", "2025-01-01T00:00:00.000Z"]
-      },
-      {
-        "policy": "allow",
-        "age": 5    // Check the package version is older than 5 days. Like quarantine
-      }
-    ]
+    "/base": {                // Context path
+      "registry": "https://registry.npmmirror.com",  // Remote registry
+      "token": "NpmToken.*********-e0b2a8e5****",    // Optional bearer token. If empty req.headers.authorization value will be used instead
+      "entrypoint": "https://r.qiwi.com/npm",        // Optional. Defaults to `${server.secure ? 'https' : 'http'}://${server.host}:${server.port}${route.base}`
+      "extends": "@qiwi/internal-npm-registry-firewall-rules",  // Optional. Populates the entry with the specified source contents (json/CJS module only)
+      "rules": [
+        {
+          "policy": "allow",
+          "org": "@qiwi"
+        },
+        {
+          "policy": "allow",
+          "name": ["@babel/*", "@jest/*", "lodash"] // string[] or "comma,separated,list". * works as .+ in regexp
+        },
+        {
+          "policy": "warn",       // `warn` directive works like `allow`, but also logs if someone has requested a tarball matching the rule
+          "name": "reqresnext"
+        },
+        {
+          "policy": "deny",
+          "extends": "@qiwi/nrf-rule",  // `extends` may be applied at any level, and should return a valid value for the current config section
+        },
+        {
+          "plugin": ["npm-registry-firewall/audit", {"moderate": "warn", "critical": "deny"}]
+        },
+        {
+          "policy": "deny",
+          "name": "colors",
+          "version": ">= v1.4.0"  // Any semver range: https://github.com/npm/node-semver#ranges
+        },
+        {
+          "policy": "deny",
+          "license": "dbad"       // Comma-separated license types or string[]
+        },
+        {
+          "policy": "allow",
+          "username": ["sindresorhus", "isaacs"] // Trusted npm authors.
+        },
+        {
+          "policy": "allow",
+          "name": "d",
+          // `allow` is upper, so it protects `< 1.0.0`-ranged versions that might be omitted on next steps
+          "version": "< 1.0.0"
+        },
+        {
+          "policy": "deny",
+          // Checks pkg version publish date against the range
+          "dateRange": ["2010-01-01T00:00:00.000Z", "2025-01-01T00:00:00.000Z"]
+        },
+        {
+          "policy": "allow",
+          "age": 5    // Check the package version is older than 5 days. Like quarantine
+        }
+      ]
+    }
   }
 }
 ```
@@ -407,9 +409,11 @@ const cache = {
 const app = createApp({
   server: {port: 5000},
   firewall: {
-    registry: 'https://registry.npmjs.org',
-    cache,
-    rules: []
+    '/registry': {
+      registry: 'https://registry.npmjs.org',
+      cache,
+      rules: []
+    }
   }
 })
 ```
@@ -438,8 +442,10 @@ const app = createApp({
   server: {port: 5000},
   agent,
   firewall: {
-    registry: 'https://registry.npmjs.org',
-    rules: []
+    '/registry': {
+      registry: 'https://registry.npmjs.org',
+      rules: []
+    }
   }
 })
 ```
@@ -455,8 +461,10 @@ const app = createApp({
     timeout: 10_000
   },
   firewall: {
-    registry: 'https://registry.npmjs.org',
-    rules: []
+    '/registry': {
+      registry: 'https://registry.npmjs.org',
+      rules: []
+    }
   }
 })
 ```
@@ -473,19 +481,21 @@ const config = {
     extends: '@qiwi/nrf-server-config'
   },
   firewall: {
-    // `rules`, `registry`, etc,
-    extends: '@qiwi/nrf-firewall-config',
-    // NOTE If you redefine `rules` the result will be contatenation of `[...rules, ...extends.rules]`
-    rules: [{
-      policy: 'deny',
-      // `name`, `org`, `filter`, etc
-      extends: '@qiwi/nrf-deprecated-pkg-list'
-    }, {
-      policy: 'allow',
-      extends: '@qiwi/nrf-whitelisted-orgs'
-    }, {
-      extends: '@qiwi/nrf-all-in-one-filter'
-    }]
+    '/registry': {
+      // `rules`, `registry`, etc,
+      extends: '@qiwi/nrf-firewall-config',
+      // NOTE If you redefine `rules` the result will be contatenation of `[...rules, ...extends.rules]`
+      rules: [{
+        policy: 'deny',
+        // `name`, `org`, `filter`, etc
+        extends: '@qiwi/nrf-deprecated-pkg-list'
+      }, {
+        policy: 'allow',
+        extends: '@qiwi/nrf-whitelisted-orgs'
+      }, {
+        extends: '@qiwi/nrf-all-in-one-filter'
+      }]
+    }
   }
 }
 ```

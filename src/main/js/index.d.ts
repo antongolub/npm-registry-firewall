@@ -53,8 +53,7 @@ type TPluginConfig = string | [string, any] | TPlugin | [TPlugin, any]
 type TCacheConfig = {
   ttl: number
   evictionTimeout?: number
-  name?: string
-  limit?: number
+  limit?: number // in bytes
 }
 
 type TCacheImpl = {
@@ -64,26 +63,23 @@ type TCacheImpl = {
   del(key: string): LetAsync<void>
 }
 
-type TCacheFactory = {
-  (opts: TCacheConfig): TCacheImpl
-}
-
-type TFirewallConfig = {
+type TFirewallConfigEntry = {
   registry: string | string[]
   entrypoint?: string
   token?: string
-  base?: string
   rules?: TRule | TRule[]
-  cache?: TCacheConfig | TCacheImpl | TCacheFactory
   extend?: string
 }
 
+type TFirewallConfig = Record<string, TFirewallConfigEntry>
+
 type TConfig = {
-  server: TServerConfig | TServerConfig[]
-  firewall: TFirewallConfig
   agent?: TAgentConfig
-  log?: { level?: TLogeLevel }
+  cache?: TCacheConfig | TCacheImpl
   extend?: string
+  firewall: TFirewallConfig
+  log?: { level?: TLogeLevel }
+  server: TServerConfig
 }
 
 type TValidationContext = {
@@ -107,10 +103,10 @@ type TPlugin = {
 
 type TAppOpts = {
   logger?: TLogger
-  cache?: TCacheFactory
+  cache?: TCacheImpl
 }
 
-export function createApp(config: string | TConfig | TConfig[], opts?: TAppOpts): Promise<TApp>
+export function createApp(config: string | TConfig, opts?: TAppOpts): Promise<TApp>
 
 type TLoggerOptions = {
   extra?: Record<string, any>,
