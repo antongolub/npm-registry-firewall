@@ -13,67 +13,62 @@ import {
   metrics,
 } from './mwares/index.js'
 import { getConfig } from './config.js'
+import { getCache } from './cache.js'
 
 export const _createApp = (cfg, {
   cache,
   logger
 } = {}) => {
   const config = getConfig(cfg)
+  getCache(cache || config.cache) // init cache
+
   mixCtx({
     logger,
     config,
-    cache
   })
 
-  const servers = config.profiles.reduce((m, p) => {
-    const firewalls = p.firewall.map(({base, entrypoint, registry, token, rules, cache}) => {
-      const f = firewall({registry, rules, entrypoint, token, cache})
-      return createRouter([
+  const firewalls = config.firewall.map(({base, entrypoint, registry, token, rules}) => {
+    const f = firewall({registry, rules, entrypoint, token})
+    return createRouter([
+      [
+        'GET',
         [
-          'GET',
-          [
-            /^\/((?:(@[a-z0-9\-._]+)(?:%2[fF]|\/))?[a-z0-9\-._]+)\/-\/[a-z0-9\-._]+-(\d+\.\d+\.\d+(?:-[+\-.a-z0-9_]+)?)\.tgz$/,
-            ['name', 'org', 'version']
-          ],
-          f
+          /^\/((?:(@[a-z0-9\-._]+)(?:%2[fF]|\/))?[a-z0-9\-._]+)\/-\/[a-z0-9\-._]+-(\d+\.\d+\.\d+(?:-[+\-.a-z0-9_]+)?)\.tgz$/,
+          ['name', 'org', 'version']
         ],
+        f
+      ],
+      [
+        '*',
         [
-          '*',
-          [
-            /^\/((?:(@[a-z0-9\-._]+)(?:%2[fF]|\/))?[a-z0-9\-._]+)\/?$/,
-            ['name', 'org']
-          ],
-          f
+          /^\/((?:(@[a-z0-9\-._]+)(?:%2[fF]|\/))?[a-z0-9\-._]+)\/?$/,
+          ['name', 'org']
         ],
-        proxy(registry),
-        errorBoundary,
-      ], base)
-    })
+        f
+      ],
+      proxy(registry),
+      errorBoundary,
+    ], base)
+  })
 
-    const servers = p.server.map(s => {
-      const router = createRouter([
-        ctx({...p, server: s}),
-        timeout,
-        trace,
-        ['GET', s.healthcheck, healthcheck],
-        ['GET', s.metrics, metrics],
-        ...firewalls,
-        notFound,
-        errorBoundary,
-      ], s.base)
+  const router = createRouter([
+    ctx(config),
+    timeout,
+    trace,
+    ['GET', config.server.healthcheck, healthcheck],
+    ['GET', config.server.metrics, metrics],
+    ...firewalls,
+    notFound,
+    errorBoundary,
+  ], config.server.base)
 
-      return createServer({...s, router})
-    })
-
-    m.push(...servers)
-    return m
-  }, [])
+  const server = createServer({...config.server, router})
 
   return {
-    servers,
+    server,
     config,
-    start() { return Promise.all(servers.map(s => s.start())) },
-    stop() { return Promise.all(servers.map(s => s.stop())) }
+    start() { return this.server.start() },
+    stop() { return this.server.stop() },
   }
 }
 

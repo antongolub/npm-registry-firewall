@@ -670,6 +670,7 @@ v1 configuration was definitely too flexible, too complex and too error-prone. v
 * there's only one `server`, `cache`, `agent` and `logger` sections now
 * `base` path cannot be `/` to avoid pkg name clashes with `/health` and `/metrics` endpoints.
 * firewall `base` paths are defined as map keys, so they must be unique
+* `cache` cannot be a factory. Pass cache opts of instance directly instead
 
 In other words, `multi-server-config` is not supported anymore. But you can still use this scheme via JS API:
 ```js

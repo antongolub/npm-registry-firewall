@@ -30,7 +30,8 @@ const sendJson = function(data, code = 200) {
     .end(buffer)
 }
 
-export const createServer = ({host, port, secure, router, entrypoint, keepAliveTimeout, headersTimeout, requestTimeout }) => {
+export const createServer = ({host, port, secure, router, keepAliveTimeout, headersTimeout, requestTimeout }) => {
+  const entrypoint = `${secure ? 'https' : 'http'}://${host}:${port}`
   const lib = secure ? https : http
   const options = {...secure}
   const sockets = createSocketPool()

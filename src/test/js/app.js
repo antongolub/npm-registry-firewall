@@ -1,43 +1,37 @@
 import crypto from 'node:crypto'
-import { testFactory, assert, sleep, objectContaining } from '../test-utils.js'
+import { testFactory, objectContaining } from '../test-utils.js'
 import { createApp } from '../../main/js/index.js'
 import { request } from '../../main/js/http/client.js'
 
 const test = testFactory('app', import.meta)
-const app = createApp([
-    {
-  server: [
-    { host: 'localhost', port: 3001 },
-    { host: 'localhost', port: 3002 },
-  ],
+const app = createApp({
+  server: {
+    host: 'localhost',
+    port: 3001
+  },
   firewall: {
-    registry: 'https://registry.npmjs.org',
-    base: '/registry',
-    rules: [
-      {
-        "policy": "deny",
-        "name": "colors",
-        "version": ">= v1.3.0"
-      },
-    ]
+    '/registry': {
+      registry: 'https://registry.npmjs.org',
+      rules: [
+        {
+          "policy": "deny",
+          "name": "colors",
+          "version": ">= v1.3.0"
+        },
+      ]
+    },
+    '/block-all': {
+      registry: ['https://registry.yarnpkg.com', 'https://registry.npmjs.org'],
+      rules: { policy: 'deny', name: '*' }
+    },
+    '/npm-proxy': {
+      registry: 'https://registry.npmjs.org'
+    },
+    '/yarn-proxy': {
+      registry: 'https://registry.yarnpkg.com',
+    }
   }
-}, {
-  server: { port: 3003 },
-  firewall: {
-    registry: ['https://registry.yarnpkg.com', 'https://registry.npmjs.org'],
-    rules: { policy: 'deny', name: '*' }
-  }
-},
-{
-  server: { host: 'localhost', port: 3004 },
-  firewall: [{
-    base: '/nexus-npm',
-    registry: 'https://registry.npmjs.org',
-  },{
-    base: '/nexus-npm-no-filter',
-    registry: 'https://registry.yarnpkg.com',
-  }]
-}])
+})
 
 test('is runnable', async () => {
   await app.start()
@@ -94,8 +88,8 @@ test('is runnable', async () => {
     { statusCode: 304 }
   ],
   [
-    'works properly with two registries with the same base beginning',
-    { url: 'http://localhost:3004/nexus-npm-no-filter/d', method: 'GET'},
+    'works as proxy',
+    { url: 'http://localhost:3001/npm-proxy/d', method: 'GET'},
     { statusCode: 200 }
   ],
 ].forEach(([name, {url, method, headers: _headers = {}}, expected]) => {
@@ -128,4 +122,3 @@ test('is runnable', async () => {
 test('is stoppable', async () => {
   await app.stop()
 })
-
