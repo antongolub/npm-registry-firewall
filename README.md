@@ -379,32 +379,6 @@ export function createLogger(options: TLoggerOptions): TLogger
 }
 ```
 
-### Multi-config
-```json5
-// Array at the top level
-[
-  // Two servers (for example, http and https) share the same preset
-  {
-    "server": [
-      {"port": 3001},
-      {"port": 3002, "secure": {"cert": "ssl/cert.pem", "key": "ssl/key.pem" }},
-    ],
-    "firewall": {
-      "registry": "https://registry.yarnpkg.com",
-      "rules": {"policy": "deny", "org": "@qiwi"}
-    }
-  },
-  // One server has a pair of separately configured endpoints
-  {
-    "server": {"port": 3003},
-    "firewall": [
-      {"base": "/foo", "registry": "https://registry.npmjs.org", "rules": {"policy": "deny", "org": "@qiwi"}},
-      {"base": "/bar", "registry": "https://registry.yarnpkg.com", "rules": {"policy": "deny", "org": "@babel"}}
-    ]
-  }
-]
-```
-
 [️More config examples](./examples)
 
 ### Cache
@@ -690,6 +664,74 @@ curl -k  https://localhost:3000/registry/minimist/-/minimist-1.2.6.tgz > minimis
 curl -k  https://localhost:3000/registry/react > react.json
 ```
 
+## Migration
+### 1.x → 2.x
+v1 configuration was definitely too flexible, too complex and too error-prone. v2 is aimed to simplify the config and make it more predictable:
+* there's only one `server`, `cache`, `agent` and `logger` sections now
+* `base` path cannot be `/` to avoid pkg name clashes with `/health` and `/metrics` endpoints.
+* firewall `base` paths are defined as map keys, so they must be unique
+
+In other words, `multi-server-config` is not supported anymore. But you can still use this scheme via JS API:
+```js
+import { createRoutes, createServer } from 'npm-registry-firewall'
+const routes = createRoutes(config)
+{
+  '/foo': (req, res, nest) => {}
+  '/bar': (req, res, nest) => {}
+}
+
+const serverFoo = createServer({port: 3000, router: routes['/foo']})
+const serverBar = createServer({port: 3001, router: routes['/bar']})
+```
+
+Sum up, the prev config:
+```js
+{
+  server: {port: 5000},
+  agent: {
+    keepAliveMsecs: 5000,
+    keepAlive: true,
+    maxSockets: 10_000,
+    timeout: 10_000
+  },
+  firewall: [{
+    base: '/foo',
+    registry: 'https://registry.npmjs.org',
+    rules: [],
+    cache: {
+      ttl: 5,
+      evictionTimeout: 1,
+      limit: 1_000_000
+    }
+  }, {
+    base: '/bar',
+    registry: 'https://registry.yarnpkg.com/',
+  }]
+}
+```
+comes to:
+```js
+{
+  server: {port: 5000},
+  agent: {
+    keepAliveMsecs: 5000,
+  },
+  cache: {
+    ttl: 5,
+    evictionTimeout: 1,
+    limit: 1_000_000
+  },
+  firewall: {
+    '/foo': {
+      registry: 'https://registry.npmjs.org',
+      rules: [],
+    },
+    '/bar': {
+      registry: 'https://registry.yarnpkg.com/',
+    }
+  }
+}
+```
 
 ## Contributing
 Feel free to open any issues: bug reports, feature requests or questions.
