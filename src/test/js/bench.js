@@ -5,16 +5,20 @@ import { request } from '../../main/js/http/client.js'
 const test = testFactory('bench', import.meta)
 
 const app = createApp({
-  server: [
-    { host: 'localhost', port: 8080 },
-  ],
-  log: {level: 'error'},
+  server: {
+    host: 'localhost',
+    port: 8080
+  },
+  log: {
+    level: 'error'
+  },
+  cache: {
+    ttl: 10
+  },
   firewall: {
-    registry: 'https://registry.npmjs.org',
-    base: '/registry',
-    rules: [],
-    cache: {
-      ttl: 10
+    '/registry': {
+      registry: 'https://registry.npmjs.org',
+      rules: [],
     }
   }
 })

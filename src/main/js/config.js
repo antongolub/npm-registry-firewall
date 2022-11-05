@@ -15,45 +15,54 @@ const populateExtra = (target) => {
 }
 
 const populate = (config) => {
-  const profiles = asArray(config).map(populateExtra).map(p => {
-    assert.ok(p.server, 'cfg: server')
-    assert.ok(p.firewall, 'cfg: firewall')
+  // assert.ok(config.firewall, 'cfg: firewall')
 
-    const agent = p.agent
-    const log = p.log
-    const server = asArray(p.server).map(populateExtra).map(({
-      host = '127.0.0.1',
-      port = 8080,
-      base = '/',
-      healthcheck = '/healthcheck',
-      metrics = '/metrics',
-      secure: _secure,
-      keepAliveTimeout = 61_000,
-      headersTimeout = 62_000,
-      requestTimeout = 30_000,
-    }) => {
-      const entrypoint = normalizePath(`${_secure ? 'https' : 'http'}://${host}:${port}`)
-      const secure = _secure
-        ? {
-          key: fs.readFileSync(_secure.key, 'utf8'),
-          cert: fs.readFileSync(_secure.cert, 'utf8'),
-        } : null
+  const agent = config.agent
+  const cache = config.cache
+    ? {
+      name: config.cache.name || genId(),
+      ttl: config.cache.ttl * 60_000,
+      evictionTimeout: (config.cache.evictionTimeout || config.cache.ttl) * 60_000
+    }
+    : null
+  const log = config.log || {
+    log: {
+      level: 'info'
+    }
+  }
+  const server = (({
+    host = '127.0.0.1',
+    port = 8080,
+    base = '/',
+    healthcheck = '/healthcheck',
+    metrics = '/metrics',
+    secure: _secure,
+    keepAliveTimeout = 61_000,
+    headersTimeout = 62_000,
+    requestTimeout = 30_000
+  }) => {
+    const secure = _secure
+      ? {
+        key: fs.readFileSync(_secure.key, 'utf8'),
+        cert: fs.readFileSync(_secure.cert, 'utf8'),
+      } : null
 
-      return {
-        secure,
-        host,
-        port,
-        base,
-        entrypoint,
-        metrics,
-        healthcheck,
-        requestTimeout,
-        headersTimeout,
-        keepAliveTimeout,
-      }
-    })
+    return {
+      secure,
+      host,
+      port,
+      base,
+      metrics,
+      healthcheck,
+      requestTimeout,
+      headersTimeout,
+      keepAliveTimeout,
+    }
+  })(populateExtra(config.server))
 
-    const firewall = asArray(p.firewall).map(populateExtra).map(f => {
+  const firewall = Object.entries(config.firewall)
+    .map(([base, f]) => ({...populateExtra(f), base}))
+    .map((f) => {
       assert.ok(f.registry, 'cfg: firewall.registry')
 
       const rules = asArray(f.rules || []).map(populateExtra).map(({
@@ -93,27 +102,16 @@ const populate = (config) => {
         registry: f.registry ? asArray(f.registry).map(normalizePath) : null,
         token: f.token,
         entrypoint: f.entrypoint ? normalizePath(f.entrypoint) : null,
-        base: f.base || '/',
-        cache: f.cache
-          ? {
-            name: f.cache.name || genId(),
-            ttl: f.cache.ttl * 60_000,
-            evictionTimeout: (f.cache.evictionTimeout || f.cache.ttl) * 60_000
-          }
-          : null
+        base: f.base
       }
     })
 
-    return {
-      server,
-      firewall,
-      agent,
-      log,
-    }
-  })
-
   return {
-    profiles,
+    agent,
+    cache,
+    firewall,
+    log,
+    server,
   }
 }
 

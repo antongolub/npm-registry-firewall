@@ -1,7 +1,5 @@
-import {genId, getByteLength} from './util.js'
-import { getCtx } from './als.js'
-
-const caches = new Map()
+import { getByteLength} from './util.js'
+import { once } from './util.js'
 
 const voidCache = {
   add() {},
@@ -12,42 +10,28 @@ const voidCache = {
   byteLength() {return 0}
 }
 
-const getCacheFactory = (opts) => typeof opts === 'function'
-  ? opts
-  : getCtx().cache || createCache
+const hits = new Map()
 
-export const getCache = (opts = {}) => {
-  // Custom cache impl
-  if (typeof opts?.get === 'function') {
-    return opts
-  }
-
-  if (opts === null || !opts.ttl) {
+export const getCache = once((opts) => {
+  if (!opts?.ttl) {
     return voidCache
   }
 
-  const name = opts.name || genId()
-
-  if (caches.has(name)) {
-    return caches.get(name)
+  // Custom cache implementation
+  if (typeof opts.get === 'function') {
+    return opts
   }
 
-  const cacheFactory = getCacheFactory(opts)
-  const cache = cacheFactory(opts)
-  caches.set(name, cache)
+  return createCache(opts)
+})
 
-  return cache
-}
+export const hasHit = (cache, name) => hits.has(name)
 
-const hitmap = new Map()
+export const hasKey = (name) => getCache().has(name)
 
-export const hasHit = (cache, name) => hitmap.get(cache)?.has(name)
+export const isNoCache = () => getCache() === voidCache
 
-export const withCache = (cache, name, cb) => {
-  if (!hitmap.has(cache)) {
-    hitmap.set(cache, new Map())
-  }
-  const hits = hitmap.get(cache)
+export const withCache = (name, cb, ttl) => {
   if (!hits.has(name)) {
     (() => {
       let p
@@ -58,12 +42,13 @@ export const withCache = (cache, name, cb) => {
         }
 
         p = (async () => {
+          const cache = getCache()
           if (await cache.has(name)) {
             return cache.get(name)
           }
 
           const value = await cb()
-          await cache.add(name, value)
+          await cache.add(name, value, ttl)
 
           p = null
           return value

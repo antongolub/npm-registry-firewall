@@ -8,90 +8,70 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 
 const test = testFactory('config', import.meta)
 
-test('multi-config', () => {
-  const config = getConfig([{
-    server: {port: 3000},
-    firewall: {
-      registry: 'https://registry.npmjs.org',
-      rules: [{policy: 'deny', name: '*'}]
-    }
-  }])
-  objectContaining(config, {
-    profiles: [{
-      firewall: [{
-        base: '/',
-        rules: [{
-          policy: 'deny', _raw: {name: '*'}
-        }]
-      }]
-    }]
-  })
-})
-
 test('resolves `extends`', () => {
-  const config = getConfig([{
+  const config = getConfig({
     server: {port: 3000},
     firewall: {
-      registry: 'https://registry.npmjs.org',
-      rules: [{policy: 'deny', extends: resolve(__dirname, '../fixtures/custom-plugin.cjs')}]
+      '/registry': {
+        registry: 'https://registry.npmjs.org',
+        rules: [{policy: 'deny', extends: resolve(__dirname, '../fixtures/custom-plugin.cjs')}]
+      }
     }
-  }])
+  })
   objectContaining(config, {
-    profiles: [{
-      firewall: [{
-        base: '/',
-        rules: [{
-          age: [5],
-          policy: 'deny',
-        }]
+    firewall: [{
+      base: '/registry',
+      rules: [{
+        age: [5],
+        policy: 'deny',
       }]
     }]
   })
 })
 
 test('resolves `preset`', () => {
-  const config = getConfig([{
+  const config = getConfig({
     server: {port: 3000},
     firewall: {
-      registry: 'https://registry.npmjs.org',
-      rules: [{policy: 'deny', preset: resolve(__dirname, '../fixtures/custom-plugin.cjs')}]
+      '/foo': {
+        registry: 'https://registry.npmjs.org',
+        rules: [{policy: 'deny', preset: resolve(__dirname, '../fixtures/custom-plugin.cjs')}]
+      }
     }
-  }])
+  })
   objectContaining(config, {
-    profiles: [{
-      firewall: [{
-        base: '/',
-        rules: [{
-          age: [5],
-          policy: 'deny',
-        }]
+    firewall: [{
+      base: '/foo',
+      rules: [{
+        age: [5],
+        policy: 'deny',
       }]
     }]
   })
 })
 
 test('resolves `preset` as string[]', () => {
-  const config = getConfig([{
+  const config = getConfig({
     server: {port: 3000},
     firewall: {
-      registry: 'https://registry.npmjs.org',
-      preset: [
-        resolve(__dirname, '../fixtures/deny-orgs.json'),
-        resolve(__dirname, '../fixtures/deny-users.json')
-      ]
+      '/foo': {
+        registry: 'https://registry.npmjs.org',
+        preset: [
+          resolve(__dirname, '../fixtures/deny-orgs.json'),
+          resolve(__dirname, '../fixtures/deny-users.json')
+        ]
+      }
     }
-  }])
+  })
   objectContaining(config, {
-    profiles: [{
-      firewall: [{
-        base: '/',
-        rules: [{
-          policy: 'deny',
-          org: ["foo", "bar"],
-        }, {
-          policy: 'deny',
-          username: ["baz", "qux"],
-        }]
+    firewall: [{
+      base: '/foo',
+      rules: [{
+        policy: 'deny',
+        org: ["foo", "bar"],
+      }, {
+        policy: 'deny',
+        username: ["baz", "qux"],
       }]
     }]
   })
@@ -99,37 +79,41 @@ test('resolves `preset` as string[]', () => {
 
 test('handles `agent` opts', () => {
   const config1 = getConfig({
-    server: {port: 3000},
-    firewall: { registry: 'https://registry.npmjs.org'},
+    server: { port: 3000 },
+    firewall: {
+      '/foo': { registry: 'https://registry.npmjs.org' }
+    },
     agent: {keepAliveMsecs: 1000 }
   })
 
   objectContaining(config1, {
-    profiles: [{ agent: {keepAliveMsecs: 1000 }}]
+    agent: {keepAliveMsecs: 1000 }
   })
 
   const agent = new https.Agent()
   const config2 = getConfig({
-    server: {port: 3000},
-    firewall: { registry: 'https://registry.npmjs.org'},
+    server: { port: 3000} ,
+    firewall: {
+      '/foo': { registry: 'https://registry.npmjs.org' }
+    },
     agent
   })
 
   objectContaining(config2, {
-    profiles: [{ agent}]
+    agent
   })
 })
 
 test('processes `logger` opts', () => {
   const config = getConfig({
     server: {port: 3000},
-    firewall: { registry: 'https://registry.npmjs.org'},
+    firewall: {
+      '/foo': { registry: 'https://registry.npmjs.org' }
+    },
     log: {level: 'trace' }
   })
 
   objectContaining(config, {
-    profiles: [{
-      log: {level: 'trace' }
-    }]
+    log: {level: 'trace' }
   })
 })

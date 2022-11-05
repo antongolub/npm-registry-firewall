@@ -10,7 +10,7 @@ import { getAgent } from './agent.js'
 import { logger } from '../logger.js'
 
 export const request = async (opts) => {
-  const {url, headers: _headers, method = 'GET', postData, pipe, gzip: _gzip, followRedirects, timeout = 30_000, authorization = null} = opts
+  const {url, headers: _headers, method = 'GET', postData, pipe, gzip: _gzip, skipUnzip, followRedirects, timeout = 30_000, authorization = null} = opts
   const {
     protocol,
     isSecure = protocol === 'https:',
@@ -78,7 +78,7 @@ export const request = async (opts) => {
     res.on('data', chunk => data.push(chunk))
     res.on('end', async () => {
       const _buffer = Buffer.concat(data)
-      const buffer = res.headers['content-encoding'] === 'gzip'
+      const buffer = res.headers['content-encoding'] === 'gzip' && !skipUnzip
         ? await time(gunzip, `unzip ${url}`)(_buffer)
         : _buffer
 

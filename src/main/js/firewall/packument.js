@@ -3,44 +3,47 @@ import crypto from 'node:crypto'
 
 import {getDirectives, getPolicy} from './engine.js'
 import {request} from '../http/index.js'
-import {asArray, gzip, tryQueue, time} from '../util.js'
+import {asArray, gunzip, tryQueue, time} from '../util.js'
 import {withCache} from '../cache.js'
 import {semver} from '../semver.js'
 
 export const getPackument = async ({boundContext, rules}) => {
-  const { cache, registry, authorization, entrypoint, name } = boundContext
+  const { registry, authorization, entrypoint, name } = boundContext
 
-  return withCache(cache, name, async () => {
+  const {buffer, headers} = await withCache(`packument-${name}`, async () => {
     const args = asArray(registry).map(r => [{
       url: `${r}/${name}`,
       authorization,
-      gzip: true
+      gzip: true,
+      skipUnzip: true
     }])
-    const {body, headers} = await tryQueue(request, ...args)
-    const packument = JSON.parse(body)
-    const deps = getDeps(packument)
-    const directives = await getDirectives({ packument, rules, boundContext})
-    const _packument = patchPackument({ packument, directives, entrypoint, registry })
+    const {buffer, headers} = await tryQueue(request, ...args)
 
-    if (Object.keys(_packument.versions).length === 0) {
-      cache.add(name, {})
-      return {}
-    }
-
-    const packumentBuffer = Object.keys(_packument.versions).length === Object.keys(packument.versions).length
-      ? body
-      : Buffer.from(JSON.stringify(_packument))
-    const etag = 'W/' + JSON.stringify(crypto.createHash('sha256').update(packumentBuffer.slice(0, 65_536)).digest('hex'))
-    const packumentZip = await time(gzip, `gzip packument ${name}`)(packumentBuffer)
-
-    return {
-      etag,
-      deps,
-      directives,
-      headers,
-      packumentZip
-    }
+    return {buffer, headers}
   })
+
+  const body = (await time(gunzip, `gunzip packument ${name}`)(buffer)).toString('utf8')
+  const packument = JSON.parse(body)
+  const deps = getDeps(packument)
+  const directives = await getDirectives({ packument, rules, boundContext})
+  const _packument = patchPackument({ packument, directives, entrypoint, registry })
+
+  if (Object.keys(_packument.versions).length === 0) {
+    return {}
+  }
+  const packumentBuffer = Object.keys(_packument.versions).length === Object.keys(packument.versions).length
+    ? buffer
+    : Buffer.from(JSON.stringify(_packument))
+  const etag = 'W/' + JSON.stringify(crypto.createHash('sha256').update(packumentBuffer.slice(0, 65_536)).digest('hex'))
+
+  return {
+    etag,
+    deps,
+    directives,
+    headers,
+    packument: _packument,
+    packumentBuffer,
+  }
 }
 
 export const patchVersions = ({packument, directives, entrypoint, registry}) => Object.values(packument.versions).reduce((m, v) => {

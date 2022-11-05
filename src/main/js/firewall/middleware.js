@@ -1,8 +1,8 @@
 import {httpError, NOT_FOUND, ACCESS_DENIED, METHOD_NOT_ALLOWED, NOT_MODIFIED, OK, FOUND} from '../http/index.js'
 import {getPolicy, getPipeline} from './engine.js'
 import {getPackument} from './packument.js'
-import {normalizePath, gzip, dropNullEntries, gunzip} from '../util.js'
-import {getCache, hasHit} from '../cache.js'
+import {normalizePath, gzip, dropNullEntries, time} from '../util.js'
+import {hasHit, hasKey, isNoCache} from '../cache.js'
 import {getCtx} from '../als.js'
 import {checkTarball} from './tarball.js'
 import {logger} from '../logger.js'
@@ -10,11 +10,15 @@ import {logger} from '../logger.js'
 const warmupPipeline = (pipeline, opts) => pipeline.forEach(([plugin, _opts]) => plugin.warmup?.({...opts, ..._opts }))
 
 const warmupDepPackuments = (name, deps, boundContext, rules) => {
-  const {cache, registry, authorization, entrypoint, pipeline} = boundContext
+  if (isNoCache()) {
+    return
+  }
+
+  const {registry, authorization, entrypoint, pipeline} = boundContext
   logger.debug(`warmup ${name} deps`, deps)
 
   deps.forEach(async (name) => {
-    if (hasHit(cache, name) || await cache.has(name)) {
+    if (hasHit(`packument-${name}`) || await hasKey(`packument-${name}`)) {
       return
     }
     const org = name.charAt(0) === '@' ? name.slice(0, (name.indexOf('/') + 1 || name.indexOf('%') + 1) - 1) : null
@@ -35,7 +39,7 @@ const getAuth = (token, auth) => token
     :`Bearer ${token}`
   : auth
 
-export const firewall = ({registry, rules, entrypoint: _entrypoint, token, cache: _cache}) => async (req, res, next) => {
+export const firewall = ({registry, rules, entrypoint: _entrypoint, token}) => async (req, res, next) => {
   const {routeParams: {name, version, org}, base, method} = req
 
   if (method !== 'GET' && method !== 'HEAD') {
@@ -43,33 +47,29 @@ export const firewall = ({registry, rules, entrypoint: _entrypoint, token, cache
   }
 
   const {cfg} = getCtx()
-  const cache = getCache(_cache)
   const authorization = getAuth(token, req.headers['authorization'])
   const entrypoint = _entrypoint || normalizePath(`${cfg.server.entrypoint}${base}`)
   const pipeline = await getPipeline(rules)
-  const boundContext = { registry, entrypoint, authorization, name, org, version, cache, pipeline }
+  const boundContext = { registry, entrypoint, authorization, name, org, version, pipeline }
 
   warmupPipeline(pipeline, boundContext)
   const [
-    { packumentZip, headers, directives, deps, etag },
+    { packumentBuffer, headers, etag, deps, directives },
     tarball
   ] = await Promise.all([
     getPackument({ boundContext, rules }),
     version ? checkTarball({registry, url: req.url}) : Promise.resolve(false)
   ])
 
-  if (!packumentZip) {
+  if (!packumentBuffer) {
     return next(httpError(NOT_FOUND))
-  }
-
-  if (cache.ttl) {
-    warmupDepPackuments(name, deps, boundContext, rules)
   }
 
   if (req.headers['if-none-match'] === etag) {
     res.writeHead(NOT_MODIFIED).end()
     return
   }
+  warmupDepPackuments(name, deps, boundContext, rules)
 
   // Tarball request
   if (tarball) {
@@ -89,7 +89,7 @@ export const firewall = ({registry, rules, entrypoint: _entrypoint, token, cache
 
   // Packument request
   const isGzip = req.headers['accept-encoding']?.includes('gzip')
-  const buffer = isGzip ? packumentZip : await gunzip(packumentZip)
+  const buffer = isGzip ? await time(gzip, `gzip packument ${name}`)(packumentBuffer) : packumentBuffer
   const cl = '' + buffer.length
   const extra = isGzip
     ? {'content-length': cl, 'transfer-encoding': null, 'content-encoding': 'gzip', etag}

@@ -1,32 +1,29 @@
 {
-  "server": [
-    {
-      "host": "localhost",
-      "port": 3000,
-      "secure": {
-        "cert": "ssl/cert.pem",
-        "key": "ssl/key.pem"
-      },
-      "_healthcheck": null
-    }
-  ],
+  "server": {
+    "host": "localhost",
+    "port": 3000,
+    "secure": {
+      "cert": "ssl/cert.pem",
+      "key": "ssl/key.pem"
+    },
+    "_healthcheck": null
+  },
   "log": {
     "level": "debug"
   },
+  "cache": {
+    "ttl": 5
+  },
   "firewall": {
-    "base": "/registry",
-    "registry": "https://registry.npmjs.org",
-    "_registry": "https://registry.npmmirror.com",
-    "_entrypoint": "https://r.qiwi.com/registry/npm",
-    "cache": {
-      "ttl": 5
-    },
-    "rules": [
-      {
-        "plugin": [["npm-registry-firewall/audit", {
-          "critical": "deny"
-        }]]
-      }
-    ]
+    "/registry": {
+      "registry": "https://registry.npmjs.org",
+      "rules": [
+        {
+          "plugin": [["npm-registry-firewall/audit", {
+            "critical": "deny"
+          }]]
+        }
+      ]
+    }
   }
 }

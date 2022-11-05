@@ -30,10 +30,8 @@ const getAdvisories = async (name, registry) => {
 
 const queues = {}
 
-const getAdvisoriesDebounced = async (name, registry) => {
-  const cache = getCache({ name: 'audit', ttl: 3600_000 })
-
-  return withCache(cache, name, () => {
+const getAdvisoriesDebounced = async (name, registry) =>
+  withCache(`audit-${name}`, (cache) => {
     const {promise, resolve, reject} = makeDeferred()
     const queue = (queues[registry] = queues[registry] || [])
 
@@ -41,8 +39,7 @@ const getAdvisoriesDebounced = async (name, registry) => {
 
     processQueue(queue, cache, registry)
     return promise
-  })
-}
+  }, 3600_000)
 
 let auditConcurrency = 10
 const processQueue = async (queue, cache, registry) => {
