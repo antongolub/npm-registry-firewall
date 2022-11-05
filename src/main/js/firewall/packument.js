@@ -18,11 +18,10 @@ export const getPackument = async ({boundContext, rules}) => {
       skipUnzip: true
     }])
     const {buffer, headers} = await tryQueue(request, ...args)
-
     return {buffer, headers}
   })
 
-  const body = (await time(gunzip, `gunzip packument ${name}`)(buffer)).toString('utf8')
+  const body = (await time(gunzip, `unzip packument ${name}`)(buffer)).toString('utf8')
   const packument = JSON.parse(body)
   const deps = getDeps(packument)
   const directives = await getDirectives({ packument, rules, boundContext})
