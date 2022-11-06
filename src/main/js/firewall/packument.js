@@ -9,7 +9,6 @@ import {semver} from '../semver.js'
 
 export const getPackument = async ({boundContext, rules}) => {
   const { registry, authorization, entrypoint, name } = boundContext
-
   const {buffer, headers} = await withCache(`packument-${name}`, async () => {
     const args = asArray(registry).map(r => [{
       url: `${r}/${name}`,

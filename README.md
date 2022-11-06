@@ -322,7 +322,7 @@ export function createLogger(options: TLoggerOptions): TLogger
     "limit": 1000000          // Optional. Max cache size in bytes. Defaults to Infinity
   },
   "firewall": {
-    "/base": {                // Context path
+    "/foo": {                 // Context path
       "registry": "https://registry.npmmirror.com",  // Remote registry
       "token": "NpmToken.*********-e0b2a8e5****",    // Optional bearer token. If empty req.headers.authorization value will be used instead
       "entrypoint": "https://r.qiwi.com/npm",        // Optional. Defaults to `${server.secure ? 'https' : 'http'}://${server.host}:${server.port}${route.base}`
@@ -376,6 +376,45 @@ export function createLogger(options: TLoggerOptions): TLogger
           "age": 5    // Check the package version is older than 5 days. Like quarantine
         }
       ]
+    }
+  }
+}
+```
+
+### Multi-config
+You can declare as many separate firewall profiles as you need.
+
+```json5
+{
+  "server": {
+    "host": "localhost",
+    "port": 3001
+  },
+  "cache": {
+    "ttl": 1
+  },
+  "firewall": {
+    "/registry": {
+      "registry": "https://registry.npmjs.org",
+      "rules": [{
+        "policy": "deny",
+        "name": "colors",
+        "version": ">= v1.3.0"
+      }]
+    },
+    "/block-all": {
+      "registry": ["https://registry.yarnpkg.com", "https://registry.npmjs.org"],
+      "rules": { "policy": "deny", "name": "*" }
+    },
+    "/npm-proxy": {
+      "registry": "https://registry.npmjs.org"
+    },
+    "/yarn-proxy": {
+      "registry": "https://registry.yarnpkg.com",
+    },
+    // fallback firewall
+    "*": {
+      "registry": "https://registry.yarnpkg.com",
     }
   }
 }
