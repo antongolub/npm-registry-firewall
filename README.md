@@ -724,14 +724,16 @@ v1 configuration was definitely too flexible, too complex and too error-prone. v
 In other words, `multi-server-config` is not supported anymore. But you can still use this scheme via JS API:
 ```js
 import { createRoutes, createServer } from 'npm-registry-firewall'
-const routes = createRoutes(config)
-{
-  '/foo': (req, res, nest) => {}
-  '/bar': (req, res, nest) => {}
-}
 
-const serverFoo = createServer({port: 3000, router: routes['/foo']})
-const serverBar = createServer({port: 3001, router: routes['/bar']})
+const config = getConfig('path/to/config.json')
+const routes = createRoutes(config)
+const routeMap = config.firewalls.reduce((acc, f, i) => {
+  acc[f.base] = routes[i]
+  return acc
+}, {})
+
+const serverFoo = createServer({port: 3000, router: routeMap['/foo']})
+const serverBar = createServer({port: 3001, router: routeMap['/bar']})
 ```
 
 Sum up, the prev config:
