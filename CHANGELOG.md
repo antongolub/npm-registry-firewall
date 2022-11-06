@@ -1,3 +1,20 @@
+# [1.35.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.34.1...v1.35.0) (2022-11-06)
+
+
+### Code Refactoring
+
+* make cache singleton ([825bdce](https://github.com/antongolub/npm-registry-firewall/commit/825bdce464432f34a0126dac2566b5ced9f0de55))
+
+
+### Features
+
+* introduce fallback firewall ([0758bda](https://github.com/antongolub/npm-registry-firewall/commit/0758bda6cf47e21a3742c5a67184543777b958c7))
+
+
+### BREAKING CHANGES
+
+* new config format
+
 ## [1.34.1](https://github.com/antongolub/npm-registry-firewall/compare/v1.34.0...v1.34.1) (2022-11-03)
 
 
