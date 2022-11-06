@@ -28,7 +28,8 @@
     "test:cov": "npm_config_yes=true npx c8 npm run test && npx c8 report -r lcov"
   },
   "files": [
-    "src/main"
+    "src/main",
+    "ssl"
   ],
   "repository": {
     "type": "git",
