@@ -1,3 +1,15 @@
+# [2.0.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.35.0...v2.0.0) (2022-11-06)
+
+
+### Features
+
+* v2 ([23f421e](https://github.com/antongolub/npm-registry-firewall/commit/23f421e0675854f49b8a07fe637faf6b3bc46ea1))
+
+
+### BREAKING CHANGES
+
+* v2
+
 # [1.35.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.34.1...v1.35.0) (2022-11-06)
 
 
