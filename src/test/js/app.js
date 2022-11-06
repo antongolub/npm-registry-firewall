@@ -4,7 +4,7 @@ import { createApp } from '../../main/js/index.js'
 import { request } from '../../main/js/http/client.js'
 
 const test = testFactory('app', import.meta)
-const app = createApp({
+const cfg = {
   server: {
     host: 'localhost',
     port: 3001
@@ -37,7 +37,8 @@ const app = createApp({
       registry: 'https://registry.yarnpkg.com',
     }
   }
-})
+}
+const app = createApp(cfg)
 
 test('is runnable', async () => {
   await app.start()

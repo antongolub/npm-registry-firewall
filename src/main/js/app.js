@@ -15,6 +15,8 @@ import {
 import { getConfig } from './config.js'
 import { getCache } from './cache.js'
 
+export { getConfig, getCache }
+
 export const _createApp = (cfg, {
   cache,
   logger
@@ -27,7 +29,31 @@ export const _createApp = (cfg, {
     config,
   })
 
-  const firewalls = config.firewall.map(({base, entrypoint, registry, token, rules}) => {
+  const firewalls = createRoutes(config)
+
+  const router = createRouter([
+    ctx(config),
+    timeout,
+    trace,
+    ['GET', config.server.healthcheck, healthcheck],
+    ['GET', config.server.metrics, metrics],
+    ...firewalls,
+    notFound,
+    errorBoundary,
+  ], config.server.base)
+
+  const server = createServer({...config.server, router})
+
+  return {
+    server,
+    config,
+    start() { return this.server.start() },
+    stop() { return this.server.stop() },
+  }
+}
+
+export const createRoutes = (config) =>
+  config.firewall.map(({base, entrypoint, registry, token, rules}) => {
     const f = firewall({registry, rules, entrypoint, token})
     return createRouter([
       [
@@ -50,27 +76,6 @@ export const _createApp = (cfg, {
       errorBoundary,
     ], base)
   })
-
-  const router = createRouter([
-    ctx(config),
-    timeout,
-    trace,
-    ['GET', config.server.healthcheck, healthcheck],
-    ['GET', config.server.metrics, metrics],
-    ...firewalls,
-    notFound,
-    errorBoundary,
-  ], config.server.base)
-
-  const server = createServer({...config.server, router})
-
-  return {
-    server,
-    config,
-    start() { return this.server.start() },
-    stop() { return this.server.stop() },
-  }
-}
 
 export const createApp = (...args) => {
   let app

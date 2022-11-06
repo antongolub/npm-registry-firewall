@@ -3,6 +3,9 @@ import {
   getCtx,
   createLogger,
   createApp,
+  createRoutes,
+  getConfig,
+  getCache,
 
   // middlewares
   healthcheck,
@@ -22,7 +25,10 @@ test('has proper export', () => {
   const fns = [
     getCtx,
     createLogger,
+    createRoutes,
     createApp,
+    getConfig,
+    getCache,
     healthcheck,
     errorBoundary,
     notFound,
