@@ -9,6 +9,9 @@ const app = createApp({
     host: 'localhost',
     port: 3001
   },
+  cache: {
+    ttl: 1
+  },
   firewall: {
     '/registry': {
       registry: 'https://registry.npmjs.org',
@@ -28,6 +31,9 @@ const app = createApp({
       registry: 'https://registry.npmjs.org'
     },
     '/yarn-proxy': {
+      registry: 'https://registry.yarnpkg.com',
+    },
+    '*': {
       registry: 'https://registry.yarnpkg.com',
     }
   }
@@ -90,6 +96,11 @@ test('is runnable', async () => {
   [
     'works as proxy',
     { url: 'http://localhost:3001/npm-proxy/d', method: 'GET'},
+    { statusCode: 200 }
+  ],
+  [
+    'uses default proxy if specified',
+    { url: 'http://localhost:3001/unknown/d', method: 'GET'},
     { statusCode: 200 }
   ],
 ].forEach(([name, {url, method, headers: _headers = {}}, expected]) => {
