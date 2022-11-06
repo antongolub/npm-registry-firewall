@@ -1,3 +1,10 @@
+# [2.1.0](https://github.com/antongolub/npm-registry-firewall/compare/v2.0.0...v2.1.0) (2022-11-06)
+
+
+### Features
+
+* expose `createRoutes` and `getConfig` API ([7d25627](https://github.com/antongolub/npm-registry-firewall/commit/7d25627e1b24d8bee42c9b0a973c921663240a9f))
+
 # [2.0.0](https://github.com/antongolub/npm-registry-firewall/compare/v1.35.0...v2.0.0) (2022-11-06)
 
 
