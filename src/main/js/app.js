@@ -22,7 +22,7 @@ export const _createApp = (cfg, {
   logger
 } = {}) => {
   const config = getConfig(cfg)
-  getCache(cache || config.cache) // init cache
+  const appCache = getCache(cache || config.cache) // init cache
 
   mixCtx({
     logger,
@@ -48,7 +48,10 @@ export const _createApp = (cfg, {
     server,
     config,
     start() { return this.server.start() },
-    stop() { return this.server.stop() },
+    stop() {
+      clearInterval(appCache.timer)
+      return this.server.stop()
+    },
   }
 }
 
