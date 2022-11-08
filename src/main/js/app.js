@@ -13,16 +13,16 @@ import {
   metrics,
 } from './mwares/index.js'
 import { getConfig } from './config.js'
-import { getCache } from './cache.js'
+import { getCache, stopCache } from './cache.js'
 
-export { getConfig, getCache }
+export { getConfig, getCache, stopCache }
 
 export const _createApp = (cfg, {
   cache,
   logger
 } = {}) => {
   const config = getConfig(cfg)
-  const appCache = getCache(cache || config.cache) // init cache
+  getCache(cache || config.cache) // init cache
 
   mixCtx({
     logger,
@@ -49,7 +49,7 @@ export const _createApp = (cfg, {
     config,
     start() { return this.server.start() },
     stop() {
-      clearInterval(appCache.timer)
+      stopCache()
       return this.server.stop()
     },
   }

@@ -1,5 +1,4 @@
 import { getByteLength} from './util.js'
-import { once } from './util.js'
 
 const voidCache = {
   add() {},
@@ -12,18 +11,26 @@ const voidCache = {
 
 const hits = new Map()
 
-export const getCache = once((opts) => {
-  if (!opts?.ttl) {
-    return voidCache
+let cache
+
+export const getCache = (opts) => {
+  if (cache) {
+    return cache
+  } else if (!opts?.ttl) {
+    cache = voidCache
+  } else if (typeof opts.get === 'function') { // Custom cache implementation
+    cache = opts
+  } else {
+    cache = createCache(opts)
   }
 
-  // Custom cache implementation
-  if (typeof opts.get === 'function') {
-    return opts
-  }
+  return cache
+}
 
-  return createCache(opts)
-})
+export const stopCache = () => {
+  clearInterval(getCache().timer)
+  cache = voidCache
+}
 
 export const hasHit = (cache, name) => hits.has(name)
 

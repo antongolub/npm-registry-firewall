@@ -6,6 +6,7 @@ import {
   createRoutes,
   getConfig,
   getCache,
+  stopCache,
 
   // middlewares
   healthcheck,
@@ -29,6 +30,7 @@ test('has proper export', () => {
     createApp,
     getConfig,
     getCache,
+    stopCache,
     healthcheck,
     errorBoundary,
     notFound,
