@@ -1,3 +1,10 @@
+# [2.2.0](https://github.com/antongolub/npm-registry-firewall/compare/v2.1.1...v2.2.0) (2022-11-08)
+
+
+### Features
+
+* add response-time p metrics ([dff120b](https://github.com/antongolub/npm-registry-firewall/commit/dff120b3334fa7cb42fa04e30a4cdc01f66af7fc)), closes [#29](https://github.com/antongolub/npm-registry-firewall/issues/29)
+
 ## [2.1.1](https://github.com/antongolub/npm-registry-firewall/compare/v2.1.0...v2.1.1) (2022-11-08)
 
 
