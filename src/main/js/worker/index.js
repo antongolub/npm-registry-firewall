@@ -3,6 +3,7 @@ import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 import os from 'node:os'
 import process from 'node:process'
+import { pushMetric } from '../metric.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -14,7 +15,7 @@ const queue = []
 let concurrency = wc <= concurrencyLimit && wc > 0 ? wc : concurrencyLimit
 
 export const runWorker = (workerName, workerData) => new Promise((resolve, reject) => {
-  queue.push({workerName, workerData, resolve, reject})
+  queue.push({workerName, workerData, resolve, reject, timestamp: Date.now()})
   processQueue()
 })
 
@@ -24,10 +25,12 @@ const processQueue = () => {
   }
   concurrency -= 1
 
-  const {resolve, reject, workerName, workerData} = queue.shift()
+  const {resolve, reject, workerName, workerData, timestamp} = queue.shift()
+  pushMetric('worker-waiting-time', Date.now() - timestamp)
   const worker = new Worker(path.resolve(__dirname, workerName), { workerData })
 
   worker.on('message', ({err, result}) => {
+    pushMetric('worker-total-time', Date.now() - timestamp)
     if (err) {
       reject(err)
     } else {

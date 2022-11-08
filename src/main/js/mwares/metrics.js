@@ -1,4 +1,5 @@
 import process from 'node:process'
+import {reservoirs, getPercentiles} from '../metric.js'
 
 export const metrics = async (req, res) => {
   const formatUptime = (uptime) => {
@@ -10,7 +11,19 @@ export const metrics = async (req, res) => {
     return pad(hours) + ':' + pad(minutes) + ':' + pad(seconds)
   }
 
+  const metrics = [...reservoirs.keys()].reduce((acc, name) => {
+    const percentiles = getPercentiles(name, [0.5, 0.75, 0.95, 0.99])
+
+    return Object.assign(acc, {
+      [`${name}-p50`]: percentiles[0],
+      [`${name}-p75`]: percentiles[1],
+      [`${name}-p95`]: percentiles[2],
+      [`${name}-p99`]: percentiles[3],
+    })
+  }, {})
+
   res.json({
+    ...metrics,
     uptime: formatUptime(process.uptime()),
     memory: process.memoryUsage(),
     cpu: process.cpuUsage()

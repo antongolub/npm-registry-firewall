@@ -114,3 +114,5 @@ type TLoggerOptions = {
 }
 
 export function createLogger(options: TLoggerOptions): TLogger
+
+export function getPercentiles(name: string, percentiles: number[]): number[]

@@ -7,6 +7,7 @@ import {
   getConfig,
   getCache,
   stopCache,
+  getPercentiles,
 
   // middlewares
   healthcheck,
@@ -17,7 +18,7 @@ import {
   ctx,
   timeout,
   firewall,
-  metrics
+  metrics,
 } from '../../main/js/index.js'
 
 const test = testFactory('index', import.meta)
@@ -31,6 +32,7 @@ test('has proper export', () => {
     getConfig,
     getCache,
     stopCache,
+    getPercentiles,
     healthcheck,
     errorBoundary,
     notFound,

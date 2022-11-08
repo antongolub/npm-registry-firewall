@@ -8,6 +8,7 @@ import {makeDeferred, normalizePath, gunzip, gzip, dropNullEntries, time} from '
 import { httpError, OK, FOUND, MULTIPLE_CHOICES, PERMANENT_REDIRECT, REQUEST_TIMEOUT, TEMPORARY_REDIRECT } from './error.js'
 import { getAgent } from './agent.js'
 import { logger } from '../logger.js'
+import { pushMetric } from '../metric.js'
 
 export const request = async (opts) => {
   const {url, headers: _headers, method = 'GET', postData, pipe, gzip: _gzip, skipUnzip, followRedirects, timeout = 30_000, authorization = null} = opts
@@ -51,6 +52,7 @@ export const request = async (opts) => {
     res.req = req
     req.res = res
     res._latency = Date.now() - s
+    pushMetric('http-time', res._latency)
     logger.debug('HTTP < latency', `${res._latency}ms`, method, url)
 
     const statusCode = res.statusCode
