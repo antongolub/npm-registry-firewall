@@ -659,8 +659,31 @@ Default plugin to filter packages by their fields. May be used directly or via s
   "cpu": {
     "user": 206715,
     "system": 51532
-  }
+  },
+  "worker-waiting-time-p50": 0,
+  "worker-waiting-time-p75": 0,
+  "worker-waiting-time-p95": 8,
+  "worker-waiting-time-p99": 19,
+  "worker-total-time-p50": 36,
+  "worker-total-time-p75": 43,
+  "worker-total-time-p95": 58,
+  "worker-total-time-p99": 81,
+  "http-time-p50": 285,
+  "http-time-p75": 546,
+  "http-time-p95": 1166,
+  "http-time-p99": 1814,
+  "response-time-p50": 395,
+  "response-time-p75": 1497,
+  "response-time-p95": 1523,
+  "response-time-p99": 1902
 }
+```
+
+You can also obtain the metrics programmatically:
+```js
+import { getPercentiles } from 'npm-registry-firewall'
+
+getPercentiles('response-time', [0.5, 0.9, 0.99]) // [234, 313, 701]
 ```
 
 #### stdout
