@@ -1,3 +1,10 @@
+## [2.1.1](https://github.com/antongolub/npm-registry-firewall/compare/v2.1.0...v2.1.1) (2022-11-08)
+
+
+### Bug Fixes
+
+* clear cache interval on stop ([10347a4](https://github.com/antongolub/npm-registry-firewall/commit/10347a42553122badf39abe67380fdd9f498c9c0))
+
 # [2.1.0](https://github.com/antongolub/npm-registry-firewall/compare/v2.0.0...v2.1.0) (2022-11-06)
 
 
