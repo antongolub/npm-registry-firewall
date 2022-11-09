@@ -1,5 +1,6 @@
 import process from 'node:process'
 import {reservoirs, getPercentiles} from '../metric.js'
+import { getCache } from '../cache.js'
 
 export const metrics = async (req, res) => {
   const formatUptime = (uptime) => {
@@ -22,8 +23,14 @@ export const metrics = async (req, res) => {
     })
   }, {})
 
+  const cache = getCache()
+
   res.json({
     ...metrics,
+    cache: {
+      size: cache.size?.(),
+      byteLength: cache.byteLength?.(),
+    },
     uptime: formatUptime(process.uptime()),
     memory: process.memoryUsage(),
     cpu: process.cpuUsage()
