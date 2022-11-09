@@ -64,8 +64,8 @@ export const getMetricsDigest = () => {
   return {
     ...metrics,
     'memory-usage-rss': memUsage.rss,
-    'memory-usage-heapTotal': memUsage.heapTotal,
-    'memory-usage-heapUsed': memUsage.heapUsed,
+    'memory-usage-heap-total': memUsage.heapTotal,
+    'memory-usage-heap-used': memUsage.heapUsed,
     'memory-usage-external': memUsage.external,
     'memory-usage-array-buffers': memUsage.arrayBuffers,
     'cpu-usage-user': cpuUsage.user,
