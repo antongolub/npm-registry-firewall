@@ -1,3 +1,10 @@
+# [2.4.0](https://github.com/antongolub/npm-registry-firewall/compare/v2.3.0...v2.4.0) (2022-11-09)
+
+
+### Features
+
+* log plugin name on error ([a2347ff](https://github.com/antongolub/npm-registry-firewall/commit/a2347ff1414dcd7625b037dac57a2b70cd7b4a00)), closes [#28](https://github.com/antongolub/npm-registry-firewall/issues/28)
+
 # [2.3.0](https://github.com/antongolub/npm-registry-firewall/compare/v2.2.0...v2.3.0) (2022-11-09)
 
 
