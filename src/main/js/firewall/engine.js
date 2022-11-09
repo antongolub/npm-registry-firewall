@@ -1,4 +1,5 @@
 import {asArray, mapValuesAsync} from '../util.js'
+import {logger} from '../logger.js'
 
 export const getDirectives = ({packument, rules, boundContext}) =>
   mapValuesAsync(packument.versions, async (entry) =>
@@ -21,8 +22,14 @@ export const getDirective = async ({rules, entry, boundContext}) => {
       return _m
     }
 
-    const policy = await plugin({rule, entry, options, boundContext})
-    return policy ? {...rule, policy} : false
+    try {
+      const policy = await plugin({rule, entry, options, boundContext})
+      return policy ? {...rule, policy} : false
+    } catch (e){
+      logger.error(`Error in plugin ${plugin.name}`, e)
+      return false
+    }
+
   }, false)
 }
 

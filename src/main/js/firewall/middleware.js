@@ -7,7 +7,13 @@ import {getCtx} from '../als.js'
 import {checkTarball} from './tarball.js'
 import {logger} from '../logger.js'
 
-const warmupPipeline = (pipeline, opts) => pipeline.forEach(([plugin, _opts]) => plugin.warmup?.({...opts, ..._opts }))
+const warmupPipeline = (pipeline, opts) => pipeline.forEach(([plugin, _opts]) => {
+  try {
+    plugin.warmup?.({...opts, ..._opts })
+  } catch (e) {
+    logger.error(`Error in plugin ${plugin.name} warmup`, e)
+  }
+})
 
 const warmupDepPackuments = (name, deps, boundContext, rules) => {
   if (isNoCache()) {

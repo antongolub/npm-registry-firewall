@@ -1,7 +1,7 @@
 import {semver} from '../../semver.js'
 import {request} from '../../http/index.js'
 import {getCache, withCache} from '../../cache.js'
-import {asArray, makeDeferred, tryQueue} from '../../util.js'
+import {asArray, makeDeferred, setFnName, tryQueue} from '../../util.js'
 import {logger} from '../../logger.js'
 
 const severityOrder = ['critical', 'high', 'moderate', 'low', 'any' ]
@@ -20,6 +20,8 @@ auditPlugin.warmup = ({name, registry}) => {
   logger.debug('audit: warming up cache for', name)
   return getAdvisories(name, registry)
 }
+
+setFnName(auditPlugin, 'audit-plugin')
 
 const getAdvisories = async (name, registry) => {
   const registries = asArray(registry)

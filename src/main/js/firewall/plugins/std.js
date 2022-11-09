@@ -1,5 +1,5 @@
 import {semver} from '../../semver.js'
-import {asRegExp} from '../../util.js'
+import {asRegExp, setFnName} from '../../util.js'
 
 export const stdPlugin = async ({rule, entry, boundContext = {}, options = rule}) => {
   const filter = options.filter || defaultFilter
@@ -10,6 +10,8 @@ export const stdPlugin = async ({rule, entry, boundContext = {}, options = rule}
 
   return !!matched && options.policy
 }
+
+setFnName(stdPlugin, 'std-plugin')
 
 export const defaultFilter = ({options: opts, boundContext: {org}, entry: { name, version, time, license, _npmUser }, now = Date.now()}) => {
   const matches = [

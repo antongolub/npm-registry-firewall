@@ -196,3 +196,5 @@ export const time = (fn, label = fn.name) => async (...args) => {
 
   return fn(...args).finally(() => logger.debug(`${label} took ${Date.now() - b}ms`))
 }
+
+export const setFnName = (fn, name) => Object.defineProperty(fn, 'name', { value: name })
