@@ -653,17 +653,13 @@ Default plugin to filter packages by their fields. May be used directly or via s
 ```json
 {
   "uptime": "00:00:47",
-  "memory": {
-    "rss": 34320384,
-    "heapTotal": 6979584,
-    "heapUsed": 5632224,
-    "external": 855222,
-    "arrayBuffers": 24758
-  },
-  "cpu": {
-    "user": 206715,
-    "system": 51532
-  },
+  "memory-usage-rss": 34320384,
+  "memory-usage-heapTotal": 6979584,
+  "memory-usage-heapUsed": 5632224,
+  "memory-usage-external": 855222,
+  "memory-usage-array-buffers": 24758,
+  "cpu-usage-user": 206715,
+  "cpu-usage-system": 51532,
   "worker-waiting-time-p50": 0,
   "worker-waiting-time-p75": 0,
   "worker-waiting-time-p95": 8,

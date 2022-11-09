@@ -15,6 +15,6 @@ test('`getPercentiles` returns proper percentile values', async () => {
 test('`getMetricsDigest` returns proper digest', () => {
   const digest = getMetricsDigest()
   const keys = Object.keys(digest)
-  assert.ok(keys.includes('cpu'))
-  assert.ok(keys.includes('memory'))
+  assert.ok(keys.includes('cpu-usage-user'))
+  assert.ok(keys.includes('memory-usage-rss'))
 })

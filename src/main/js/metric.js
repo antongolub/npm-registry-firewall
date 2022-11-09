@@ -58,15 +58,20 @@ export const getMetricsDigest = () => {
   }, {})
 
   const cache = getCache()
+  const memUsage = process.memoryUsage()
+  const cpuUsage = process.cpuUsage()
 
   return {
     ...metrics,
-    cache: {
-      size: cache.size?.(),
-      byteLength: cache.byteLength?.(),
-    },
+    'memory-usage-rss': memUsage.rss,
+    'memory-usage-heapTotal': memUsage.heapTotal,
+    'memory-usage-heapUsed': memUsage.heapUsed,
+    'memory-usage-external': memUsage.external,
+    'memory-usage-array-buffers': memUsage.arrayBuffers,
+    'cpu-usage-user': cpuUsage.user,
+    'cpu-usage-system': cpuUsage.system,
+    'cache-size': cache.size?.(),
+    'cache-byte-length': cache.byteLength?.(),
     uptime: formatUptime(process.uptime()),
-    memory: process.memoryUsage(),
-    cpu: process.cpuUsage()
   }
 }
