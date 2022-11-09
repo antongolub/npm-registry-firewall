@@ -1,3 +1,5 @@
+## [2.5.1](https://github.com/antongolub/npm-registry-firewall/compare/v2.5.0...v2.5.1) (2022-11-09)
+
 # [2.5.0](https://github.com/antongolub/npm-registry-firewall/compare/v2.4.0...v2.5.0) (2022-11-09)
 
 
