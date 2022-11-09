@@ -8,6 +8,7 @@ import {
   getCache,
   stopCache,
   getPercentiles,
+  getMetricsDigest,
 
   // middlewares
   healthcheck,
@@ -33,6 +34,7 @@ test('has proper export', () => {
     getCache,
     stopCache,
     getPercentiles,
+    getMetricsDigest,
     healthcheck,
     errorBoundary,
     notFound,

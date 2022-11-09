@@ -1,3 +1,5 @@
+import {getCache} from './cache.js'
+
 export const reservoirs = new Map()
 
 // https://javadoc.io/doc/io.dropwizard.metrics/metrics-core/4.0.5/com/codahale/metrics/ExponentiallyDecayingReservoir.html
@@ -33,3 +35,38 @@ export const getPercentiles = (name, percentiles = [0.5, 0.75, 0.95, 0.99]) => {
 }
 
 export const getPercentile = (name, percentile = 0.5) => getPercentiles(name, [percentile])[0]
+
+export const getMetricsDigest = () => {
+  const formatUptime = (uptime) => {
+    const pad = s => (s < 10 ? '0' : '') + s
+    const hours = Math.floor(uptime / (60 * 60))
+    const minutes = Math.floor(uptime % (60 * 60) / 60)
+    const seconds = Math.floor(uptime % 60)
+
+    return pad(hours) + ':' + pad(minutes) + ':' + pad(seconds)
+  }
+
+  const metrics = [...reservoirs.keys()].reduce((acc, name) => {
+    const percentiles = getPercentiles(name, [0.5, 0.75, 0.95, 0.99])
+
+    return Object.assign(acc, {
+      [`${name}-p50`]: percentiles[0],
+      [`${name}-p75`]: percentiles[1],
+      [`${name}-p95`]: percentiles[2],
+      [`${name}-p99`]: percentiles[3],
+    })
+  }, {})
+
+  const cache = getCache()
+
+  return {
+    ...metrics,
+    cache: {
+      size: cache.size?.(),
+      byteLength: cache.byteLength?.(),
+    },
+    uptime: formatUptime(process.uptime()),
+    memory: process.memoryUsage(),
+    cpu: process.cpuUsage()
+  }
+}

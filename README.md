@@ -285,6 +285,10 @@ type TLoggerOptions = {
 }
 
 export function createLogger(options: TLoggerOptions): TLogger
+
+export function getPercentiles(name: string, percentiles: number[]): number[]
+
+export function getMetricsDigest(): Record<string, any>
 ```
 
 </details>
@@ -681,9 +685,10 @@ Default plugin to filter packages by their fields. May be used directly or via s
 
 You can also obtain the metrics programmatically:
 ```js
-import { getPercentiles } from 'npm-registry-firewall'
+import { getPercentiles, getMetricsDigest } from 'npm-registry-firewall'
 
 getPercentiles('response-time', [0.5, 0.9, 0.99]) // [234, 313, 701]
+getMetricsDigest() // { uptime: '00:00:47', memory: { rss: 34320384, ... }, ... }
 ```
 
 #### stdout
