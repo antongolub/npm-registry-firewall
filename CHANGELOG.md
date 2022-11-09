@@ -1,3 +1,10 @@
+# [2.3.0](https://github.com/antongolub/npm-registry-firewall/compare/v2.2.0...v2.3.0) (2022-11-09)
+
+
+### Features
+
+* add cache state to metrics output ([cdc7019](https://github.com/antongolub/npm-registry-firewall/commit/cdc70193bec27f2cde4e8fbe1892061158b806ec))
+
 # [2.2.0](https://github.com/antongolub/npm-registry-firewall/compare/v2.1.1...v2.2.0) (2022-11-08)
 
 
