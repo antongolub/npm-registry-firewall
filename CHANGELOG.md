@@ -1,3 +1,10 @@
+## [2.5.2](https://github.com/antongolub/npm-registry-firewall/compare/v2.5.1...v2.5.2) (2022-11-09)
+
+
+### Bug Fixes
+
+* rm uppercase letters from metrics keys ([317d68f](https://github.com/antongolub/npm-registry-firewall/commit/317d68f1bbe07ea5bb85bd97312aec2f1b9b03a3))
+
 ## [2.5.1](https://github.com/antongolub/npm-registry-firewall/compare/v2.5.0...v2.5.1) (2022-11-09)
 
 # [2.5.0](https://github.com/antongolub/npm-registry-firewall/compare/v2.4.0...v2.5.0) (2022-11-09)
