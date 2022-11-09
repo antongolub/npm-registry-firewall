@@ -1,3 +1,10 @@
+# [2.5.0](https://github.com/antongolub/npm-registry-firewall/compare/v2.4.0...v2.5.0) (2022-11-09)
+
+
+### Features
+
+* expose `getMetricsDigest` API ([0270edd](https://github.com/antongolub/npm-registry-firewall/commit/0270edde1d81301c58fd38eb77f3dc8a232b16d0))
+
 # [2.4.0](https://github.com/antongolub/npm-registry-firewall/compare/v2.3.0...v2.4.0) (2022-11-09)
 
 
