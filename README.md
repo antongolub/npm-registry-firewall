@@ -654,8 +654,8 @@ Default plugin to filter packages by their fields. May be used directly or via s
 {
   "uptime": "00:00:47",
   "memory-usage-rss": 34320384,
-  "memory-usage-heapTotal": 6979584,
-  "memory-usage-heapUsed": 5632224,
+  "memory-usage-heap-total": 6979584,
+  "memory-usage-heap-used": 5632224,
   "memory-usage-external": 855222,
   "memory-usage-array-buffers": 24758,
   "cpu-usage-user": 206715,
