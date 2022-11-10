@@ -2,9 +2,10 @@ import crypto from 'node:crypto'
 
 import {getDirectives, getPolicy} from './engine.js'
 import {request} from '../http/index.js'
-import {asArray, gunzip, tryQueue, time} from '../util.js'
+import {asArray, tryQueue, time} from '../util.js'
 import {withCache} from '../cache.js'
 import {semver} from '../semver.js'
+import {gunzip} from '../zip.js'
 
 export const getPackument = async ({boundContext, rules}) => {
   const { registry, authorization, entrypoint, name } = boundContext

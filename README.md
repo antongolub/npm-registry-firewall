@@ -325,6 +325,7 @@ export function getMetricsDigest(): Record<string, any>
     "evictionTimeout": 1,     // Cache invalidation period in minutes. Defaults to cache.ttl.
     "limit": 1000000          // Optional. Max cache size in bytes. Defaults to Infinity
   },
+  "workerConcurrency": 2,     // Optional. os.cpus().length by default. NB: workers are used to perform `heavy` tasks like zip
   "firewall": {
     "/foo": {                 // Context path
       "registry": "https://registry.npmmirror.com",  // Remote registry
@@ -749,7 +750,7 @@ In other words, `multi-server-config` is not supported anymore. But you can stil
 ```js
 import { createRoutes, createServer } from 'npm-registry-firewall'
 
-const config = getConfig('path/to/config.json')
+const config = loadConfig('path/to/config.json')
 const routes = createRoutes(config)
 const routeMap = config.firewalls.reduce((acc, f, i) => {
   acc[f.base] = routes[i]

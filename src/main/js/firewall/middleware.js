@@ -1,12 +1,13 @@
-import {Buffer} from 'node:buffer'
 import {httpError, NOT_FOUND, ACCESS_DENIED, METHOD_NOT_ALLOWED, NOT_MODIFIED, OK, FOUND} from '../http/index.js'
 import {getPolicy, getPipeline} from './engine.js'
 import {getPackument} from './packument.js'
-import {normalizePath, gzip, dropNullEntries, time, jsonBuffer} from '../util.js'
+import {normalizePath, dropNullEntries, time, jsonBuffer} from '../util.js'
+import {gzip} from '../zip.js'
 import {hasHit, hasKey, isNoCache} from '../cache.js'
 import {getCtx} from '../als.js'
 import {checkTarball} from './tarball.js'
 import {logger} from '../logger.js'
+import {getConfig} from '../config.js'
 
 const warmupPipeline = (pipeline, opts) => pipeline.forEach(([plugin, _opts]) => {
   try {
@@ -53,9 +54,9 @@ export const firewall = ({registry, rules, entrypoint: _entrypoint, token}) => a
     return next(httpError(METHOD_NOT_ALLOWED))
   }
 
-  const {cfg} = getCtx()
+  const config = getConfig()
   const authorization = getAuth(token, req.headers['authorization'])
-  const entrypoint = _entrypoint || normalizePath(`${cfg.server.entrypoint}${base}`)
+  const entrypoint = _entrypoint || normalizePath(`${config.server.entrypoint}${base}`)
   const pipeline = await getPipeline(rules)
   const boundContext = { registry, entrypoint, authorization, name, org, version, pipeline }
 

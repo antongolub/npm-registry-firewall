@@ -1,6 +1,7 @@
 import {strict as assert} from 'node:assert'
 import fs from 'node:fs'
 
+import {getCtx} from './als.js'
 import {asArray, asStrOrRegexpArray, genId, load, normalizePath, mergeDeep} from './util.js'
 import { semver } from './semver.js'
 
@@ -17,6 +18,7 @@ const populateExtra = (target) => {
 const populate = (config) => {
   // assert.ok(config.firewall, 'cfg: firewall')
 
+  const workerConcurrency = config.workerConcurrency | 0
   const agent = config.agent
   const cache = config.cache
     ? {
@@ -112,10 +114,11 @@ const populate = (config) => {
     firewall,
     log,
     server,
+    workerConcurrency
   }
 }
 
-export const getConfig = (file) => {
+export const loadConfig = (file) => {
   assert.ok(file, 'cfg: config must be specified')
 
   return populate(typeof file === 'string'
@@ -123,3 +126,5 @@ export const getConfig = (file) => {
     : file
   )
 }
+
+export const getConfig = () => getCtx().config

@@ -2,26 +2,26 @@ import { createServer } from './http/server.js'
 import { createRouter } from './http/router.js'
 import { runInCtx, mixCtx } from './als.js'
 import {
+  ctx,
   healthcheck,
   errorBoundary,
   notFound,
   trace,
   proxy,
-  ctx,
   timeout,
   firewall,
   metrics,
 } from './mwares/index.js'
-import { getConfig } from './config.js'
+import { loadConfig } from './config.js'
 import { getCache, stopCache } from './cache.js'
 
-export { getConfig, getCache, stopCache }
+export { getCache, stopCache }
 
 export const _createApp = (cfg, {
   cache,
   logger
 } = {}) => {
-  const config = getConfig(cfg)
+  const config = loadConfig(cfg)
   getCache(cache || config.cache) // init cache
 
   mixCtx({
@@ -32,7 +32,7 @@ export const _createApp = (cfg, {
   const firewalls = createRoutes(config)
 
   const router = createRouter([
-    ctx(config),
+    ctx({config, logger}),
     timeout,
     trace,
     ['GET', config.server.healthcheck, healthcheck],

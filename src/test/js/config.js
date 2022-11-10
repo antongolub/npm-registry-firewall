@@ -1,5 +1,5 @@
 import {testFactory, objectContaining} from '../test-utils.js'
-import {getConfig} from '../../main/js/index.js'
+import {loadConfig} from '../../main/js/index.js'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import https from 'node:https'
@@ -9,7 +9,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 const test = testFactory('config', import.meta)
 
 test('resolves `extends`', () => {
-  const config = getConfig({
+  const config = loadConfig({
     server: {port: 3000},
     firewall: {
       '/registry': {
@@ -30,7 +30,7 @@ test('resolves `extends`', () => {
 })
 
 test('resolves `preset`', () => {
-  const config = getConfig({
+  const config = loadConfig({
     server: {port: 3000},
     firewall: {
       '/foo': {
@@ -51,7 +51,7 @@ test('resolves `preset`', () => {
 })
 
 test('resolves `preset` as string[]', () => {
-  const config = getConfig({
+  const config = loadConfig({
     server: {port: 3000},
     firewall: {
       '/foo': {
@@ -78,7 +78,7 @@ test('resolves `preset` as string[]', () => {
 })
 
 test('handles `agent` opts', () => {
-  const config1 = getConfig({
+  const config1 = loadConfig({
     server: { port: 3000 },
     firewall: {
       '/foo': { registry: 'https://registry.npmjs.org' }
@@ -91,7 +91,7 @@ test('handles `agent` opts', () => {
   })
 
   const agent = new https.Agent()
-  const config2 = getConfig({
+  const config2 = loadConfig({
     server: { port: 3000} ,
     firewall: {
       '/foo': { registry: 'https://registry.npmjs.org' }
@@ -105,7 +105,7 @@ test('handles `agent` opts', () => {
 })
 
 test('processes `logger` opts', () => {
-  const config = getConfig({
+  const config = loadConfig({
     server: {port: 3000},
     firewall: {
       '/foo': { registry: 'https://registry.npmjs.org' }

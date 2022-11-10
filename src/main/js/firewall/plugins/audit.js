@@ -1,6 +1,6 @@
 import {semver} from '../../semver.js'
 import {request} from '../../http/index.js'
-import {getCache, withCache} from '../../cache.js'
+import {withCache} from '../../cache.js'
 import {asArray, makeDeferred, setFnName, tryQueue} from '../../util.js'
 import {logger} from '../../logger.js'
 
@@ -33,18 +33,18 @@ const getAdvisories = async (name, registry) => {
 const queues = {}
 
 const getAdvisoriesDebounced = async (name, registry) =>
-  withCache(`audit-${name}`, (cache) => {
+  withCache(`audit-${name}`, () => {
     const {promise, resolve, reject} = makeDeferred()
     const queue = (queues[registry] = queues[registry] || [])
 
     queue.push({name, resolve, reject})
 
-    processQueue(queue, cache, registry)
+    processQueue(queue, registry)
     return promise
   }, 3600_000)
 
 let auditConcurrency = 10
-const processQueue = async (queue, cache, registry) => {
+const processQueue = async (queue, registry) => {
   if (auditConcurrency === 0) {
     return
   }
@@ -74,10 +74,10 @@ const processQueue = async (queue, cache, registry) => {
       : {}
     batch.forEach(({name, resolve}) => resolve(advisories[name] || []))
   } catch (e) {
-    batch.forEach(({reject, name}) => { reject(e); cache.del(name) })
+    batch.forEach(({reject}) => reject(e))
   } finally {
     auditConcurrency += 1
-    processQueue(queue, cache, registry)
+    processQueue(queue, registry)
   }
 }
 
