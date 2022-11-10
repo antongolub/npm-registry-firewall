@@ -1,7 +1,7 @@
 import {httpError, NOT_FOUND, ACCESS_DENIED, METHOD_NOT_ALLOWED, NOT_MODIFIED, OK, FOUND} from '../http/index.js'
 import {getPolicy, getPipeline} from './engine.js'
 import {getPackument} from './packument.js'
-import {normalizePath, gzip, dropNullEntries, time} from '../util.js'
+import {normalizePath, gunzip, dropNullEntries, time} from '../util.js'
 import {hasHit, hasKey, isNoCache} from '../cache.js'
 import {getCtx} from '../als.js'
 import {checkTarball} from './tarball.js'
@@ -95,7 +95,7 @@ export const firewall = ({registry, rules, entrypoint: _entrypoint, token}) => a
 
   // Packument request
   const isGzip = req.headers['accept-encoding']?.includes('gzip')
-  const buffer = isGzip ? await time(gzip, `gzip packument ${name}`)(packumentBuffer) : packumentBuffer
+  const buffer = isGzip ? packumentBuffer : await time(gunzip, `gunzip packument ${name}`)(packumentBuffer)
   const cl = '' + buffer.length
   const extra = isGzip
     ? {'content-length': cl, 'transfer-encoding': null, 'content-encoding': 'gzip', etag}

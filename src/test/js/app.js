@@ -68,7 +68,7 @@ test('is runnable', async () => {
   [
     'reads packument via GET',
     { url: 'http://localhost:3001/registry/d', method: 'GET'},
-    { statusCode: 200 }
+    { statusCode: 200, json: {name: 'd', description: 'Property descriptor factory'}}
   ],
   [
     'reads packument via HEAD',
@@ -119,6 +119,7 @@ test('is runnable', async () => {
       result = {
         statusCode: res.statusCode,
         body: res.body,
+        json: JSON.parse(res.body || null),
         hash,
       }
     } catch ({statusCode}) {
