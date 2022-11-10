@@ -1,3 +1,10 @@
+# [2.6.0](https://github.com/antongolub/npm-registry-firewall/compare/v2.5.5...v2.6.0) (2022-11-10)
+
+
+### Features
+
+* add `workerConcurrency` to config, simplify config injects ([d877d8c](https://github.com/antongolub/npm-registry-firewall/commit/d877d8c2a41d4d518fbd867a362e28581e56d475))
+
 ## [2.5.5](https://github.com/antongolub/npm-registry-firewall/compare/v2.5.4...v2.5.5) (2022-11-10)
 
 
