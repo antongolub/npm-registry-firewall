@@ -68,7 +68,20 @@ test('is runnable', async () => {
   [
     'reads packument via GET',
     { url: 'http://localhost:3001/registry/d', method: 'GET'},
-    { statusCode: 200, json: {name: 'd', description: 'Property descriptor factory'}}
+    { statusCode: 200, json: {
+        name: 'd',
+        description: 'Property descriptor factory',
+        versions: {
+          '0.1.0': {
+            name: 'd',
+            version: '0.1.0',
+            dist: {
+              tarball: 'http://localhost:3001/registry/d/-/d-0.1.0.tgz'
+            }
+          }
+        }
+      }
+    }
   ],
   [
     'reads packument via HEAD',

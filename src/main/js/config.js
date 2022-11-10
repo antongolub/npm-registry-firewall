@@ -39,6 +39,7 @@ const populate = (config) => {
     healthcheck = '/healthcheck',
     metrics = '/metrics',
     secure: _secure,
+    entrypoint = `${_secure ? 'https' : 'http'}://${host}:${port}`,
     keepAliveTimeout = 61_000,
     headersTimeout = 62_000,
     requestTimeout = 30_000
@@ -54,6 +55,7 @@ const populate = (config) => {
       host,
       port,
       base,
+      entrypoint,
       metrics,
       healthcheck,
       requestTimeout,
