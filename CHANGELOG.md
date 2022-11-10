@@ -1,3 +1,10 @@
+## [2.5.5](https://github.com/antongolub/npm-registry-firewall/compare/v2.5.4...v2.5.5) (2022-11-10)
+
+
+### Performance Improvements
+
+* extract deps after packument processing ([020e623](https://github.com/antongolub/npm-registry-firewall/commit/020e6233b55f3f9352c744edb959b8f816bad633))
+
 ## [2.5.4](https://github.com/antongolub/npm-registry-firewall/compare/v2.5.3...v2.5.4) (2022-11-10)
 
 
