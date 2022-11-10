@@ -21,9 +21,9 @@ export const getPackument = async ({boundContext, rules}) => {
 
   const body = (await time(gunzip, `unzip packument ${name}`)(buffer)).toString('utf8')
   const packument = JSON.parse(body)
-  const deps = getDeps(packument)
   const directives = await getDirectives({ packument, rules, boundContext})
   const _packument = patchPackument({ packument, directives, entrypoint, registry })
+  const deps = getDeps(_packument)
   const vkeys = Object.keys(_packument.versions)
 
   if (vkeys.length === 0) {
