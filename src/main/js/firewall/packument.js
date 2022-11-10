@@ -1,4 +1,3 @@
-import {Buffer} from 'node:buffer'
 import crypto from 'node:crypto'
 
 import {getDirectives, getPolicy} from './engine.js'
@@ -25,14 +24,13 @@ export const getPackument = async ({boundContext, rules}) => {
   const deps = getDeps(packument)
   const directives = await getDirectives({ packument, rules, boundContext})
   const _packument = patchPackument({ packument, directives, entrypoint, registry })
+  const vkeys = Object.keys(_packument.versions)
 
-  if (Object.keys(_packument.versions).length === 0) {
+  if (vkeys.length === 0) {
     return {}
   }
-  const packumentBuffer = Object.keys(_packument.versions).length === Object.keys(packument.versions).length
-    ? buffer
-    : Buffer.from(JSON.stringify(_packument))
-  const etag = 'W/' + JSON.stringify(crypto.createHash('sha256').update(packumentBuffer.slice(0, 65_536)).digest('hex'))
+  const packumentBufferZip = vkeys.length === Object.keys(packument.versions).length && buffer
+  const etag = 'W/' + JSON.stringify(crypto.createHash('sha256').update(`${packument.name}${vkeys.join(',')}`).digest('hex'))
 
   return {
     etag,
@@ -40,7 +38,7 @@ export const getPackument = async ({boundContext, rules}) => {
     directives,
     headers,
     packument: _packument,
-    packumentBuffer,
+    packumentBufferZip,
   }
 }
 

@@ -1,7 +1,8 @@
+import {Buffer} from 'node:buffer'
 import {httpError, NOT_FOUND, ACCESS_DENIED, METHOD_NOT_ALLOWED, NOT_MODIFIED, OK, FOUND} from '../http/index.js'
 import {getPolicy, getPipeline} from './engine.js'
 import {getPackument} from './packument.js'
-import {normalizePath, gunzip, dropNullEntries, time} from '../util.js'
+import {normalizePath, gzip, dropNullEntries, time, jsonBuffer} from '../util.js'
 import {hasHit, hasKey, isNoCache} from '../cache.js'
 import {getCtx} from '../als.js'
 import {checkTarball} from './tarball.js'
@@ -60,14 +61,14 @@ export const firewall = ({registry, rules, entrypoint: _entrypoint, token}) => a
 
   warmupPipeline(pipeline, boundContext)
   const [
-    { packumentBuffer, headers, etag, deps, directives },
+    { packument, packumentBufferZip, headers, etag, deps, directives },
     tarball
   ] = await Promise.all([
     getPackument({ boundContext, rules }),
     version ? checkTarball({registry, url: req.url}) : Promise.resolve(false)
   ])
 
-  if (!packumentBuffer) {
+  if (!packument) {
     return next(httpError(NOT_FOUND))
   }
 
@@ -95,7 +96,9 @@ export const firewall = ({registry, rules, entrypoint: _entrypoint, token}) => a
 
   // Packument request
   const isGzip = req.headers['accept-encoding']?.includes('gzip')
-  const buffer = isGzip ? packumentBuffer : await time(gunzip, `gunzip packument ${name}`)(packumentBuffer)
+  const buffer = isGzip
+    ? packumentBufferZip || await time(gzip, `gzip packument ${name}`)(jsonBuffer(packument))
+    : jsonBuffer(packument)
   const cl = '' + buffer.length
   const extra = isGzip
     ? {'content-length': cl, 'transfer-encoding': null, 'content-encoding': 'gzip', etag}

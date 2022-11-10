@@ -198,3 +198,5 @@ export const time = (fn, label = fn.name) => async (...args) => {
 }
 
 export const setFnName = (fn, name) => Object.defineProperty(fn, 'name', { value: name })
+
+export const jsonBuffer = (v) => Buffer.from(JSON.stringify(v))
