@@ -1,3 +1,10 @@
+## [2.6.1](https://github.com/antongolub/npm-registry-firewall/compare/v2.6.0...v2.6.1) (2022-11-10)
+
+
+### Bug Fixes
+
+* fix packuments entrypoint ([7dfd63c](https://github.com/antongolub/npm-registry-firewall/commit/7dfd63ca76e37657f271a24f1624f2052f3117ec))
+
 # [2.6.0](https://github.com/antongolub/npm-registry-firewall/compare/v2.5.5...v2.6.0) (2022-11-10)
 
 
