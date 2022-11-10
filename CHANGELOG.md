@@ -1,3 +1,10 @@
+## [2.5.4](https://github.com/antongolub/npm-registry-firewall/compare/v2.5.3...v2.5.4) (2022-11-10)
+
+
+### Performance Improvements
+
+* avoid redundant buffers init ([c1ce6c2](https://github.com/antongolub/npm-registry-firewall/commit/c1ce6c215743853ade5f0d65e2b2b55addc0ce2c))
+
 ## [2.5.3](https://github.com/antongolub/npm-registry-firewall/compare/v2.5.2...v2.5.3) (2022-11-10)
 
 
