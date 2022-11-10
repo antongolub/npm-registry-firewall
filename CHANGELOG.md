@@ -1,3 +1,10 @@
+## [2.5.3](https://github.com/antongolub/npm-registry-firewall/compare/v2.5.2...v2.5.3) (2022-11-10)
+
+
+### Bug Fixes
+
+* fix packument unzip ([6f236d1](https://github.com/antongolub/npm-registry-firewall/commit/6f236d16de27c011b839adc61e0781188722df7e))
+
 ## [2.5.2](https://github.com/antongolub/npm-registry-firewall/compare/v2.5.1...v2.5.2) (2022-11-09)
 
 
