@@ -54,7 +54,7 @@ jobs:
     strategy:
       matrix:
         os: [ ubuntu-22.04, windows-2022 ]
-        node-version: [ 14, 16, 18 ]
+        node-version: [ 14.21.1, 16, 18 ]
 
     runs-on: ${{ matrix.os }}
     steps:
@@ -67,7 +67,9 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - if: matrix.os == 'windows-2022'
-        run: npm i -g npm@latest --force
+        run: |
+          node -v
+          npm i -g npm@latest
 
       - name: Run tests
         timeout-minutes: 2
