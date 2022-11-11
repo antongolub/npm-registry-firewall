@@ -65,19 +65,35 @@ export const patchTime = (time, versions) => Object.entries(time).reduce((m, [k,
   modified: time.modified,
 })
 
+export const guessDistTags = (distTags, versions, time) => {
+  const _versions = Object.keys(versions).sort((a, b) => time[b] - time[a])
+
+  return Object.entries(distTags)
+    .reduce((m, [tag, v]) => {
+      if (_versions.includes(v)) {
+        m[tag] = v
+      } else if (tag === 'latest') {
+        m[tag] = _versions.find(v => !v.includes('-')) || _versions[0]
+      } else {
+        m[tag] = _versions.find(v => v.includes(`-${tag}.`))
+      }
+
+      return m
+    }, {})
+}
+
 export const patchPackument = ({packument, directives, entrypoint, registry}) => {
   const versions = patchVersions({packument, directives, entrypoint, registry})
   const time = patchTime(packument.time, versions)
 
-  const latestVersion = Object.keys(versions).reduce((m, v) => time[m] > time[v] ? m : v , null);
-  const distTags = { latest: latestVersion }
-  const latestEntry = versions[latestVersion] || {}
+  const distTags = guessDistTags(packument['dist-tags'], versions, time)
+  const latestEntry = versions[distTags.latest]
 
   return {
     ...packument,
-    author: latestEntry.author,
-    license: latestEntry.license,
-    maintainer: latestEntry.maintainer,
+    author: latestEntry?.author,
+    license: latestEntry?.license,
+    maintainer: latestEntry?.maintainer,
     'dist-tags': distTags,
     time,
     versions
