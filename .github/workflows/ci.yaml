@@ -67,7 +67,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - if: matrix.os == 'windows-2022'
-        run: npm i -g npm
+        run: npm i -g npm@latest --force
 
       - name: Run tests
         timeout-minutes: 2
