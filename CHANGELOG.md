@@ -1,3 +1,10 @@
+## [2.6.2](https://github.com/antongolub/npm-registry-firewall/compare/v2.6.1...v2.6.2) (2022-11-11)
+
+
+### Bug Fixes
+
+* properly resolve `distTags` ([2358e80](https://github.com/antongolub/npm-registry-firewall/commit/2358e8091e00bbbde8c44a3d6e6c83b57c7cf1a2))
+
 ## [2.6.1](https://github.com/antongolub/npm-registry-firewall/compare/v2.6.0...v2.6.1) (2022-11-10)
 
 
