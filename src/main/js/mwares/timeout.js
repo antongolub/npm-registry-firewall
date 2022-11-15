@@ -14,7 +14,6 @@ export const timeout = async (req, res, next) => {
 
   res.on('close', drop)
   res.on('error', drop)
-  req.on('error', drop)
 
   next()
 }
