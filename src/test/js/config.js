@@ -3,6 +3,7 @@ import {loadConfig} from '../../main/js/index.js'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import https from 'node:https'
+import os from 'node:os'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -115,5 +116,25 @@ test('processes `logger` opts', () => {
 
   objectContaining(config, {
     log: {level: 'trace' }
+  })
+})
+
+test('processes `workerConcurrency` && `warmup` opts', () => {
+  objectContaining(loadConfig({
+    workerConcurrency: 10,
+    warmup: false,
+    server: {port: 3000},
+    firewall: {},
+  }), {
+    workerConcurrency: 10,
+    warmup: false,
+  })
+
+  objectContaining(loadConfig({
+    server: {port: 3000},
+    firewall: {},
+  }), {
+    workerConcurrency: os.cpus().length,
+    warmup: true,
   })
 })

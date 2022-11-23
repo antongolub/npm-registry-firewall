@@ -2,7 +2,6 @@ import { Worker } from 'node:worker_threads'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 import os from 'node:os'
-import process from 'node:process'
 import { pushMetric } from '../metric.js'
 import { getConfig } from '../config.js'
 import { once} from '../util.js'
@@ -18,12 +17,7 @@ export const runWorker = (workerName, workerData) => new Promise((resolve, rejec
   processQueue()
 })
 
-const getConcurrencyLimit = once(() => {
-  const concurrencyLimit = os.cpus().length
-  const wc = getConfig().workerConcurrency || process.env.WORKER_CONCURRENCY | 0
-
-  return wc <= concurrencyLimit && wc > 0 ? wc : concurrencyLimit
-})
+const getConcurrencyLimit = once(() => getConfig()?.workerConcurrency || os.cpus().length)
 
 const processQueue = () => {
   const concurrencyLimit = getConcurrencyLimit()

@@ -1,8 +1,10 @@
 import {strict as assert} from 'node:assert'
 import fs from 'node:fs'
+import os from 'node:os'
+import process from 'node:process'
 
 import {getCtx} from './als.js'
-import {asArray, asStrOrRegexpArray, genId, load, normalizePath, mergeDeep} from './util.js'
+import {asArray, asStrOrRegexpArray, genId, load, normalizePath, mergeDeep, once} from './util.js'
 import { semver } from './semver.js'
 
 const populateExtra = (target) => {
@@ -18,7 +20,10 @@ const populateExtra = (target) => {
 const populate = (config) => {
   // assert.ok(config.firewall, 'cfg: firewall')
 
-  const workerConcurrency = config.workerConcurrency | 0
+
+
+  const workerConcurrency = getConcurrencyLimit(config.workerConcurrency)
+  const warmup = !!(config.warmup ?? true)
   const agent = config.agent
   const cache = config.cache
     ? {
@@ -116,7 +121,8 @@ const populate = (config) => {
     firewall,
     log,
     server,
-    workerConcurrency
+    workerConcurrency,
+    warmup
   }
 }
 
@@ -127,6 +133,13 @@ export const loadConfig = (file) => {
     ? load(file)
     : file
   )
+}
+
+const getConcurrencyLimit = (workerConcurrency = process.env.WORKER_CONCURRENCY) => {
+  const concurrencyLimit = os.cpus().length
+  const wc = workerConcurrency | 0
+
+  return wc <= concurrencyLimit && wc > 0 ? wc : concurrencyLimit
 }
 
 export const getConfig = () => getCtx().config

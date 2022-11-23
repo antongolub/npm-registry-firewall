@@ -9,6 +9,8 @@ import {logger} from '../logger.js'
 import {getConfig} from '../config.js'
 
 const warmupPipeline = (pipeline, opts) => pipeline.forEach(([plugin, _opts]) => {
+  if (getConfig().warmup === false || isNoCache()) return
+
   try {
     plugin.warmup?.({...opts, ..._opts })
   } catch (e) {
@@ -17,9 +19,7 @@ const warmupPipeline = (pipeline, opts) => pipeline.forEach(([plugin, _opts]) =>
 })
 
 const warmupDepPackuments = (name, deps, boundContext, rules) => {
-  if (isNoCache()) {
-    return
-  }
+  if (getConfig().warmup === false || isNoCache()) return
 
   const {registry, authorization, entrypoint, pipeline} = boundContext
   logger.debug(`warmup ${name} deps`, deps)
