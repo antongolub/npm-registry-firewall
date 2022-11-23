@@ -1,3 +1,10 @@
+## [2.6.3](https://github.com/antongolub/npm-registry-firewall/compare/v2.6.2...v2.6.3) (2022-11-23)
+
+
+### Bug Fixes
+
+* exclude healthcheck from response-time metric ([d40303d](https://github.com/antongolub/npm-registry-firewall/commit/d40303d36988b1fde2ffa16b967d5b4040c324e3))
+
 ## [2.6.2](https://github.com/antongolub/npm-registry-firewall/compare/v2.6.1...v2.6.2) (2022-11-11)
 
 
