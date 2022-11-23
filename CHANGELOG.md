@@ -1,3 +1,10 @@
+# [2.7.0](https://github.com/antongolub/npm-registry-firewall/compare/v2.6.3...v2.7.0) (2022-11-23)
+
+
+### Features
+
+* make `warmup` configurable ([f31ee91](https://github.com/antongolub/npm-registry-firewall/commit/f31ee91d03cb26f8c38a8676288579ab0f8b3f4d))
+
 ## [2.6.3](https://github.com/antongolub/npm-registry-firewall/compare/v2.6.2...v2.6.3) (2022-11-23)
 
 
