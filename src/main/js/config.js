@@ -20,8 +20,6 @@ const populateExtra = (target) => {
 const populate = (config) => {
   // assert.ok(config.firewall, 'cfg: firewall')
 
-
-
   const workerConcurrency = getConcurrencyLimit(config.workerConcurrency)
   const warmup = !!(config.warmup ?? true)
   const agent = config.agent

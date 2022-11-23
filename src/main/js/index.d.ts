@@ -20,6 +20,7 @@ type TServerConfig = {
   host?: string
   port?: string | number
   base?: string
+  entrypoint?: string
   healthcheck?: string | null
   metrics?: string | null
   secure?: {
