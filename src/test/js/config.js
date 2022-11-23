@@ -121,12 +121,12 @@ test('processes `logger` opts', () => {
 
 test('processes `workerConcurrency` && `warmup` opts', () => {
   objectContaining(loadConfig({
-    workerConcurrency: 10,
+    workerConcurrency: 1,
     warmup: false,
     server: {port: 3000},
     firewall: {},
   }), {
-    workerConcurrency: 10,
+    workerConcurrency: 1,
     warmup: false,
   })
 
