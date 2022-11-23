@@ -191,6 +191,7 @@ type TServerConfig = {
   host?: string
   port?: string | number
   base?: string
+  entrypoint?: string
   healthcheck?: string | null
   metrics?: string | null
   secure?: {
@@ -303,6 +304,7 @@ export function getMetricsDigest(): Record<string, any>
       "cert": "ssl/cert.pem",
       "key": "ssl/key.pem"
     },
+    "entrypoint": "https://r.qiwi.com/npm",  // Optional. Defaults to `${server.secure ? 'https' : 'http'}://${server.host}:${server.port}${server.base}`
     "base": "/",                // Optional. Defaults to '/'
     "healthcheck": "/health",   // Optional. Defaults to '/healthcheck'. Pass null to disable
     "metrics": "/metrics",      // Optional. Uptime, CPU and memory usage. Defaults to '/metrics'. null to disable
@@ -318,7 +320,7 @@ export function getMetricsDigest(): Record<string, any>
     "timeout": 10000
   },
   "log": {
-    "level": "info"               // Optional. Defaults to 'info'
+    "level": "info"           // Optional. Defaults to 'info'
   },
   "cache": {                  // Optional. Defaults to no-cache (null)
     "ttl": 5,                 // Time to live in minutes. Specifies how long resolved pkg directives will live.
@@ -434,8 +436,6 @@ By default, _nrf_ uses a simple in-memory cache to store patched packuments.
 cache: {              // Optional. Defaults to no-cache (null)
   ttl: 5,             // Time to live in minutes. Specifies how long resolved pkg directives will live.
   evictionTimeout: 1, // Cache invalidation period in minutes. Defaults to cache.ttl.
-  name: 'unique',     // If and only if you use the same rules for several firewall entrypoints (multi-port proxy)
-                      // you can slighly optimise resource consupmtion by sharing the cache. Defaults to `randId()`
   limit: 1000000      // Optional. Max cache size in bytes. Defaults to Infinity
 }
 ```
