@@ -32,10 +32,10 @@ const warmupDepPackuments = (name, deps, boundContext, rules) => {
     try {
       warmupPipeline(pipeline, {name, registry, org})
 
-      const {deps: _deps} = await getPackument({ boundContext: {cache, registry, authorization, entrypoint, name, org, pipeline}, rules })
+      const {deps: _deps} = await getPackument({ boundContext: {registry, authorization, entrypoint, name, org, pipeline}, rules })
       warmupDepPackuments(name, _deps, boundContext, rules)
     } catch (e) {
-      logger.warn('warmup error', e)
+      logger.warn('warmup error', e.message, e.stack)
     }
   })
 }
@@ -48,6 +48,7 @@ const getAuth = (token, auth) => token
 
 export const firewall = ({registry, rules, entrypoint: _entrypoint, token}) => async (req, res, next) => {
   const {routeParams: {name, version, org}, base, method} = req
+  req.timed = true
 
   if (method !== 'GET' && method !== 'HEAD') {
     return next(httpError(METHOD_NOT_ALLOWED))

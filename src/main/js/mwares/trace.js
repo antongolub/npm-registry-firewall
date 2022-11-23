@@ -23,7 +23,9 @@ export const trace = async (req, res, next) => {
     const isErr = statusCode < 200 || (statusCode >= 400 && statusCode !== 404)
     const delay  = Date.now() - startedAt
 
-    pushMetric('response-time', delay)
+    if (req.timed) {
+      pushMetric('response-time', delay)
+    }
     logger[isErr ? 'error' : 'info']('HTTP', statusCode, `${delay}ms`, req.method, req.url)
 
     return end.call(this, ...args)
