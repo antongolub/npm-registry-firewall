@@ -1,3 +1,15 @@
+# [2.9.0](https://github.com/antongolub/npm-registry-firewall/compare/v2.8.0...v2.9.0) (2022-12-07)
+
+
+### Bug Fixes
+
+* fix distTags sorter ([7384aad](https://github.com/antongolub/npm-registry-firewall/commit/7384aad9d91eaf32d9b9a2b20cf5b5b393d9ed4e))
+
+
+### Features
+
+* log denied pkg versions ([3236f67](https://github.com/antongolub/npm-registry-firewall/commit/3236f6713b9b617933a4df0ab76dd7e324ad4fd8))
+
 # [2.8.0](https://github.com/antongolub/npm-registry-firewall/compare/v2.7.1...v2.8.0) (2022-12-07)
 
 
