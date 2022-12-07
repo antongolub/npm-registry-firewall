@@ -69,7 +69,7 @@ export const patchTime = (time, versions) => Object.entries(time).reduce((m, [k,
 })
 
 export const guessDistTags = (distTags, versions, time) => {
-  const _versions = Object.keys(versions).sort((a, b) => time[b] - time[a])
+  const _versions = Object.keys(versions).sort((a, b) => Date.parse(time[b]) - Date.parse(time[a]))
 
   return Object.entries(distTags)
     .reduce((m, [tag, v]) => {
