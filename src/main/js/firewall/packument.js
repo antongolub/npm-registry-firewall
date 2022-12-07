@@ -2,6 +2,7 @@ import crypto from 'node:crypto'
 
 import {getDirectives, getPolicy} from './engine.js'
 import {request} from '../http/index.js'
+import {logger} from '../logger.js'
 import {asArray, tryQueue, time} from '../util.js'
 import {withCache} from '../cache.js'
 import {semver} from '../semver.js'
@@ -24,12 +25,14 @@ export const getPackument = async ({boundContext, rules}) => {
   const packument = JSON.parse(body)
   const directives = await getDirectives({ packument, rules, boundContext})
   const _packument = patchPackument({ packument, directives, entrypoint, registry })
-  const deps = getDeps(_packument)
   const vkeys = Object.keys(_packument.versions)
+
+  logDenied(packument.name, directives)
 
   if (vkeys.length === 0) {
     return {}
   }
+  const deps = getDeps(_packument)
   const packumentBufferZip = vkeys.length === Object.keys(packument.versions).length && buffer
   const etag = 'W/' + JSON.stringify(crypto.createHash('sha256').update(`${packument.name}${vkeys.join(',')}`).digest('hex'))
 
@@ -85,7 +88,6 @@ export const guessDistTags = (distTags, versions, time) => {
 export const patchPackument = ({packument, directives, entrypoint, registry}) => {
   const versions = patchVersions({packument, directives, entrypoint, registry})
   const time = patchTime(packument.time, versions)
-
   const distTags = guessDistTags(packument['dist-tags'], versions, time)
   const latestEntry = versions[distTags.latest]
 
@@ -119,4 +121,25 @@ export const getDeps = (packument) => {
       Object.keys(p.dependencies || {}).forEach(d => m.add(d))
       return m
     }, new Set())]
+}
+
+const logDenied = (name, directives) => {
+  const denied = Object.entries(directives).reduce((m, [v, {policy, pluginName, options}]) => {
+    if (policy === 'deny') {
+      const snap = JSON.stringify({pluginName, policy, options})
+      if (!m[snap]) {
+        m[snap] = []
+      }
+      m[snap].push(v)
+    }
+
+    return m
+  }, {})
+
+  if (Object.keys(denied).length > 0) {
+    const formatted = Object.entries(denied).reduce((m, [snap, versions]) =>
+      m + `${versions.join(',')} by ${snap.replaceAll('\"', '')} `
+    , '')
+    logger.info(`denied ${name} versions: ${formatted}`)
+  }
 }

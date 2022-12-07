@@ -22,11 +22,13 @@ export const getDirective = async ({rules, entry, boundContext}) => {
       return _m
     }
 
+    const pluginName = plugin.name
+
     try {
       const policy = await plugin({rule, entry, options, boundContext})
-      return policy ? {...rule, policy} : false
+      return policy ? {rule, options, pluginName, policy} : false
     } catch (e){
-      logger.error(`Error in plugin ${plugin.name}`, e)
+      logger.error(`Error in plugin ${pluginName}`, e)
       return false
     }
 
