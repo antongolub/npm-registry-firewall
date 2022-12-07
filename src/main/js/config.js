@@ -21,7 +21,7 @@ const populate = (config) => {
   // assert.ok(config.firewall, 'cfg: firewall')
 
   const workerConcurrency = getConcurrencyLimit(config.workerConcurrency)
-  const warmup = !!(config.warmup ?? true)
+  const warmup = config.warmup === true || config.warmup === undefined ? Number.POSITIVE_INFINITY : config.warmup | 0
   const agent = config.agent
   const cache = config.cache
     ? {

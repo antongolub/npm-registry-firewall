@@ -246,12 +246,13 @@ type TFirewallConfigEntry = {
 type TFirewallConfig = Record<string, TFirewallConfigEntry>
 
 type TConfig = {
-  agent?: TAgentConfig
-  cache?: TCacheConfig | TCacheImpl
-  extend?: string
-  firewall: TFirewallConfig
-  log?: { level?: TLogeLevel }
   server: TServerConfig
+  firewall: TFirewallConfig
+  extend?: string
+  agent?: TAgentConfig
+  log?: { level?: TLogeLevel }
+  cache?: TCacheConfig | TCacheImpl
+  warmup?: boolean | number
 }
 
 type TValidationContext = {
@@ -328,7 +329,7 @@ export function getMetricsDigest(): Record<string, any>
     "limit": 1000000          // Optional. Max cache size in bytes. Defaults to Infinity
   },
   "workerConcurrency": 2,     // Optional. os.cpus().length by default. NB: workers are used to perform `heavy` tasks like zip
-  "warmup": true,             // Optional. Lets the prefetcher guess the next packages to load. Defaults to true
+  "warmup": true,             // Optional. Lets the prefetcher guess the next packages to load. Defaults to true (infinity). If set to a number, limits the fetching depth.
   "firewall": {
     "/foo": {                 // Context path
       "registry": "https://registry.npmmirror.com",  // Remote registry

@@ -8,18 +8,20 @@ import {checkTarball} from './tarball.js'
 import {logger} from '../logger.js'
 import {getConfig} from '../config.js'
 
-const warmupPipeline = (pipeline, opts) => pipeline.forEach(([plugin, _opts]) => {
-  if (getConfig().warmup === false || isNoCache()) return
+const warmupPipeline = (pipeline, opts, warmup = getConfig().warmup) => {
+  if (warmup <= 0 || isNoCache()) return
 
-  try {
-    plugin.warmup?.({...opts, ..._opts })
-  } catch (e) {
-    logger.error(`Error in plugin ${plugin.name} warmup`, e)
-  }
-})
+  pipeline.forEach(([plugin, _opts]) => {
+    try {
+      plugin.warmup?.({...opts, ..._opts })
+    } catch (e) {
+      logger.error(`Error in plugin ${plugin.name} warmup`, e)
+    }
+  })
+}
 
-const warmupDepPackuments = (name, deps, boundContext, rules) => {
-  if (getConfig().warmup === false || isNoCache()) return
+const warmupDepPackuments = (name, deps, boundContext, rules, warmup = getConfig().warmup) => {
+  if (warmup <= 0 || isNoCache()) return
 
   const {registry, authorization, entrypoint, pipeline} = boundContext
   logger.debug(`warmup ${name} deps`, deps)
@@ -30,10 +32,10 @@ const warmupDepPackuments = (name, deps, boundContext, rules) => {
     }
     const org = name.charAt(0) === '@' ? name.slice(0, (name.indexOf('/') + 1 || name.indexOf('%') + 1) - 1) : null
     try {
-      warmupPipeline(pipeline, {name, registry, org})
+      warmupPipeline(pipeline, {name, registry, org}, warmup--)
 
       const {deps: _deps} = await getPackument({ boundContext: {registry, authorization, entrypoint, name, org, pipeline}, rules })
-      warmupDepPackuments(name, _deps, boundContext, rules)
+      warmupDepPackuments(name, _deps, boundContext, rules, warmup--)
     } catch (e) {
       logger.warn('warmup error', e.message, e.stack)
     }

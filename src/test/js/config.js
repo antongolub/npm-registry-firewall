@@ -127,7 +127,7 @@ test('processes `workerConcurrency` && `warmup` opts', () => {
     firewall: {},
   }), {
     workerConcurrency: 1,
-    warmup: false,
+    warmup: 0,
   })
 
   objectContaining(loadConfig({
@@ -135,6 +135,6 @@ test('processes `workerConcurrency` && `warmup` opts', () => {
     firewall: {},
   }), {
     workerConcurrency: os.cpus().length,
-    warmup: true,
+    warmup: Number.POSITIVE_INFINITY,
   })
 })

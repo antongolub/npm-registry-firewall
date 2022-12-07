@@ -75,12 +75,13 @@ type TFirewallConfigEntry = {
 type TFirewallConfig = Record<string, TFirewallConfigEntry>
 
 type TConfig = {
-  agent?: TAgentConfig
-  cache?: TCacheConfig | TCacheImpl
-  extend?: string
-  firewall: TFirewallConfig
-  log?: { level?: TLogeLevel }
   server: TServerConfig
+  firewall: TFirewallConfig
+  extend?: string
+  agent?: TAgentConfig
+  log?: { level?: TLogeLevel }
+  cache?: TCacheConfig | TCacheImpl
+  warmup?: boolean | number
 }
 
 type TValidationContext = {
