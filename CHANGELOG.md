@@ -1,3 +1,10 @@
+## [2.9.3](https://github.com/antongolub/npm-registry-firewall/compare/v2.9.2...v2.9.3) (2022-12-08)
+
+
+### Performance Improvements
+
+* tweak up zip layer ([324759b](https://github.com/antongolub/npm-registry-firewall/commit/324759b42c2189096f302cd45dedfe760c183aba))
+
 ## [2.9.2](https://github.com/antongolub/npm-registry-firewall/compare/v2.9.1...v2.9.2) (2022-12-08)
 
 
