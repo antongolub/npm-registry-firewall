@@ -71,17 +71,18 @@ export const withCache = (name, cb, ttl) => {
 
 export const createCache = ({ttl, evictionTimeout = ttl, warmup, limit = Infinity}) => {
   const store = new Map()
+  let totalByteLength = 0
+
   const timer = setInterval(() => {
     const now = Date.now()
     store.forEach(({validTill, key}) => {
       if (now > validTill) {
-        store.delete(key)
+        cache.del(key)
       }
     })
   }, evictionTimeout)
-  let totalByteLength = 0
 
-  return {
+  const cache = {
     add(key, value, _ttl) {
       const byteLength = getByteLength(value)
       if (totalByteLength + byteLength <= limit) {
@@ -117,4 +118,6 @@ export const createCache = ({ttl, evictionTimeout = ttl, warmup, limit = Infinit
     warmup,
     evictionTimeout
   }
+
+  return cache
 }
