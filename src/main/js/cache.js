@@ -40,33 +40,20 @@ export const isNoCache = () => getCache() === voidCache
 
 export const withCache = (name, cb, ttl) => {
   if (!hits.has(name)) {
-    (() => {
-      let p
+    hits.set(name, (async () => {
+      const cache = getCache()
+      if (await cache.has(name)) {
+        return cache.get(name)
+      }
 
-      hits.set(name, async () => {
-        if (p) {
-          return p
-        }
+      const value = await cb()
+      await cache.add(name, value, ttl)
 
-        p = (async () => {
-          const cache = getCache()
-          if (await cache.has(name)) {
-            return cache.get(name)
-          }
-
-          const value = await cb()
-          await cache.add(name, value, ttl)
-
-          p = null
-          return value
-        })().finally(() => hits.delete(name))
-
-        return p
-      })
-    })()
+      return value
+    })().finally(() => hits.delete(name)))
   }
 
-  return hits.get(name)()
+  return hits.get(name)
 }
 
 export const createCache = ({ttl, evictionTimeout = ttl, warmup, limit = Infinity}) => {

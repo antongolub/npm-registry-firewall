@@ -46,5 +46,6 @@ const processQueue = () => {
     }
     concurrency -= 1
     processQueue()
+    worker.unref()
   })
 }
