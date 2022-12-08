@@ -1,3 +1,10 @@
+## [2.9.1](https://github.com/antongolub/npm-registry-firewall/compare/v2.9.0...v2.9.1) (2022-12-08)
+
+
+### Bug Fixes
+
+* fix cache bytesLength indicator ([91eeb24](https://github.com/antongolub/npm-registry-firewall/commit/91eeb243b985688a2121c34dc740afc5363d7efb))
+
 # [2.9.0](https://github.com/antongolub/npm-registry-firewall/compare/v2.8.0...v2.9.0) (2022-12-07)
 
 
