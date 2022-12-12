@@ -20,7 +20,7 @@ const populateExtra = (target) => {
 const populate = (config) => {
   // assert.ok(config.firewall, 'cfg: firewall')
 
-  const workerConcurrency = getConcurrencyLimit(config.workerConcurrency)
+  const zlib = config.zlib || 'node:zlib'
   const warmup = config.warmup === true || config.warmup === undefined ? Number.POSITIVE_INFINITY : config.warmup | 0
   const agent = config.agent
   const cache = config.cache
@@ -119,8 +119,8 @@ const populate = (config) => {
     firewall,
     log,
     server,
-    workerConcurrency,
-    warmup
+    warmup,
+    zlib
   }
 }
 
@@ -131,13 +131,6 @@ export const loadConfig = (file) => {
     ? load(file)
     : file
   )
-}
-
-const getConcurrencyLimit = (workerConcurrency = process.env.WORKER_CONCURRENCY) => {
-  const concurrencyLimit = os.cpus().length
-  const wc = workerConcurrency | 0
-
-  return wc <= concurrencyLimit && wc > 0 ? wc : concurrencyLimit
 }
 
 export const getConfig = () => getCtx().config

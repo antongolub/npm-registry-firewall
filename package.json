@@ -46,5 +46,8 @@
   "bugs": {
     "url": "https://github.com/antongolub/npm-registry-firewall/issues"
   },
-  "homepage": "https://github.com/antongolub/npm-registry-firewall#readme"
+  "homepage": "https://github.com/antongolub/npm-registry-firewall#readme",
+  "devDependencies": {
+    "fflate": "^0.7.4"
+  }
 }

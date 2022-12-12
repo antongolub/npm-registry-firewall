@@ -9,6 +9,7 @@ const cfg = {
     host: 'localhost',
     port: 3001
   },
+  zlib: 'fflate',
   cache: {
     ttl: 1
   },

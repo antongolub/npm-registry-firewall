@@ -119,14 +119,12 @@ test('processes `logger` opts', () => {
   })
 })
 
-test('processes `workerConcurrency` && `warmup` opts', () => {
+test('processes `warmup` opt', () => {
   objectContaining(loadConfig({
-    workerConcurrency: 1,
     warmup: false,
     server: {port: 3000},
     firewall: {},
   }), {
-    workerConcurrency: 1,
     warmup: 0,
   })
 
@@ -134,7 +132,6 @@ test('processes `workerConcurrency` && `warmup` opts', () => {
     server: {port: 3000},
     firewall: {},
   }), {
-    workerConcurrency: os.cpus().length,
     warmup: Number.POSITIVE_INFINITY,
   })
 })
