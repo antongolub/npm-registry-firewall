@@ -191,3 +191,22 @@ export const time = (fn, label = fn.name) => async (...args) => {
 export const setFnName = (fn, name) => Object.defineProperty(fn, 'name', { value: name })
 
 export const jsonBuffer = (v) => Buffer.from(JSON.stringify(v))
+
+
+export const fromBufferToArrayBuffer = (buf) => {
+  const ab = new ArrayBuffer(buf.length)
+  const view = new Uint8Array(ab)
+  for (let i = 0; i < buf.length; ++i) {
+    view[i] = buf[i]
+  }
+  return ab
+}
+
+export const fromArrayBufferToBuffer = (ab) => {
+  const buf = Buffer.alloc(ab.byteLength)
+  const view = new Uint8Array(ab)
+  for (let i = 0; i < buf.length; ++i) {
+    buf[i] = view[i]
+  }
+  return buf
+}
