@@ -1,3 +1,10 @@
+## [2.10.1](https://github.com/antongolub/npm-registry-firewall/compare/v2.10.0...v2.10.1) (2022-12-12)
+
+
+### Bug Fixes
+
+* add fromArrayBufferToBuffer util ([754163a](https://github.com/antongolub/npm-registry-firewall/commit/754163a33468048f8b7c750a05dc007c8ac94979))
+
 # [2.10.0](https://github.com/antongolub/npm-registry-firewall/compare/v2.9.3...v2.10.0) (2022-12-12)
 
 
