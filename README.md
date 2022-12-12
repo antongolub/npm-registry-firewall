@@ -328,7 +328,7 @@ export function getMetricsDigest(): Record<string, any>
     "evictionTimeout": 1,     // Cache invalidation period in minutes. Defaults to cache.ttl.
     "limit": 1000000          // Optional. Max cache size in bytes. Defaults to Infinity
   },
-  "workerConcurrency": 2,     // Optional. os.cpus().length by default. NB: workers are used to perform `heavy` tasks like zip
+  "zlib": "fflate",           // Optional. Defined a custom zlib provider. Defaults to 'node:zlib'
   "warmup": true,             // Optional. Lets the prefetcher guess the next packages to load. Defaults to true (infinity). If set to a number, limits the fetching depth.
   "firewall": {
     "/foo": {                 // Context path
@@ -663,14 +663,6 @@ Default plugin to filter packages by their fields. May be used directly or via s
   "memory-usage-array-buffers": 24758,
   "cpu-usage-user": 206715,
   "cpu-usage-system": 51532,
-  "worker-waiting-time-p50": 0,
-  "worker-waiting-time-p75": 0,
-  "worker-waiting-time-p95": 8,
-  "worker-waiting-time-p99": 19,
-  "worker-total-time-p50": 36,
-  "worker-total-time-p75": 43,
-  "worker-total-time-p95": 58,
-  "worker-total-time-p99": 81,
   "http-time-p50": 285,
   "http-time-p75": 546,
   "http-time-p95": 1166,
