@@ -1,3 +1,10 @@
+# [2.10.0](https://github.com/antongolub/npm-registry-firewall/compare/v2.9.3...v2.10.0) (2022-12-12)
+
+
+### Features
+
+* provide zlib customization ([3a55091](https://github.com/antongolub/npm-registry-firewall/commit/3a550910d5d0e5fceee538fd21ba7e349109b44b))
+
 ## [2.9.3](https://github.com/antongolub/npm-registry-firewall/compare/v2.9.2...v2.9.3) (2022-12-08)
 
 
