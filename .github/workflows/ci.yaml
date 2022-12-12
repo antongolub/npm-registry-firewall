@@ -28,6 +28,9 @@ jobs:
         with:
           node-version: 18
 
+      - name: Deps
+        run: npm i
+
       - name: Run Node.js tests
         run: npm run test
 
@@ -66,6 +69,9 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
+      - name: Deps
+        run: npm i
+
       # https://github.com/npm/cli/issues/4341#issuecomment-1040608101
       - if: matrix.os == 'windows-2022' && matrix.node-version == 14
         run: npm i -g npm@7
@@ -93,6 +99,9 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
+
+      - name: Deps
+        run: npm i
 
       - name: Run tests
         run: npm run test:cov
