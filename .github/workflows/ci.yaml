@@ -34,22 +34,6 @@ jobs:
       - name: Run Node.js tests
         run: npm run test
 
-  test_bun:
-    name: Test with Bun
-    needs: init
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3.1.0
-
-      - name: Setup Bun Runtime
-        uses: antongolub/action-setup-bun@v1.3.1
-        with:
-          version: '>=0.1.1'
-
-      - name: Run Bun tests
-        run: bun run test
-
   test_pr:
     if: ${{ needs.init.outputs.skip == 'false' && github.event_name == 'pull_request' }}
     needs: init
