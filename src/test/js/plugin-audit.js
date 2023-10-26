@@ -7,7 +7,7 @@ const test = testFactory('audit', import.meta)
   [
     'maps `critical` to `deny`',
     {
-      entry: {name: 'minimist', version: '1.2.5'},
+      entry: {name: 'minimist', version: '0.2.1'},
       boundContext: {
         registry: 'https://registry.npmjs.org'
       },
@@ -75,5 +75,3 @@ const test = testFactory('audit', import.meta)
     assert.equal(await auditPlugin(ctx), result)
   })
 })
-
-
