@@ -1,3 +1,11 @@
+## [2.11.0](https://github.com/antongolub/npm-registry-firewall/compare/v2.10.1...v2.11.0) (2023-10-28)
+
+### Fixes & improvements
+* docs: allow zlib option in typings ([1d22e9e](https://github.com/antongolub/npm-registry-firewall/commit/1d22e9e1e375cf096f11b5eecc8b2dcb460326f2))
+
+### Features
+* feat: provide support for bun ([f69951e](https://github.com/antongolub/npm-registry-firewall/commit/f69951e80921f1db48f1b0542395d0e5e5acb8e4))
+
 ## [2.10.1](https://github.com/antongolub/npm-registry-firewall/compare/v2.10.0...v2.10.1) (2022-12-12)
 
 
