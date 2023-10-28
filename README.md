@@ -22,7 +22,7 @@ npm registry proxy with on-the-fly filtering
 * Standalone. No clouds, no subscriptions.
 * Linux / Windows / macOS compatible.
 * Works with [Bun](https://github.com/Jarred-Sumner/bun). But `config.zlib:` [fflate](https://github.com/101arrowz/fflate) does not work because: `worker_threads.Worker option "eval" is not implemented.`
-* Has no deps. Literally zero.
+* Has no prod deps. Literally zero.
 
 ## Motivation
 
@@ -249,6 +249,7 @@ type TFirewallConfig = Record<string, TFirewallConfigEntry>
 type TConfig = {
   server: TServerConfig
   firewall: TFirewallConfig
+  zlib?: string // ref to zlib implementation like `fflate`. Defaults to `node:zlib`
   extend?: string
   agent?: TAgentConfig
   log?: { level?: TLogeLevel }

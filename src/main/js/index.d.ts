@@ -77,6 +77,7 @@ type TFirewallConfig = Record<string, TFirewallConfigEntry>
 type TConfig = {
   server: TServerConfig
   firewall: TFirewallConfig
+  zlib?: string // ref to zlib implementation like `fflate`. Defaults to `node:zlib`
   extend?: string
   agent?: TAgentConfig
   log?: { level?: TLogeLevel }
