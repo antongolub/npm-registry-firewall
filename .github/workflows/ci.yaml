@@ -20,7 +20,7 @@ jobs:
         run: npm i
 
       - name: Run Node.js tests
-        run: npm run test
+        run: npm run test:cov
 
       - name: Codeclimate
         if: github.ref == 'refs/heads/master'
@@ -93,4 +93,4 @@ jobs:
 
       - name: Run tests
         timeout-minutes: 2
-        run: npm run test
+        run: npm run test:cov
