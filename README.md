@@ -21,7 +21,7 @@ npm registry proxy with on-the-fly filtering
 * Extendable. [expressjs](https://expressjs.com/en/guide/using-middleware.html)-inspired server implementation is under the hood.
 * Standalone. No clouds, no subscriptions.
 * Linux / Windows / macOS compatible.
-* Works with [Bun](https://github.com/Jarred-Sumner/bun). But `config.zlib: 'flatte'` does not work because: `worker_threads.Worker option "eval" is not implemented.`
+* Works with [Bun](https://github.com/Jarred-Sumner/bun). But `config.zlib:` [fflate](https://github.com/101arrowz/fflate) does not work because: `worker_threads.Worker option "eval" is not implemented.`
 * Has no deps. Literally zero.
 
 ## Motivation
