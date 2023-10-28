@@ -7,7 +7,7 @@ export const errorBoundary = async (err, req, res, next) => {
   const message = Object.values(statusMessages).includes(_message) ? _message : statusMessages[INTERNAL_SERVER_ERROR]
 
   if (!err.statusCode || err.statusCode >= INTERNAL_SERVER_ERROR) {
-    logger.error(err.stack)
+    logger.error(err.stack || err)
   }
 
   res.statusCode = code

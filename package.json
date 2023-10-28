@@ -7,15 +7,12 @@
   "type": "module",
   "exports": {
     ".": {
+      "types": "./src/main/js/index.d.ts",
       "import": "./src/main/js/index.js",
-      "types": "./src/main/js/index.d.ts"
+      "default": "./src/main/js/index.js"
     },
-    "./audit": {
-      "import": "./src/main/js/firewall/plugins/audit.js"
-    },
-    "./std": {
-      "import": "./src/main/js/firewall/plugins/std.js"
-    }
+    "./audit": "./src/main/js/firewall/plugins/audit.js",
+    "./std": "./src/main/js/firewall/plugins/std.js"
   },
   "types": "./src/main/js/index.d.ts",
   "engines": {
@@ -25,6 +22,7 @@
     "docs": "mkdir -p docs && cp ./README.md ./docs/README.md",
     "start": "node src/main/js/cli.js config.cjs",
     "test": "node src/test/js/all.js",
+    "test:bun": "bun src/test/js/all.js",
     "test:cov": "c8 npm run test && c8 report -r lcov"
   },
   "files": [
