@@ -1,5 +1,5 @@
-import {asArray, tryQueue} from '../util.js'
-import {request} from '../http/index.js'
+import {asArray, tryQueue} from '../../util.js'
+import {request} from '../../http/index.js'
 
 export const checkTarball = async ({registry, url}) => {
   const registries = asArray(registry)

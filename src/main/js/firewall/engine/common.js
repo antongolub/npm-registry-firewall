@@ -1,5 +1,21 @@
-import {asArray, mapValuesAsync} from '../util.js'
-import {logger} from '../logger.js'
+import {asArray, mapValuesAsync, normalizePath} from '../../util.js'
+import {logger} from '../../logger.js'
+import {getConfig} from '../../config.js'
+
+const getAuth = (token, auth) => token
+  ? token?.startsWith('Bearer')
+    ? token
+    :`Bearer ${token}`
+  : auth
+
+export const getBoundContext = async ({org, name, version, rules, registry, token, req = {headers: {}}}) => {
+  const config = getConfig()
+  const authorization = getAuth(token, req.headers['authorization'])
+  const entrypoint = _entrypoint || normalizePath(`${config.server.entrypoint}${base}`)
+  const pipeline = await getPipeline(rules)
+
+  return { registry, entrypoint, authorization, name, org, version, pipeline, rules }
+}
 
 export const getDirectives = ({packument, rules, boundContext}) =>
   mapValuesAsync(packument.versions, async (entry) =>

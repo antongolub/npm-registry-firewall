@@ -1,10 +1,8 @@
 import {httpError, NOT_FOUND, ACCESS_DENIED, METHOD_NOT_ALLOWED, NOT_MODIFIED, OK, FOUND} from '../http/index.js'
-import {getPolicy, getPipeline} from './engine.js'
-import {getPackument} from './packument.js'
+import {getPolicy, getPipeline, checkTarball, getPackument} from './engine/api.js'
 import {normalizePath, dropNullEntries, time, jsonBuffer} from '../util.js'
 import {gzip} from '../zip.js'
 import {hasHit, hasKey, isNoCache} from '../cache.js'
-import {checkTarball} from './tarball.js'
 import {logger} from '../logger.js'
 import {getConfig} from '../config.js'
 
