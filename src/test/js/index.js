@@ -20,6 +20,9 @@ import {
   timeout,
   firewall,
   metrics,
+
+  // utils
+  assertPolicy
 } from '../../main/js/index.js'
 
 const test = testFactory('index', import.meta)
@@ -43,7 +46,8 @@ test('has proper export', () => {
     ctx,
     timeout,
     firewall,
-    metrics
+    metrics,
+    assertPolicy
   ]
 
   fns.forEach(fn => assert.ok(typeof fn === 'function', fn.name))

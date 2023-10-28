@@ -1,10 +1,11 @@
 import {httpError, NOT_FOUND, ACCESS_DENIED, METHOD_NOT_ALLOWED, NOT_MODIFIED, OK, FOUND} from '../http/index.js'
-import {getPolicy, getPipeline, checkTarball, getPackument} from './engine/api.js'
-import {normalizePath, dropNullEntries, time, jsonBuffer} from '../util.js'
+import {getPolicy, getPackument, getAssets} from './engine/api.js'
+import {dropNullEntries, time, jsonBuffer} from '../util.js'
 import {gzip} from '../zip.js'
 import {hasHit, hasKey, isNoCache} from '../cache.js'
 import {logger} from '../logger.js'
 import {getConfig} from '../config.js'
+import {getBoundContext} from "./engine/common.js";
 
 const warmupPipeline = (pipeline, opts, warmup = getConfig().warmup) => {
   if (warmup <= 0 || isNoCache()) return
@@ -46,7 +47,7 @@ const getAuth = (token, auth) => token
     :`Bearer ${token}`
   : auth
 
-export const firewall = ({registry, rules, entrypoint: _entrypoint, token}) => async (req, res, next) => {
+export const firewall = ({registry, rules, entrypoint, token}) => async (req, res, next) => {
   const {routeParams: {name, version, org}, base, method} = req
   req.timed = true
 
@@ -54,20 +55,11 @@ export const firewall = ({registry, rules, entrypoint: _entrypoint, token}) => a
     return next(httpError(METHOD_NOT_ALLOWED))
   }
 
-  const config = getConfig()
-  const authorization = getAuth(token, req.headers['authorization'])
-  const entrypoint = _entrypoint || normalizePath(`${config.server.entrypoint}${base}`)
-  const pipeline = await getPipeline(rules)
-  const boundContext = { registry, entrypoint, authorization, name, org, version, pipeline }
+  const boundContext = await getBoundContext({org, name, version, rules, registry, token, entrypoint, req})
+  const {pipeline} = boundContext
 
   warmupPipeline(pipeline, boundContext)
-  const [
-    { packument, packumentBufferZip, headers, etag, deps, directives },
-    tarball
-  ] = await Promise.all([
-    getPackument({ boundContext, rules }),
-    version ? checkTarball({registry, url: req.url}) : Promise.resolve(false)
-  ])
+  const {packument, packumentBufferZip, headers, etag, deps, directives, tarball} = await getAssets(boundContext)
 
   if (!packument) {
     return next(httpError(NOT_FOUND))

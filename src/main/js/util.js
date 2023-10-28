@@ -210,3 +210,11 @@ export const fromArrayBufferToBuffer = (ab) => {
   }
   return buf
 }
+
+export const replaceAll = (a, b, c) => {
+  if (!a) return a
+
+  return a.replaceAll
+    ? a.replaceAll(b, c)
+    : a.split(b).join(c)
+}

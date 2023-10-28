@@ -8,10 +8,11 @@ const getAuth = (token, auth) => token
     :`Bearer ${token}`
   : auth
 
-export const getBoundContext = async ({org, name, version, rules, registry, token, req = {headers: {}}}) => {
+export const getBoundContext = async ({name, version, rules, registry, token, entrypoint: _entrypoint, req = {headers: {}, base: ''}}) => {
   const config = getConfig()
+  const org = name.charAt(0) === '@' ? name.slice(0, (name.indexOf('/') + 1 || name.indexOf('%') + 1) - 1) : null
   const authorization = getAuth(token, req.headers['authorization'])
-  const entrypoint = _entrypoint || normalizePath(`${config.server.entrypoint}${base}`)
+  const entrypoint = _entrypoint || normalizePath(`${config?.server?.entrypoint || ''}${req.base}`)
   const pipeline = await getPipeline(rules)
 
   return { registry, entrypoint, authorization, name, org, version, pipeline, rules }
