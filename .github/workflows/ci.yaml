@@ -3,21 +3,10 @@
 name: CI
 on: [push, pull_request]
 jobs:
-  init:
-    name: init
-    runs-on: ubuntu-22.04
-    outputs:
-      skip: ${{ steps.ci-skip-step.outputs.ci-skip }}
-      skip-not: ${{ steps.ci-skip-step.outputs.ci-skip-not }}
-    steps:
-      - uses: actions/checkout@v3.1.0
-      - id: ci-skip-step
-        uses: mstachniuk/ci-skip@v1
-
   test_push:
     name: Test on push
     needs: init
-    if: ${{ needs.init.outputs.skip == 'false' && github.event_name == 'push' }}
+    if: ${{ github.event_name == 'push' }}
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout
@@ -35,13 +24,12 @@ jobs:
         run: npm run test
 
   test_pr:
-    if: ${{ needs.init.outputs.skip == 'false' && github.event_name == 'pull_request' }}
-    needs: init
+    if: ${{ github.event_name == 'pull_request' }}
     name: Test PR (Node v${{ matrix.node-version }}, OS ${{ matrix.os }})
     strategy:
       matrix:
         os: [ ubuntu-22.04, windows-2022 ]
-        node-version: [ 14, 16, 18 ]
+        node-version: [ 14, 16, 18, 20 ]
 
     runs-on: ${{ matrix.os }}
     steps:

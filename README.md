@@ -21,7 +21,7 @@ npm registry proxy with on-the-fly filtering
 * Extendable. [expressjs](https://expressjs.com/en/guide/using-middleware.html)-inspired server implementation is under the hood.
 * Standalone. No clouds, no subscriptions.
 * Linux / Windows / macOS compatible.
-* ~~Supports [Bun](https://github.com/Jarred-Sumner/bun) Runtime.~~ Not yet.
+* Works with [Bun](https://github.com/Jarred-Sumner/bun). But `config.zlib: 'flatte'` does not work because: `worker_threads.Worker option "eval" is not implemented.`
 * Has no deps. Literally zero.
 
 ## Motivation
@@ -107,7 +107,8 @@ The proxy intercepts packuments and tarball requests and applies the specified f
 * [Passes any other](https://github.com/antongolub/npm-registry-firewall/blob/master/src/main/js/app.js#L49) requests to the remote registry as is.
 
 ## Requirements
-Node.js >= 14
+Node.js >= 14  
+Bun >= 1.0.6
 
 ## Install
 ```shell

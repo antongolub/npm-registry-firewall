@@ -1,6 +1,5 @@
 import {fileURLToPath} from 'node:url'
 import {relative} from 'node:path'
-import {promisify} from 'node:util'
 import assert from 'node:assert'
 
 import {flatten} from '../main/js/util.js'
@@ -19,7 +18,7 @@ export const objectContaining = (a, b) => {
 
 export {assert}
 
-export const sleep = promisify(setTimeout)
+export const sleep = (delay) => new Promise(resolve => setTimeout(resolve, delay))
 
 // https://stackoverflow.com/questions/9781218/how-to-change-node-jss-console-font-color
 const Reset = "\x1b[0m",
@@ -50,7 +49,7 @@ const timeout = (promise, ms = 5000, exception = `TimeoutException: exec time ex
   let timer
   return Promise.race([
     promise,
-    new Promise((_r, rej) => timer = setTimeout(rej, ms, exception))
+    new Promise((_r, rej) => { timer = setTimeout(rej, ms, exception) })
   ]).finally(() => clearTimeout(timer))
 }
 

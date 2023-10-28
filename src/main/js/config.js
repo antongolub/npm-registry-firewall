@@ -1,10 +1,9 @@
 import {strict as assert} from 'node:assert'
 import fs from 'node:fs'
-import os from 'node:os'
-import process from 'node:process'
+
 
 import {getCtx} from './als.js'
-import {asArray, asStrOrRegexpArray, genId, load, normalizePath, mergeDeep, once} from './util.js'
+import {asArray, asStrOrRegexpArray, genId, load, normalizePath, mergeDeep} from './util.js'
 import { semver } from './semver.js'
 
 const populateExtra = (target) => {

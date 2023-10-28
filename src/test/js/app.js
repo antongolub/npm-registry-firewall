@@ -1,4 +1,5 @@
 import crypto from 'node:crypto'
+import process from 'node:process'
 import { testFactory, objectContaining } from '../test-utils.js'
 import { createApp } from '../../main/js/index.js'
 import { request } from '../../main/js/http/client.js'
@@ -9,7 +10,7 @@ const cfg = {
     host: 'localhost',
     port: 3001
   },
-  zlib: 'fflate',
+  zlib: process.versions.bun ? 'node:zlib' : 'fflate',
   cache: {
     ttl: 1
   },
