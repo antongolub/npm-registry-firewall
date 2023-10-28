@@ -121,3 +121,11 @@ export function createLogger(options: TLoggerOptions): TLogger
 export function getPercentiles(name: string, percentiles: number[]): number[]
 
 export function getMetricsDigest(): Record<string, any>
+
+export function assertPolicy(opts: {
+  name: string
+  version: string
+  rules: TRule | TRule[]
+  registry: string
+  token?: string
+}, policy?: TPolicy): TPolicy

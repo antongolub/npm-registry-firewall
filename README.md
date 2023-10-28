@@ -127,7 +127,7 @@ npm-registry-firewall /path/to/config.json
 
 ### JS API
 ```js
-import {createApp} from 'npm-registry-firewall'
+import {createApp, assertPolicy} from 'npm-registry-firewall'
 
 const app = createApp({
   server: {
@@ -162,6 +162,18 @@ const app = createApp({
 })
 
 await app.start()
+
+// Checks the specified pkg version against the rules preset
+await assertPolicy({
+  name: 'eventsource',
+  version: '1.1.0',
+  registry: 'https://registry.npmjs.org',
+  rules: [{
+    plugin: [['npm-registry-firewall/audit', {
+      critical: 'deny'
+    }]]
+  }]
+}, 'allow') // Error: assert policy: deny !== allow
 ```
 
 ### TS libdefs

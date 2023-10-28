@@ -1,4 +1,4 @@
-import {asArray, normalizePath, once} from '../util.js'
+import {asArray, normalizePath, once, replaceAll} from '../util.js'
 
 const normalizeRoute = (item) => {
   const [m, p, cb] = asArray(item)
@@ -35,7 +35,7 @@ const getRouteParams = (url, pattern, rmap) => rmap && pattern instanceof RegExp
     .reduce((m, v, k) => {
       const _k = rmap[k]
       if (_k) {
-        m[_k] = v?.replace('%2f', '/')
+        m[_k] = replaceAll(v, '%2f', '/')
       }
       return m
     }, {})

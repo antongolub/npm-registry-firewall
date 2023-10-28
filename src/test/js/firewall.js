@@ -3,6 +3,36 @@ import { getDirective, assertPolicy } from '../../main/js/firewall/index.js'
 
 const test = testFactory('firewall', import.meta)
 
+test('assertPolicy', async () => {
+  const policy = await assertPolicy({
+    name: 'eventsource',
+    version: '1.1.0',
+    registry: 'https://registry.npmjs.org',
+    rules: [{
+      plugin: [['npm-registry-firewall/audit', {
+        critical: 'deny'
+      }]]
+    }]
+  })
+
+  assert.equal(policy, 'deny')
+
+  try {
+    await assertPolicy({
+      name: 'eventsource',
+      version: '1.1.0',
+      registry: 'https://registry.npmjs.org',
+      rules: [{
+        plugin: [['npm-registry-firewall/audit', {
+          critical: 'deny'
+        }]]
+      }]
+    }, 'allow')
+  } catch (e) {
+    assert.equal(e.message, 'assert policy: deny !== allow')
+  }
+})
+
 ;[
   [
     'getDirective by name (pos)',
