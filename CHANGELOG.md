@@ -1,3 +1,11 @@
+## [2.12.0](https://github.com/antongolub/npm-registry-firewall/compare/v2.11.0...v2.12.0) (2023-10-28)
+
+### Features
+* feat: export `assertPolicy` helper to check pkg version against the rules preset ([11e5287](https://github.com/antongolub/npm-registry-firewall/commit/11e528704afe2b69259330c290d2722a2baa9cfc))
+
+### Fixes & improvements
+* refactor: separate engine firewall domain ([f779be5](https://github.com/antongolub/npm-registry-firewall/commit/f779be538ad05a1c83acdef36a69d697ec4eafa8))
+
 ## [2.11.0](https://github.com/antongolub/npm-registry-firewall/compare/v2.10.1...v2.11.0) (2023-10-28)
 
 ### Fixes & improvements
