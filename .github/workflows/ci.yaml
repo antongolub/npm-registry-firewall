@@ -5,7 +5,6 @@ on: [push, pull_request]
 jobs:
   test_push:
     name: Test on push
-    needs: init
     if: ${{ github.event_name == 'push' }}
     runs-on: ubuntu-22.04
     steps:
@@ -15,7 +14,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 20
 
       - name: Deps
         run: npm i
@@ -23,9 +22,29 @@ jobs:
       - name: Run Node.js tests
         run: npm run test
 
-  test_pr:
+  test_pr_bun:
     if: ${{ github.event_name == 'pull_request' }}
-    name: Test PR (Node v${{ matrix.node-version }}, OS ${{ matrix.os }})
+    runs-on: ubuntu-22.04
+    name: Test PR with Bun
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3.1.0
+
+      - name: Setup Bun
+        uses: antongolub/action-setup-bun@v1
+
+      - name: Deps
+        run: | 
+          bun install
+          ln -s ../ ./node_modules/npm-registry-firewall
+
+      - name: Run tests
+        timeout-minutes: 2
+        run: bun test:bun
+
+  test_pr_node:
+    if: ${{ github.event_name == 'pull_request' }}
+    name: Test PR Node.js v${{ matrix.node-version }}, OS ${{ matrix.os }}
     strategy:
       matrix:
         os: [ ubuntu-22.04, windows-2022 ]
@@ -48,7 +67,7 @@ jobs:
       - if: matrix.os == 'windows-2022' && matrix.node-version == 14
         run: npm i -g npm@7
 
-      - if: matrix.os == 'windows-2022'
+      - if: matrix.os == 'windows-2022' && matrix.node-version != 14
         run: npm i -g npm@latest
 
       - name: Run tests
@@ -70,7 +89,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 20
 
       - name: Deps
         run: npm i
