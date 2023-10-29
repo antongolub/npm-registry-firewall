@@ -23,6 +23,11 @@ const cfg = {
           "name": "colors",
           "version": ">= v1.3.0"
         },
+        {
+          "plugin": [["npm-registry-firewall/audit", {
+            "critical": "deny"
+          }]]
+        }
       ]
     },
     '/block-all': {
@@ -110,6 +115,11 @@ test('is runnable', async () => {
     { statusCode: 304 }
   ],
   [
+    'provides check API',
+    { url: 'http://localhost:3001/registry/_check/bulk', method: 'POST', body: '["eventsource@1.1.0"]'},
+    { statusCode: 200, body: '{"eventsource@1.1.0":"deny"}' }
+  ],
+  [
     'works as proxy',
     { url: 'http://localhost:3001/npm-proxy/d', method: 'GET'},
     { statusCode: 200 }
@@ -119,13 +129,13 @@ test('is runnable', async () => {
     { url: 'http://localhost:3001/unknown/d', method: 'GET'},
     { statusCode: 200 }
   ],
-].forEach(([name, {url, method, headers: _headers = {}}, expected]) => {
+].forEach(([name, {url, method, body, headers: _headers = {}}, expected]) => {
   test(name, async () => {
     let result
     const headers = typeof _headers === 'function' ? await _headers() : _headers
 
     try {
-      const res = await request({url, method, headers})
+      const res = await request({url, method, body, headers, test: 'true'})
       const hash = crypto
         .createHash('sha512')
         .update(res.buffer)

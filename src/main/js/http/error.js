@@ -4,6 +4,7 @@ export const PERMANENT_REDIRECT =     301
 export const FOUND =                  302
 export const NOT_MODIFIED =           304
 export const TEMPORARY_REDIRECT =     307
+export const BAD_REQUEST =            400
 export const ACCESS_DENIED =          403
 export const NOT_FOUND =              404
 export const METHOD_NOT_ALLOWED =     405
@@ -21,7 +22,8 @@ export const statusMessages = {
   [NOT_FOUND]:              'Not Found',
   [REQUEST_TIMEOUT]:        'Request Timeout',
   [INTERNAL_SERVER_ERROR]:  'Internal Server Error',
-  [METHOD_NOT_ALLOWED]:     'Method Not Allowed'
+  [METHOD_NOT_ALLOWED]:     'Method Not Allowed',
+  [BAD_REQUEST]:            'Bad request',
 }
 
 export const httpError = (code = INTERNAL_SERVER_ERROR, {

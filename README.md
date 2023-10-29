@@ -661,6 +661,19 @@ Default plugin to filter packages by their fields. May be used directly or via s
 }
 ```
 
+### Checks
+To check the specified package version against the applied registry rules trigger its `_check` entrypoint.
+For one package:
+```bash
+curl -X GET -k https://localhost:3000/registry/_check/eventsource/1.1.0
+# {"eventsource@1.1.0":"deny"}
+```
+To inspect a bulk on entries at once:
+```bash
+curl -X POST -k https://localhost:3000/registry/_check/bulk -d '["eventsource@1.1.0"]'
+# {"eventsource@1.1.0":"deny"}
+```
+
 ### Monitoring
 #### /healthcheck
 ```json

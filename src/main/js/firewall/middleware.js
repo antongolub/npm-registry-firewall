@@ -1,5 +1,5 @@
 import {httpError, NOT_FOUND, ACCESS_DENIED, METHOD_NOT_ALLOWED, NOT_MODIFIED, OK, FOUND} from '../http/index.js'
-import {getPolicy, getPackument, getAssets} from './engine/api.js'
+import {getPolicy, getPackument, getAssets, assertPolicy} from './engine/api.js'
 import {dropNullEntries, time, jsonBuffer} from '../util.js'
 import {gzip} from '../zip.js'
 import {hasHit, hasKey, isNoCache} from '../cache.js'
@@ -41,14 +41,26 @@ const warmupDepPackuments = (name, deps, boundContext, rules, warmup = getConfig
   })
 }
 
-const getAuth = (token, auth) => token
-  ? token?.startsWith('Bearer')
-    ? token
-    :`Bearer ${token}`
-  : auth
+export const advisory =  ({registry, rules, token}) => async (req, res, next) => {
+  const {routeParams: {name, version}} = req
+  const data = version
+    ? [`${name}@${version}`]
+    : await req.json()
+
+  const result = Object.fromEntries(await Promise.all(data.map(async entry => {
+    const atSepPos = entry.indexOf('@', 1)
+    const name = entry.slice(0, atSepPos)
+    const version = entry.slice(atSepPos + 1)
+
+    return [entry, await assertPolicy({name, version, registry, rules, token})]
+  })))
+
+  req.timed = true
+  res.json(result)
+}
 
 export const firewall = ({registry, rules, entrypoint, token}) => async (req, res, next) => {
-  const {routeParams: {name, version, org}, base, method} = req
+  const {routeParams: {name, version, org}, method} = req
   req.timed = true
 
   if (method !== 'GET' && method !== 'HEAD') {

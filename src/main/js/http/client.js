@@ -12,7 +12,7 @@ import { logger } from '../logger.js'
 import { pushMetric } from '../metric.js'
 
 export const request = async (opts) => {
-  const {url, headers: _headers, method = 'GET', postData, pipe, gzip: _gzip, skipUnzip, followRedirects, timeout = 30_000, authorization = null} = opts
+  const {url, headers: _headers, method = 'GET', postData, data, body = postData || data, pipe, gzip: _gzip, skipUnzip, followRedirects, timeout = 30_000, authorization = null} = opts
   const {
     protocol,
     isSecure = protocol === 'https:',
@@ -24,17 +24,20 @@ export const request = async (opts) => {
   const lib = isSecure ? https : http
   const agent = getAgent(isSecure)
   const {promise, resolve, reject} = makeDeferred()
-  const data = postData && (_gzip ? await gzip(Buffer.from(postData), {level: zlib.constants.Z_BEST_COMPRESSION}) : Buffer.from(postData))
+  const _body = body && (_gzip ? await gzip(Buffer.from(body), {level: zlib.constants.Z_BEST_COMPRESSION}) : Buffer.from(body))
+  const contentEncoding = _gzip && method === 'POST' ? 'gzip' : undefined
+  const acceptEncoding = _gzip ? 'gzip' : '*'
+  const contentLength = !contentEncoding && body ? '' + Buffer.byteLength(_body) + '' : undefined
   const headers = dropNullEntries({
+    connection: 'keep-alive',
     ...pipe?.req?.headers,
     ..._headers,
     host,
     authorization,
-    connection: 'keep-alive',
-    'content-encoding': _gzip && method === 'POST' ? 'gzip' : undefined,
-    'accept-encoding': _gzip ? 'gzip' : '*'
+    'Content-Encoding': contentEncoding,
+    'content-length': contentLength,
+    'Accept-Encoding': acceptEncoding
   })
-
   const params = {
     protocol,
     method,
@@ -45,7 +48,6 @@ export const request = async (opts) => {
     agent,
     headers
   }
-
   logger.debug('HTTP >', method, url)
 
   const s = Date.now()
@@ -107,8 +109,8 @@ export const request = async (opts) => {
     pipe.req.pipe(req, { end: true })//.pipe(pipe.res)
 
   } else {
-    if (data) {
-      req.write(data)
+    if (_body) {
+      req.write(_body)
     }
     req.end()
   }
