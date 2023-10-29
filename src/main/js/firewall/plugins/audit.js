@@ -82,7 +82,7 @@ const processQueue = async (queue, registry) => {
 }
 
 export const getAdvisoriesBatch = async (batch = [], registry) => {
-  const postData = JSON.stringify(batch.reduce((m, name) => {
+  const data = JSON.stringify(batch.reduce((m, name) => {
     m[name] = ['0.0.0']
     return m
   }, {}))
@@ -95,7 +95,7 @@ export const getAdvisoriesBatch = async (batch = [], registry) => {
   const {body} = await request({
     method: 'POST',
     url: `${registry}/-/npm/v1/security/advisories/bulk`,
-    postData,
+    data,
     headers,
     gzip: true
   })

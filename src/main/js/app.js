@@ -10,6 +10,7 @@ import {
   proxy,
   timeout,
   firewall,
+  advisory,
   metrics,
 } from './mwares/index.js'
 import { loadConfig } from './config.js'
@@ -58,7 +59,10 @@ export const _createApp = (cfg, {
 export const createRoutes = (config) =>
   config.firewall.map(({base, entrypoint, registry, token, rules}) => {
     const f = firewall({registry, rules, entrypoint, token})
+    const a = advisory({registry, rules, entrypoint, token})
+
     return createRouter([
+      // tarball
       [
         'GET',
         [
@@ -67,6 +71,7 @@ export const createRoutes = (config) =>
         ],
         f
       ],
+      // packument
       [
         '*',
         [
@@ -74,6 +79,23 @@ export const createRoutes = (config) =>
           ['name', 'org']
         ],
         f
+      ],
+      // advisory
+      [
+        'GET',
+        [
+          /^\/_check\/((?:(@[a-z0-9\-._]+)(?:%2[fF]|\/))?[a-z0-9\-._]+)\/(\d+\.\d+\.\d+(?:-[+\-.a-z0-9_]+)?)\/?$/,
+          ['name', 'org', 'version']
+        ],
+        a
+      ],
+      [
+        'POST',
+        [
+          /^\/_check\/bulk\/?$/,
+          []
+        ],
+        a
       ],
       proxy(registry),
       errorBoundary,

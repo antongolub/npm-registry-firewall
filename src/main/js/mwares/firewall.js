@@ -1,1 +1,1 @@
-export { firewall } from '../firewall/index.js'
+export { firewall, advisory } from '../firewall/index.js'

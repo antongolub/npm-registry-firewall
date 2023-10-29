@@ -1,9 +1,10 @@
 import http from 'node:http'
 import https from 'node:https'
+import { Buffer } from 'node:buffer'
 
-import {makeDeferred} from '../util.js'
-import {INTERNAL_SERVER_ERROR, statusMessages} from './error.js'
-import {logger} from '../logger.js'
+import { makeDeferred } from '../util.js'
+import { INTERNAL_SERVER_ERROR, BAD_REQUEST, statusMessages, httpError } from './error.js'
+import { logger } from '../logger.js'
 
 const createSocketPool = () => {
   const sockets = new Set()
@@ -30,6 +31,27 @@ const sendJson = function(data, code = 200) {
     .end(buffer)
 }
 
+const getBody = async function() {
+  return new Promise((resolve) => {
+    const body = []
+    this
+      .on('data', chunk => {
+        body.push(chunk)
+      })
+      .on('end', () => {
+        resolve(Buffer.concat(body).toString())
+      })
+  })
+}
+const getJson = async function() {
+  try {
+    const body = await this.body()
+    return JSON.parse(body)
+  } catch {
+    throw httpError(BAD_REQUEST)
+  }
+}
+
 export const createServer = ({host, port, secure, router, keepAliveTimeout, headersTimeout, requestTimeout }) => {
   const entrypoint = `${secure ? 'https' : 'http'}://${host}:${port}`
   const lib = secure ? https : http
@@ -37,6 +59,8 @@ export const createServer = ({host, port, secure, router, keepAliveTimeout, head
   const sockets = createSocketPool()
   const server = lib.createServer(options, async (req, res) => {
     try {
+      req.body = getBody
+      req.json = getJson
       res.json = sendJson
       await router(req, res)
 
