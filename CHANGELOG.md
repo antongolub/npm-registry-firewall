@@ -1,3 +1,8 @@
+## [2.13.0](https://github.com/antongolub/npm-registry-firewall/compare/v2.12.0...v2.13.0) (2023-10-30)
+
+### Features
+* feat: provide check api ([593093a](https://github.com/antongolub/npm-registry-firewall/commit/593093a076971941d571a2b31c19079240099b1a))
+
 ## [2.12.0](https://github.com/antongolub/npm-registry-firewall/compare/v2.11.0...v2.12.0) (2023-10-28)
 
 ### Features
