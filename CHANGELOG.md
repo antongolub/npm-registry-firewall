@@ -1,3 +1,8 @@
+## [2.13.1](https://github.com/antongolub/npm-registry-firewall/compare/v2.13.0...v2.13.1) (2023-11-02)
+
+### Fixes & improvements
+* docs: mention presentation at HolyJS 2022 ([bd39b9d](https://github.com/antongolub/npm-registry-firewall/commit/bd39b9d987e53f5ce0a320036fa4a54809e22c32))
+
 ## [2.13.0](https://github.com/antongolub/npm-registry-firewall/compare/v2.12.0...v2.13.0) (2023-10-30)
 
 ### Features
