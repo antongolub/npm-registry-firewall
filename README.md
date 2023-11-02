@@ -835,6 +835,11 @@ comes to:
 }
 ```
 
+## Roadmap
+It seems possible to avoid using package managers to patch lockfiles in the future. The algorithm will be greatly simplified:
+* Invoke [the registry audit API directly](https://github.com/antongolub/npm-registry-firewall/blob/master/src/main/js/firewall/plugins/audit.js#L84).
+* Read, modify and write lockfiles. [@antongolub/lockfile](https://github.com/antongolub/lockfile) is aimed to solve this issue.
+
 ## Contributing
 Feel free to open any issues: bug reports, feature requests or questions.
 You're always welcome to suggest a PR. Just fork this repo, write some code, put some tests and push your changes.
