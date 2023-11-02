@@ -106,6 +106,10 @@ The proxy intercepts packuments and tarball requests and applies the specified f
 * [Returns 404](https://github.com/antongolub/npm-registry-firewall/blob/master/src/main/js/firewall/middleware.js#L23) if `registy/pkg-tarball@version.tgz` does not satisfy the policies.
 * [Passes any other](https://github.com/antongolub/npm-registry-firewall/blob/master/src/main/js/app.js#L49) requests to the remote registry as is.
 
+### Presentation
+[npm vulnerabilities: challenge accepted](https://holyjs.ru/talks/703ae2781cbc46d49a007f16834d7c0b/?referer=/persons/15a4605d3664430ba116f38fc7d0613d/) at HolyJS 2022 Spring  
+[slides](https://squidex.jugru.team/api/assets/srm/5f08d7c7-00d4-4387-bd22-370b7660d9d7/holyjs-2020-spring-slides-reforged.pptx)
+
 ## Requirements
 Node.js >= 14  
 Bun >= 1.0.6
