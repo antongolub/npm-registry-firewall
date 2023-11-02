@@ -1,3 +1,8 @@
+## [2.13.2](https://github.com/antongolub/npm-registry-firewall/compare/v2.13.1...v2.13.2) (2023-11-02)
+
+### Fixes & improvements
+* docs: add roadmap ([bf87caf](https://github.com/antongolub/npm-registry-firewall/commit/bf87caf98f4e6b23a798bf350f458700fa8f7d83))
+
 ## [2.13.1](https://github.com/antongolub/npm-registry-firewall/compare/v2.13.0...v2.13.1) (2023-11-02)
 
 ### Fixes & improvements
