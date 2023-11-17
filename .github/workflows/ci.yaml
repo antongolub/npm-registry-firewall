@@ -37,7 +37,7 @@ jobs:
           CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
         with:
           coverageLocations: |
-            ${{github.workspace}}/target/coverage/lcov.info:lcov
+            ${{github.workspace}}/coverage/lcov.info:lcov
 
       - name: Semantic Release
         if: github.ref == 'refs/heads/master'
