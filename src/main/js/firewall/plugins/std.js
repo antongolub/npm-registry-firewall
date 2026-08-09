@@ -13,7 +13,7 @@ export const stdPlugin = async ({rule, entry, boundContext = {}, options = rule}
 
 setFnName(stdPlugin, 'std-plugin')
 
-export const defaultFilter = ({options: opts, boundContext: {org}, entry: { name, version, time, license, _npmUser }, now = Date.now()}) => {
+export const defaultFilter = ({options: opts, boundContext: {org}, entry: { name, version, time, license, _npmUser, dependencies = {} }, now = Date.now()}) => {
   const matches = [
     matchByName(opts, name, version),
     matchByOrg(opts, org),
@@ -21,7 +21,8 @@ export const defaultFilter = ({options: opts, boundContext: {org}, entry: { name
     matchByUsername(opts, _npmUser),
     matchByAge(opts, time, now),
     matchByDateRange(opts, time),
-    matchByVersion(opts, version)
+    matchByVersion(opts, version),
+    matchByDepsCount(opts, Object.keys(dependencies).length)
   ]
 
   return opts.cond === 'or'
@@ -76,5 +77,7 @@ export const matchByLicense = (opts, license) => opts.license?.includes(license?
 export const matchByUsername = (opts, _npmUser) => opts.username?.includes(_npmUser?.name?.toLowerCase())
 
 export const matchByVersion = (opts, version) => opts.version && semver.satisfies(version, opts.version)
+
+export const matchByDepsCount = (opts, count) => opts.depsCount && count >= (opts.depsCount[0] ?? 0) && count <= (opts.depsCount[1] ?? Infinity)
 
 export default stdPlugin
